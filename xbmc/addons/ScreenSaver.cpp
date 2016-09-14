@@ -90,19 +90,19 @@ bool CScreenSaver::CreateScreenSaver()
 void CScreenSaver::Start()
 {
   // notify screen saver that they should start
-  if (Initialized()) m_pStruct->Start();
+  if (Initialized()) m_pStruct->Start(m_addonInstance);
 }
 
 void CScreenSaver::Render()
 {
   // ask screensaver to render itself
-  if (Initialized()) m_pStruct->Render();
+  if (Initialized()) m_pStruct->Render(m_addonInstance);
 }
 
 void CScreenSaver::GetInfo(SCR_INFO *info)
 {
   // get info from screensaver
-  if (Initialized()) m_pStruct->GetInfo(info);
+  if (Initialized()) m_pStruct->GetInfo(m_addonInstance, info);
 }
 
 void CScreenSaver::Destroy()

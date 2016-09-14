@@ -42,9 +42,9 @@ extern "C"
 
   struct ScreenSaver
   {
-    void (__cdecl* Start) ();
-    void (__cdecl* Render) ();
-    void (__cdecl* GetInfo)(SCR_INFO *info);
+    void (__cdecl* Start) (void* addonInstance);
+    void (__cdecl* Render) (void* addonInstance);
+    void (__cdecl* GetInfo)(void* addonInstance, SCR_INFO *info);
   };
 }
 
