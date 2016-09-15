@@ -82,35 +82,38 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   m_pInfo->profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
   m_pInfo->submodule = NULL;
 
-  if (CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>::Create() == ADDON_STATUS_OK)
+  if (CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>::Create() != ADDON_STATUS_OK)
+    return false;
+  
+  ADDON_STATUS status = CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>::CreateInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), m_pInfo, m_pStruct, this, &m_addonInstance);
+  if (status != ADDON_STATUS_OK && status != ADDON_STATUS_NOT_IMPLEMENTED)
+    return false;
+  
+  // Start the visualisation
+  std::string strFile = URIUtils::GetFileName(g_application.CurrentFile());
+  CLog::Log(LOGDEBUG, "Visualisation::Start()\n");
+  try
   {
-    // Start the visualisation
-    std::string strFile = URIUtils::GetFileName(g_application.CurrentFile());
-    CLog::Log(LOGDEBUG, "Visualisation::Start()\n");
-    try
-    {
-      m_pStruct->Start(m_iChannels, m_iSamplesPerSec, m_iBitsPerSample, strFile.c_str());
-    }
-    catch (std::exception e)
-    {
-      HandleException(e, "m_pStruct->Start() (CVisualisation::Create)");
-      return false;
-    }
-
-    m_hasPresets = GetPresets();
-
-    if (GetSubModules())
-      m_pInfo->submodule = strdup(CSpecialProtocol::TranslatePath(m_submodules.front()).c_str());
-    else
-      m_pInfo->submodule = NULL;
-
-    CreateBuffers();
-
-    CAEFactory::RegisterAudioCallback(this);
-
-    return true;
+    m_pStruct->Start(m_iChannels, m_iSamplesPerSec, m_iBitsPerSample, strFile.c_str());
   }
-  return false;
+  catch (std::exception e)
+  {
+    HandleException(e, "m_pStruct->Start() (CVisualisation::Create)");
+    return false;
+  }
+
+  m_hasPresets = GetPresets();
+
+  if (GetSubModules())
+    m_pInfo->submodule = strdup(CSpecialProtocol::TranslatePath(m_submodules.front()).c_str());
+  else
+    m_pInfo->submodule = NULL;
+
+  CreateBuffers();
+
+  CAEFactory::RegisterAudioCallback(this);
+
+  return true;
 }
 
 void CVisualisation::Start(int iChannels, int iSamplesPerSec, int iBitsPerSample, const std::string &strSongName)
@@ -447,7 +450,9 @@ void CVisualisation::Destroy()
     m_pInfo = NULL;
   }
 
+  CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>::DestroyInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), m_addonInstance);
   CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>::Destroy();
+  m_addonInstance = nullptr;
 }
 
 unsigned CVisualisation::GetPreset()

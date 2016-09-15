@@ -59,7 +59,8 @@ namespace ADDON
   {
   public:
     explicit CVisualisation(AddonProps props)
-        : CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>(std::move(props)) {}
+      : CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>(std::move(props)),
+        m_addonInstance(nullptr) {}
 
     virtual void OnInitialize(int iChannels, int iSamplesPerSec, int iBitsPerSample);
     virtual void OnAudioData(const float* pAudioData, int iAudioDataLength);
@@ -107,5 +108,7 @@ namespace ADDON
 
     // track information
     std::string m_AlbumThumb;
+
+    void* m_addonInstance;
   };
 }
