@@ -36,6 +36,8 @@ public:
   virtual unsigned int GetSettings(ADDON_StructSetting*** sSet)=0;
   virtual void FreeSettings()=0;
   virtual ADDON_STATUS SetSetting(const char *settingName, const void *settingValue) =0;
+  virtual ADDON_STATUS CreateInstance(int instanceType, const char* instanceID, const void* instanceProps, void* instanceFunctions, void* kodiInstance, void** addonInstance) =0;
+  virtual void DestroyInstance(int instanceType, const char* instanceID, void* instance) =0;
 };
 
 template <typename TheStruct, typename Props>
@@ -51,6 +53,8 @@ public:
   DEFINE_METHOD1(unsigned int, GetSettings, (ADDON_StructSetting ***p1))
   DEFINE_METHOD0(void, FreeSettings)
   DEFINE_METHOD2(ADDON_STATUS, SetSetting, (const char *p1, const void *p2))
+  DEFINE_METHOD6(ADDON_STATUS, CreateInstance, (int p1, const char* p2, const void* p3, void* p4, void* p5, void** p6))
+  DEFINE_METHOD3(void, DestroyInstance, (int p1, const char* p2, void* p3))
   DEFINE_METHOD1(void, GetAddon, (TheStruct* p1))
   BEGIN_METHOD_RESOLVE()
     RESOLVE_METHOD_RENAME(get_addon,GetAddon)
@@ -62,6 +66,8 @@ public:
     RESOLVE_METHOD_RENAME(ADDON_SetSetting, SetSetting)
     RESOLVE_METHOD_RENAME(ADDON_GetSettings, GetSettings)
     RESOLVE_METHOD_RENAME(ADDON_FreeSettings, FreeSettings)
+    RESOLVE_METHOD_RENAME(ADDON_CreateInstance, CreateInstance)
+    RESOLVE_METHOD_RENAME(ADDON_DestroyInstance, DestroyInstance)
   END_METHOD_RESOLVE()
 };
 

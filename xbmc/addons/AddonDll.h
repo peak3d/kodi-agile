@@ -63,6 +63,10 @@ namespace ADDON
 
     bool DllLoaded(void) const;
 
+    bool SupportMultipleInstances(int instanceType, const char* instanceID);
+    ADDON_STATUS CreateInstance(int instanceType, const char* instanceID, const void* instanceProps, void* instanceFunctions, void* kodiInstance, void** addonInstance);
+    void DestroyInstance(int instanceType, const char* instanceID, void* instance);
+
   protected:
     void HandleException(std::exception &e, const char* context);
     bool Initialized() { return m_initialized; }
@@ -572,6 +576,33 @@ ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::TransferSettings()
   }
 
   return ADDON_STATUS_OK;
+}
+
+template<class TheDll, typename TheStruct, typename TheProps>
+ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::CreateInstance(int instanceType, const char* instanceID, const void* instanceProps, void* instanceFunctions, void* kodiInstance, void** addonInstance)
+{
+  try
+  {
+    return m_pDll->CreateInstance(instanceType, instanceID, instanceProps, instanceFunctions, kodiInstance, addonInstance);
+  }
+  catch (std::exception &e)
+  {
+    HandleException(e, "m_pDll->CreateInstance()");
+  }
+  return ADDON_STATUS_UNKNOWN;
+}
+
+template<class TheDll, typename TheStruct, typename TheProps>
+void CAddonDll<TheDll, TheStruct, TheProps>::DestroyInstance(int instanceType, const char* instanceID, void* instance)
+{
+  try
+  {
+    return m_pDll->DestroyInstance(instanceType, instanceID, instance);
+  }
+  catch (std::exception &e)
+  {
+    HandleException(e, "m_pDll->DestroyInstance()");
+  }
 }
 
 template<class TheDll, typename TheStruct, typename TheProps>
