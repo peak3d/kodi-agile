@@ -42,6 +42,9 @@ public:
   void Render();
   void GetInfo(SCR_INFO *info);
   void Destroy();
+
+private:
+  void* m_addonInstance;
 };
 
 } /*namespace ADDON*/

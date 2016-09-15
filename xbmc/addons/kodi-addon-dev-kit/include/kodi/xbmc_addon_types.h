@@ -24,6 +24,11 @@
 extern "C" {
 #endif
 
+typedef enum ADDON_INSTANCE_TYPE
+{
+  ADDON_INSTANCE_SCREENSAVER = 1
+} ADDON_INSTANCE_TYPE;
+
 enum ADDON_STATUS
 {
   ADDON_STATUS_OK,
@@ -32,7 +37,8 @@ enum ADDON_STATUS
   ADDON_STATUS_NEED_SETTINGS,
   ADDON_STATUS_UNKNOWN,
   ADDON_STATUS_NEED_SAVEDSETTINGS,
-  ADDON_STATUS_PERMANENT_FAILURE   /**< permanent failure, like failing to resolve methods */
+  ADDON_STATUS_PERMANENT_FAILURE,   /**< permanent failure, like failing to resolve methods */
+  ADDON_STATUS_NOT_IMPLEMENTED
 };
 
 typedef struct

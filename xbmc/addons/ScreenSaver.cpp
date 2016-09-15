@@ -33,7 +33,8 @@ namespace ADDON
 {
 
 CScreenSaver::CScreenSaver(const char *addonID)
-    : ADDON::CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>(AddonProps(addonID, ADDON_UNKNOWN))
+  : ADDON::CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>(AddonProps(addonID, ADDON_UNKNOWN)),
+    m_addonInstance(nullptr)
 {
 }
 
@@ -44,6 +45,8 @@ bool CScreenSaver::IsInUse() const
 
 bool CScreenSaver::CreateScreenSaver()
 {
+  ADDON_STATUS status;
+
   if (CScriptInvocationManager::GetInstance().HasLanguageInvoker(LibPath()))
   {
     // Don't allow a previously-scheduled alarm to kill our new screensaver
@@ -73,10 +76,15 @@ bool CScreenSaver::CreateScreenSaver()
   m_pInfo->presets    = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
   m_pInfo->profile    = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
 
-  if (CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>::Create() == ADDON_STATUS_OK)
-    return true;
+  status = CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>::Create();
+  if (status != ADDON_STATUS_OK)
+    return false;
 
-  return false;
+  status = CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), m_pInfo, m_pStruct, this, &m_addonInstance);
+  if (status != ADDON_STATUS_OK && status != ADDON_STATUS_NOT_IMPLEMENTED)
+    return false;
+
+  return true;
 }
 
 void CScreenSaver::Start()
@@ -121,7 +129,9 @@ void CScreenSaver::Destroy()
     m_pInfo = NULL;
   }
 
+  CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>::DestroyInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), m_addonInstance);
   CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>::Destroy();
+  m_addonInstance = nullptr;
 }
 
 } /*namespace ADDON*/
