@@ -266,7 +266,7 @@ ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::Create()
      needed to become the AddOn running */
   try
   {
-    status = m_pDll->Create(m_pHelpers->GetCallbacks(), m_pInfo);
+    status = m_pDll->Create(m_pHelpers->GetCallbacks());
     if (status == ADDON_STATUS_OK)
     {
       m_initialized = true;

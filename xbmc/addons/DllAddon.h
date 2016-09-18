@@ -28,7 +28,7 @@ class DllAddonInterface
 public:
   virtual ~DllAddonInterface() {}
   virtual void GetAddon(TheStruct* pAddon) =0;
-  virtual ADDON_STATUS Create(void *cb, Props *info) =0;
+  virtual ADDON_STATUS Create(void *cb) =0;
   virtual void Stop() =0;
   virtual void Destroy() =0;
   virtual ADDON_STATUS GetStatus() =0;
@@ -45,7 +45,7 @@ class DllAddon : public DllDynamic, public DllAddonInterface<TheStruct, Props>
 {
 public:
   DECLARE_DLL_WRAPPER_TEMPLATE(DllAddon)
-  DEFINE_METHOD2(ADDON_STATUS, Create, (void* p1, Props* p2))
+  DEFINE_METHOD1(ADDON_STATUS, Create, (void* p1))
   DEFINE_METHOD0(void, Stop)
   DEFINE_METHOD0(void, Destroy)
   DEFINE_METHOD0(ADDON_STATUS, GetStatus)

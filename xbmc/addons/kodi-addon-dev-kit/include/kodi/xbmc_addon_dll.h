@@ -37,7 +37,7 @@
 extern "C" { 
 #endif
 
-  ADDON_STATUS __declspec(dllexport) ADDON_Create(void *callbacks, void* props);
+  ADDON_STATUS __declspec(dllexport) ADDON_Create(void *callbacks);
   void         __declspec(dllexport) ADDON_Stop();
   void         __declspec(dllexport) ADDON_Destroy();
   ADDON_STATUS __declspec(dllexport) ADDON_GetStatus();
