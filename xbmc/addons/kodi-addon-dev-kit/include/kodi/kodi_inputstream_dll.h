@@ -37,32 +37,32 @@ extern "C"
    * @return True if the stream has been opened successfully, false otherwise.
    * @remarks
    */
-  bool Open(INPUTSTREAM& props);
+  bool Open(void* addonInstance, INPUTSTREAM& props);
 
   /*!
    * Close an open stream.
    * @remarks
    */
-  void Close(void);
+  void Close(void* addonInstance);
 
   /*!
    * Get path/url for this addon.
    * @remarks
    */
-  const char* GetPathList(void);
+  const char* GetPathList(void* addonInstance);
 
   /*!
   * Get Capabilities of this addon.
   * @remarks
   */
-  struct INPUTSTREAM_CAPABILITIES GetCapabilities();
+  struct INPUTSTREAM_CAPABILITIES GetCapabilities(void* addonInstance);
 
 
   /*!
    * Get IDs of available streams
    * @remarks
    */
-  INPUTSTREAM_IDS GetStreamIds();
+  INPUTSTREAM_IDS GetStreamIds(void* addonInstance);
 
   /*!
    * Get stream properties of a stream.
@@ -70,7 +70,7 @@ extern "C"
    * @return struc of stream properties
    * @remarks
    */
-  INPUTSTREAM_INFO GetStream(int streamid);
+  INPUTSTREAM_INFO GetStream(void* addonInstance, int streamid);
 
   /*!
    * Enable or disable a stream.
@@ -79,25 +79,25 @@ extern "C"
    * @param enable true for enable, false for disable
    * @remarks
    */
-  void EnableStream(int streamid, bool enable);
+  void EnableStream(void* addonInstance, int streamid, bool enable);
 
   /*!
    * Reset the demultiplexer in the add-on.
    * @remarks Required if bHandlesDemuxing is set to true.
    */
-  void DemuxReset(void);
+  void DemuxReset(void* addonInstance);
 
   /*!
    * Abort the demultiplexer thread in the add-on.
    * @remarks Required if bHandlesDemuxing is set to true.
    */
-  void DemuxAbort(void);
+  void DemuxAbort(void* addonInstance);
 
   /*!
    * Flush all data that's currently in the demultiplexer buffer in the add-on.
    * @remarks Required if bHandlesDemuxing is set to true.
    */
-  void DemuxFlush(void);
+  void DemuxFlush(void* addonInstance);
 
   /*!
    * Read the next packet from the demultiplexer, if there is one.
@@ -111,7 +111,7 @@ extern "C"
    *         The add-on should return NULL if an error occured.
    * @remarks Return NULL if this add-on won't provide this function.
    */
-  DemuxPacket* DemuxRead(void);
+  DemuxPacket* DemuxRead(void* addonInstance);
 
   /*!
    * Notify the InputStream addon/demuxer that XBMC wishes to seek the stream by time
@@ -122,38 +122,38 @@ extern "C"
    * @return True if the seek operation was possible
    * @remarks Optional, and only used if addon has its own demuxer.
    */
-  bool DemuxSeekTime(int time, bool backwards, double *startpts);
+  bool DemuxSeekTime(void* addonInstance, int time, bool backwards, double *startpts);
 
   /*!
    * Notify the InputStream addon/demuxer that XBMC wishes to change playback speed
    * @param speed The requested playback speed
    * @remarks Optional, and only used if addon has its own demuxer.
    */
-  void DemuxSetSpeed(int speed);
+  void DemuxSetSpeed(void* addonInstance, int speed);
 
   /*!
    * Sets desired width / height
    * @param width / hight
    */
-  void SetVideoResolution(int width, int height);
+  void SetVideoResolution(void* addonInstance, int width, int height);
 
   /*!
    * Totel time in ms
    * @remarks
    */
-  int GetTotalTime();
+  int GetTotalTime(void* addonInstance);
 
   /*!
    * Playing time in ms
    * @remarks
    */
-  int GetTime();
+  int GetTime(void* addonInstance);
 
   /*!
    * Positions inputstream to playing time given in ms
    * @remarks
    */
-  bool PosTime(int ms);
+  bool PosTime(void* addonInstance, int ms);
 
 
   /*!
@@ -161,14 +161,14 @@ extern "C"
    * This will enable/disable the pause button in XBMC based on the return value
    * @return false if the InputStream addon/backend does not support pausing, true if possible
    */
-  bool CanPauseStream();
+  bool CanPauseStream(void* addonInstance);
 
   /*!
    * Check if the backend supports seeking for the currently playing stream
    * This will enable/disable the rewind/forward buttons in XBMC based on the return value
    * @return false if the InputStream addon/backend does not support seeking, true if possible
    */
-  bool CanSeekStream();
+  bool CanSeekStream(void* addonInstance);
 
   
   /*!
@@ -178,7 +178,7 @@ extern "C"
   * @return The amount of bytes that were actually read from the stream.
   * @remarks Return -1 if this add-on won't provide this function.
   */
-  int ReadStream(uint8_t* pBuffer, unsigned int iBufferSize);
+  int ReadStream(void* addonInstance, uint8_t* pBuffer, unsigned int iBufferSize);
 
   /*!
   * Seek in a stream.
@@ -187,34 +187,34 @@ extern "C"
   * @return The new position.
   * @remarks Return -1 if this add-on won't provide this function.
   */
-  int64_t SeekStream(int64_t iPosition, int iWhence = SEEK_SET);
+  int64_t SeekStream(void* addonInstance, int64_t iPosition, int iWhence = SEEK_SET);
 
   /*!
   * @return The position in the stream that's currently being read.
   * @remarks Return -1 if this add-on won't provide this function.
   */
-  int64_t PositionStream(void);
+  int64_t PositionStream(void* addonInstance);
 
   /*!
   * @return The total length of the stream that's currently being read.
   * @remarks Return -1 if this add-on won't provide this function.
   */
-  int64_t LengthStream(void);
+  int64_t LengthStream(void* addonInstance);
 
 
   /*!
   * @brief Notify the InputStream addon that XBMC (un)paused the currently playing stream
   */
-  void PauseStream(double time);
+  void PauseStream(void* addonInstance, double time);
 
 
   /*!
   *  Check for real-time streaming
   *  @return true if current stream is real-time
   */
-  bool IsRealTimeStream();
+  bool IsRealTimeStream(void* addonInstance);
 
-  const char* GetApiVersion()
+  const char* GetApiVersion(void* addonInstance)
   {
     static const char *ApiVersion = INPUTSTREAM_API_VERSION;
     return ApiVersion;

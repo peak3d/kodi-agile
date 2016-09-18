@@ -86,7 +86,7 @@ void CInputStream::Destroy(void)
 
 bool CInputStream::CheckAPIVersion()
 {
-  std::string dllVersion = m_pStruct->GetApiVersion();
+  std::string dllVersion = m_pStruct->GetApiVersion(m_addonInstance);
   if (dllVersion.compare(INPUTSTREAM_API_VERSION) != 0)
   {
     CLog::Log(LOGERROR, "CInputStream::CheckAPIVersion - API version does not match");
@@ -128,7 +128,7 @@ void CInputStream::UpdateConfig()
   {
     try
     {
-      pathList = m_pStruct->GetPathList();
+      pathList = m_pStruct->GetPathList(m_addonInstance);
     }
     catch (std::exception &e)
     {
@@ -254,9 +254,9 @@ bool CInputStream::Open(CFileItem &fileitem)
   bool ret = false;
   try
   {
-    ret = m_pStruct->Open(props);
+    ret = m_pStruct->Open(m_addonInstance, props);
     if (ret)
-      m_caps = m_pStruct->GetCapabilities();
+      m_caps = m_pStruct->GetCapabilities(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -272,7 +272,7 @@ void CInputStream::Close()
 {
   try
   {
-    m_pStruct->Close();
+    m_pStruct->Close(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -294,7 +294,7 @@ int CInputStream::GetTotalTime()
   int ret = 0;
   try
   {
-    ret = m_pStruct->GetTotalTime();
+    ret = m_pStruct->GetTotalTime(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -308,7 +308,7 @@ int CInputStream::GetTime()
   int ret = 0;
   try
   {
-    ret = m_pStruct->GetTime();
+    ret = m_pStruct->GetTime(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -323,7 +323,7 @@ bool CInputStream::PosTime(int ms)
   bool ret = false;
   try
   {
-    ret = m_pStruct->PosTime(ms);
+    ret = m_pStruct->PosTime(m_addonInstance, ms);
   }
   catch (std::exception &e)
   {
@@ -340,7 +340,7 @@ void CInputStream::UpdateStreams()
   INPUTSTREAM_IDS streamIDs;
   try
   {
-    streamIDs = m_pStruct->GetStreamIds();
+    streamIDs = m_pStruct->GetStreamIds(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -360,7 +360,7 @@ void CInputStream::UpdateStreams()
     INPUTSTREAM_INFO stream;
     try
     {
-      stream = m_pStruct->GetStream(streamIDs.m_streamIds[i]);
+      stream = m_pStruct->GetStream(m_addonInstance, streamIDs.m_streamIds[i]);
     }
     catch (std::exception &e)
     {
@@ -473,7 +473,7 @@ void CInputStream::EnableStream(int iStreamId, bool enable)
 
   try
   {
-    m_pStruct->EnableStream(it->second->uniqueId, enable);
+    m_pStruct->EnableStream(m_addonInstance, it->second->uniqueId, enable);
   }
   catch (std::exception &e)
   {
@@ -486,7 +486,7 @@ DemuxPacket* CInputStream::ReadDemux()
   DemuxPacket* pPacket = nullptr;
   try
   {
-    pPacket = m_pStruct->DemuxRead();
+    pPacket = m_pStruct->DemuxRead(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -515,7 +515,7 @@ bool CInputStream::SeekTime(int time, bool backward, double* startpts)
   bool ret = false;
   try
   {
-    ret = m_pStruct->DemuxSeekTime(time, backward, startpts);
+    ret = m_pStruct->DemuxSeekTime(m_addonInstance, time, backward, startpts);
   }
   catch (std::exception &e)
   {
@@ -528,7 +528,7 @@ void CInputStream::AbortDemux()
 {
   try
   {
-    m_pStruct->DemuxAbort();
+    m_pStruct->DemuxAbort(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -540,7 +540,7 @@ void CInputStream::FlushDemux()
 {
   try
   {
-    m_pStruct->DemuxFlush();
+    m_pStruct->DemuxFlush(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -552,7 +552,7 @@ void CInputStream::SetSpeed(int iSpeed)
 {
   try
   {
-    m_pStruct->DemuxSetSpeed(iSpeed);
+    m_pStruct->DemuxSetSpeed(m_addonInstance, iSpeed);
   }
   catch (std::exception &e)
   {
@@ -565,7 +565,7 @@ int CInputStream::ReadStream(uint8_t* buf, unsigned int size)
   int ret = -1;
   try
   {
-    ret = m_pStruct->ReadStream(buf, size);
+    ret = m_pStruct->ReadStream(m_addonInstance, buf, size);
   }
   catch (std::exception &e)
   {
@@ -579,7 +579,7 @@ int64_t CInputStream::SeekStream(int64_t offset, int whence)
   int64_t ret = -1;
   try
   {
-    ret = m_pStruct->SeekStream(offset, whence);
+    ret = m_pStruct->SeekStream(m_addonInstance, offset, whence);
   }
   catch (std::exception &e)
   {
@@ -593,7 +593,7 @@ int64_t CInputStream::PositionStream()
   int64_t ret = -1;
   try
   {
-    ret = m_pStruct->PositionStream();
+    ret = m_pStruct->PositionStream(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -607,7 +607,7 @@ int64_t CInputStream::LengthStream()
   int64_t ret = -1;
   try
   {
-    ret = m_pStruct->LengthStream();
+    ret = m_pStruct->LengthStream(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -620,7 +620,7 @@ void CInputStream::PauseStream(double time)
 {
   try
   {
-    m_pStruct->PauseStream(time);
+    m_pStruct->PauseStream(m_addonInstance, time);
   }
   catch (std::exception &e)
   {
@@ -633,7 +633,7 @@ bool CInputStream::IsRealTimeStream()
   bool ret = false;
   try
   {
-    ret = m_pStruct->IsRealTimeStream();
+    ret = m_pStruct->IsRealTimeStream(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -646,7 +646,7 @@ void CInputStream::SetVideoResolution(int width, int height)
 {
   try
   {
-    m_pStruct->SetVideoResolution(width, height);
+    m_pStruct->SetVideoResolution(m_addonInstance, width, height);
   }
   catch (std::exception &e)
   {

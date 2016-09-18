@@ -126,41 +126,41 @@ extern "C" {
    */
   typedef struct InputStreamAddonFunctions
   {
-    bool (__cdecl* Open)(INPUTSTREAM&);
-    void (__cdecl* Close)(void);
-    const char* (__cdecl* GetPathList)(void);
-    struct INPUTSTREAM_CAPABILITIES (__cdecl* GetCapabilities)(void);
-    const char* (__cdecl* GetApiVersion)(void);
+    bool (__cdecl* Open)(void* addonInstance, INPUTSTREAM&);
+    void (__cdecl* Close)(void* addonInstance);
+    const char* (__cdecl* GetPathList)(void* addonInstance);
+    struct INPUTSTREAM_CAPABILITIES (__cdecl* GetCapabilities)(void* addonInstance);
+    const char* (__cdecl* GetApiVersion)(void* addonInstance);
 
     // IDemux
-    struct INPUTSTREAM_IDS (__cdecl* GetStreamIds)();
-    struct INPUTSTREAM_INFO (__cdecl* GetStream)(int);
-    void (__cdecl* EnableStream)(int, bool);
-    void (__cdecl* DemuxReset)(void);
-    void (__cdecl* DemuxAbort)(void);
-    void (__cdecl* DemuxFlush)(void);
-    DemuxPacket* (__cdecl* DemuxRead)(void);
-    bool (__cdecl* DemuxSeekTime)(int, bool, double*);
-    void (__cdecl* DemuxSetSpeed)(int);
-    void (__cdecl* SetVideoResolution)(int, int);
+    struct INPUTSTREAM_IDS (__cdecl* GetStreamIds)(void* addonInstance);
+    struct INPUTSTREAM_INFO (__cdecl* GetStream)(void* addonInstance, int);
+    void (__cdecl* EnableStream)(void* addonInstance, int, bool);
+    void (__cdecl* DemuxReset)(void* addonInstance);
+    void (__cdecl* DemuxAbort)(void* addonInstance);
+    void (__cdecl* DemuxFlush)(void* addonInstance);
+    DemuxPacket* (__cdecl* DemuxRead)(void* addonInstance);
+    bool (__cdecl* DemuxSeekTime)(void* addonInstance, int, bool, double*);
+    void (__cdecl* DemuxSetSpeed)(void* addonInstance, int);
+    void (__cdecl* SetVideoResolution)(void* addonInstance, int, int);
 
     // IDisplayTime
-    int (__cdecl* GetTotalTime)(void);
-    int (__cdecl* GetTime)(void);
+    int (__cdecl* GetTotalTime)(void* addonInstance);
+    int (__cdecl* GetTime)(void* addonInstance);
 
     // IPosTime
-    bool (__cdecl* PosTime)(int);
+    bool (__cdecl* PosTime)(void* addonInstance, int);
 
     // Seekable (mandatory)
-    bool (__cdecl* CanPauseStream)(void);
-    bool (__cdecl* CanSeekStream)(void);
+    bool (__cdecl* CanPauseStream)(void* addonInstance);
+    bool (__cdecl* CanSeekStream)(void* addonInstance);
 
-    int (__cdecl* ReadStream)(uint8_t*, unsigned int);
-    int64_t(__cdecl* SeekStream)(int64_t, int);
-    int64_t (__cdecl* PositionStream)(void);
-    int64_t (__cdecl* LengthStream)(void);
-    void (__cdecl* PauseStream)(double);
-    bool (__cdecl* IsRealTimeStream)(void);
+    int (__cdecl* ReadStream)(void* addonInstance, uint8_t*, unsigned int);
+    int64_t(__cdecl* SeekStream)(void* addonInstance, int64_t, int);
+    int64_t (__cdecl* PositionStream)(void* addonInstance);
+    int64_t (__cdecl* LengthStream)(void* addonInstance);
+    void (__cdecl* PauseStream)(void* addonInstance, double);
+    bool (__cdecl* IsRealTimeStream)(void* addonInstance);
   } InputStreamAddonFunctions;
 }
 
