@@ -48,6 +48,8 @@ namespace ADDON
                  const std::string& extensions,
                  const std::string& protocols);
     virtual ~CInputStream() {}
+    
+    void Destroy(void);
 
     virtual void SaveSettings() override;
     virtual bool CheckAPIVersion(void) override;
@@ -111,6 +113,9 @@ namespace ADDON
       bool m_ready;
     };
     static std::map<std::string, Config> m_configMap;
+
+  private:
+    void* m_addonInstance;
   };
 
 } /*namespace ADDON*/

@@ -69,6 +69,21 @@ CInputStream::CInputStream(const AddonProps& props,
   }
 }
 
+void CInputStream::Destroy(void)
+{
+  /* destroy the add-on */
+  try
+  {
+    InputStreamDll::DestroyInstance(ADDON_INSTANCE_INPUTSTREAM, ID().c_str(), m_addonInstance);
+    InputStreamDll::Destroy();
+    m_addonInstance = nullptr;
+  }
+  catch (std::exception &e)
+  {
+    CLog::Log(LOGERROR, "CInputStream::Supports - could not destroy add-on. Reason: %s", e.what());
+  }
+}
+
 bool CInputStream::CheckAPIVersion()
 {
   std::string dllVersion = m_pStruct->GetApiVersion();
@@ -106,6 +121,8 @@ void CInputStream::UpdateConfig()
 {
   std::string pathList;
   ADDON_STATUS status = Create();
+  if (status == ADDON_STATUS_OK)
+    status = InputStreamDll::CreateInstance(ADDON_INSTANCE_INPUTSTREAM, ID().c_str(), m_pInfo, m_pStruct, this, &m_addonInstance);
 
   if (status != ADDON_STATUS_PERMANENT_FAILURE)
   {
