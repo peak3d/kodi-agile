@@ -27,23 +27,23 @@
 extern "C"
 {
   //! \copydoc AudioEncoder::Create
-  void* Create(audioenc_callbacks *callbacks);
+  void* Create(void* addonInstance, audioenc_callbacks *callbacks);
 
   //! \copydoc AudioEncoder::Start
-  bool Start(void* context, int iInChannels, int iInRate, int iInBits,
+  bool Start(void* addonInstance, void* context, int iInChannels, int iInRate, int iInBits,
              const char* title, const char* artist,
              const char* albumartist, const char* album,
              const char* year, const char* track,
              const char* genre, const char* comment, int iTrackLength);
 
   //! \copydoc AudioEncoder::Encode
-  int Encode(void* context, int nNumBytesRead, uint8_t* pbtStream);
+  int Encode(void* addonInstance, void* context, int nNumBytesRead, uint8_t* pbtStream);
 
   //! \copydoc AudioEncoder::Finish
-  bool Finish(void* context);
+  bool Finish(void* addonInstance, void* context);
 
   //! \copydoc AudioEncoder::Free
-  void Free(void* context);
+  void Free(void* addonInstance, void* context);
 
   // function to export the above structure to XBMC
   void __declspec(dllexport) get_addon(struct AudioEncoder* pScr)

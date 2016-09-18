@@ -62,7 +62,7 @@ extern "C"
      \return opaque pointer to encoder context, to be passed to other methods.
      \sa IEncoder::Init
      */
-    void (*(__cdecl *Create) (audioenc_callbacks* callbacks));
+    void (*(__cdecl *Create) (void* addonInstance, audioenc_callbacks* callbacks));
 
     /*! \brief Start encoder
      \param context Encoder context from Create.
@@ -79,7 +79,7 @@ extern "C"
      \param iTrackLength Total track length in seconds
      \sa IEncoder::Init
      */
-    bool (__cdecl* Start) (void* context, int iInChannels, int iInRate, int iInBits,
+    bool (__cdecl* Start) (void* addonInstance, void* context, int iInChannels, int iInRate, int iInBits,
                            const char* title, const char* artist,
                            const char* albumartist, const char* album,
                            const char* year, const char* track,
@@ -93,18 +93,18 @@ extern "C"
      \return Number of bytes consumed
      \sa IEncoder::Encode
      */
-    int  (__cdecl* Encode) (void* context, int nNumBytesRead, uint8_t* pbtStream);
+    int  (__cdecl* Encode) (void* addonInstance, void* context, int nNumBytesRead, uint8_t* pbtStream);
 
     /*! \brief Finalize encoding
      \param context Encoder context from Create.
      \return True on success, false on failure.
      */
-    bool (__cdecl* Finish) (void* context);
+    bool (__cdecl* Finish) (void* addonInstance, void* context);
 
     /*! \brief Free encoder context
      \param context Encoder context to free.
      */
-    void (__cdecl* Free)(void* context);
+    void (__cdecl* Free)(void* addonInstance, void* context);
   };
 }
 
