@@ -38,7 +38,7 @@ extern "C"
    *
    * Used to check if the implementation is compatible with the frontend.
    */
-  const char* GetPeripheralAPIVersion(void);
+  const char* GetPeripheralAPIVersion(void* addonInstance);
 
   /*!
    * @brief Get the KODI_PERIPHERAL_MIN_API_VERSION used to compile this peripheral add-on
@@ -47,7 +47,7 @@ extern "C"
    *
    * Used to check if the implementation is compatible with the frontend.
    */
-  const char* GetMinimumPeripheralAPIVersion(void);
+  const char* GetMinimumPeripheralAPIVersion(void* addonInstance);
 
   /*!
    * @brief Get the list of features that this add-on provides
@@ -59,7 +59,7 @@ extern "C"
    * peripherals. All capabilities that the add-on supports should be set to true.
    *
    */
-  PERIPHERAL_ERROR GetAddonCapabilities(PERIPHERAL_CAPABILITIES *pCapabilities);
+  PERIPHERAL_ERROR GetAddonCapabilities(void* addonInstance, PERIPHERAL_CAPABILITIES *pCapabilities);
 
   /*!
    * @brief Perform a scan for joysticks
@@ -72,7 +72,7 @@ extern "C"
    * detects a hardware change, it can trigger this function using the
    * TriggerScan() callback.
    */
-  PERIPHERAL_ERROR PerformDeviceScan(unsigned int* peripheral_count, PERIPHERAL_INFO** scan_results);
+  PERIPHERAL_ERROR PerformDeviceScan(void* addonInstance, unsigned int* peripheral_count, PERIPHERAL_INFO** scan_results);
 
   /*!
    * @brief Free the memory allocated in PerformDeviceScan()
@@ -82,14 +82,14 @@ extern "C"
    * @param peripheral_count  The number of events allocated for the events array
    * @param scan_results      The array of allocated peripherals
    */
-  void FreeScanResults(unsigned int peripheral_count, PERIPHERAL_INFO* scan_results);
+  void FreeScanResults(void* addonInstance, unsigned int peripheral_count, PERIPHERAL_INFO* scan_results);
 
   /*!
    * @brief Get all events that have occurred since the last call to GetEvents()
    * @return PERIPHERAL_NO_ERROR if successful; events must be freed using
    * FreeEvents() in this case
    */
-  PERIPHERAL_ERROR GetEvents(unsigned int* event_count, PERIPHERAL_EVENT** events);
+  PERIPHERAL_ERROR GetEvents(void* addonInstance, unsigned int* event_count, PERIPHERAL_EVENT** events);
 
   /*!
    * @brief Free the memory allocated in GetEvents()
@@ -99,7 +99,7 @@ extern "C"
    * @param event_count  The number of events allocated for the events array
    * @param events       The array of allocated events
    */
-  void FreeEvents(unsigned int event_count, PERIPHERAL_EVENT* events);
+  void FreeEvents(void* addonInstance, unsigned int event_count, PERIPHERAL_EVENT* events);
 
   /*!
    * @brief Send an input event to the specified peripheral
@@ -107,7 +107,7 @@ extern "C"
    * @param event The input event
    * @return true if the event was handled, false otherwise
    */
-  bool SendEvent(const PERIPHERAL_EVENT* event);
+  bool SendEvent(void* addonInstance, const PERIPHERAL_EVENT* event);
   ///}
 
   /// @name Joystick operations
@@ -125,12 +125,12 @@ extern "C"
    * @return PERIPHERAL_NO_ERROR if successful; array must be freed using
    *         FreeJoystickInfo() in this case
    */
-  PERIPHERAL_ERROR GetJoystickInfo(unsigned int index, JOYSTICK_INFO* info);
+  PERIPHERAL_ERROR GetJoystickInfo(void* addonInstance, unsigned int index, JOYSTICK_INFO* info);
 
   /*!
    * @brief Free the memory allocated in GetJoystickInfo()
    */
-  void FreeJoystickInfo(JOYSTICK_INFO* info);
+  void FreeJoystickInfo(void* addonInstance, JOYSTICK_INFO* info);
 
   /*!
    * @brief Get the features that allow translating the joystick into the controller profile
@@ -141,7 +141,7 @@ extern "C"
    * @return PERIPHERAL_NO_ERROR if successful; array must be freed using
    *         FreeButtonMap() in this case
    */
-  PERIPHERAL_ERROR GetFeatures(const JOYSTICK_INFO* joystick, const char* controller_id,
+  PERIPHERAL_ERROR GetFeatures(void* addonInstance, const JOYSTICK_INFO* joystick, const char* controller_id,
                                unsigned int* feature_count, JOYSTICK_FEATURE** features);
 
   /*!
@@ -152,7 +152,7 @@ extern "C"
    * @param feature_count  The number of features allocated for the features array
    * @param features       The array of allocated features
    */
-  void FreeFeatures(unsigned int feature_count, JOYSTICK_FEATURE* features);
+  void FreeFeatures(void* addonInstance, unsigned int feature_count, JOYSTICK_FEATURE* features);
 
   /*!
    * @brief Add or update joystick features
@@ -162,27 +162,27 @@ extern "C"
    * @param features      The array of features
    * @return PERIPHERAL_NO_ERROR if successful
    */
-  PERIPHERAL_ERROR MapFeatures(const JOYSTICK_INFO* joystick, const char* controller_id,
+  PERIPHERAL_ERROR MapFeatures(void* addonInstance, const JOYSTICK_INFO* joystick, const char* controller_id,
                                unsigned int feature_count, JOYSTICK_FEATURE* features);
 
   /*!
    * @brief Save the button map for the given joystick
    * @param joystick      The device's joystick properties
    */
-  void SaveButtonMap(const JOYSTICK_INFO* joystick);
+  void SaveButtonMap(void* addonInstance, const JOYSTICK_INFO* joystick);
 
   /*!
    * @brief Reset the button map for the given joystick and controller profile ID
    * @param joystick      The device's joystick properties
    * @param controller_id The game controller profile being reset
    */
-  void ResetButtonMap(const JOYSTICK_INFO* joystick, const char* controller_id);
+  void ResetButtonMap(void* addonInstance, const JOYSTICK_INFO* joystick, const char* controller_id);
 
   /*!
    * @brief Powers off the given joystick if supported
    * @param index  The joystick's driver index
    */
-  void PowerOffJoystick(unsigned int index);
+  void PowerOffJoystick(void* addonInstance, unsigned int index);
 #endif
   ///}
 
