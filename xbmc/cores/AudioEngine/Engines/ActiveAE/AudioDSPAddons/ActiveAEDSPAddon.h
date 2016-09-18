@@ -424,5 +424,7 @@ namespace ActiveAE
     CCriticalSection          m_critSection;
 
     ADDON::AddonVersion       m_apiVersion;
+    
+    void* m_addonInstance;
   };
 }

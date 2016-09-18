@@ -36,7 +36,8 @@ using namespace ActiveAE;
 
 CActiveAEDSPAddon::CActiveAEDSPAddon(AddonProps props) :
     CAddonDll<DllAudioDSP, AudioDSP, AE_DSP_PROPERTIES>(std::move(props)),
-    m_apiVersion("0.0.0")
+    m_apiVersion("0.0.0"),
+    m_addonInstance(nullptr)
 {
   ResetProperties();
 }
@@ -126,8 +127,13 @@ ADDON_STATUS CActiveAEDSPAddon::Create(int iClientId)
   CLog::Log(LOGDEBUG, "ActiveAE DSP - %s - creating audio dsp add-on instance '%s'", __FUNCTION__, Name().c_str());
   try
   {
-    if ((status = CAddonDll<DllAudioDSP, AudioDSP, AE_DSP_PROPERTIES>::Create()) == ADDON_STATUS_OK)
-      bReadyToUse = GetAddonProperties();
+    if ((status = CAddonDll<DllAudioDSP, AudioDSP, AE_DSP_PROPERTIES>::Create()) != ADDON_STATUS_OK)
+      return status;
+    
+    if ((status = CAddonDll<DllAudioDSP, AudioDSP, AE_DSP_PROPERTIES>::CreateInstance(ADDON_INSTANCE_ADSP, ID().c_str(), m_pInfo, m_pStruct, this, &m_addonInstance)) != ADDON_STATUS_OK)
+      return status;
+
+    bReadyToUse = GetAddonProperties();
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -168,7 +174,9 @@ void CActiveAEDSPAddon::Destroy(void)
   /* destroy the add-on */
   try
   {
+    CAddonDll<DllAudioDSP, AudioDSP, AE_DSP_PROPERTIES>::DestroyInstance(ADDON_INSTANCE_ADSP, ID().c_str(), m_addonInstance);
     CAddonDll<DllAudioDSP, AudioDSP, AE_DSP_PROPERTIES>::Destroy();
+    m_addonInstance = nullptr;
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
