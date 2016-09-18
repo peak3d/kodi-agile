@@ -59,6 +59,7 @@ namespace PERIPHERALS
      * @brief Initialise the instance of this add-on
      */
     ADDON_STATUS CreateAddon(void);
+    void Destroy();
 
     bool         Register(unsigned int peripheralIndex, CPeripheral* peripheral);
     void         UnregisterRemovedDevices(const PeripheralScanResults &results, std::vector<CPeripheral*>& removedPeripherals);
@@ -148,5 +149,8 @@ namespace PERIPHERALS
 
     /* @brief Thread synchronization */
     CCriticalSection    m_critSection;
+    
+  private:
+    void* m_addonInstance;
   };
 }
