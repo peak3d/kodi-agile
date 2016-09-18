@@ -151,6 +151,7 @@ namespace PERIPHERALS
     CCriticalSection    m_critSection;
     
   private:
+    PERIPHERAL_PROPERTIES m_pInfo;
     void* m_addonInstance;
   };
 }

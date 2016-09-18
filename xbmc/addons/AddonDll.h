@@ -73,7 +73,6 @@ namespace ADDON
     virtual bool LoadSettings();
     static uint32_t GetChildCount() { static uint32_t childCounter = 0; return childCounter++; }
     TheStruct* m_pStruct;
-    TheProps*     m_pInfo;
     CAddonInterfaces* m_pHelpers;
     bool m_bIsChild;
     std::string m_parentLib;
@@ -103,7 +102,6 @@ CAddonDll<TheDll, TheStruct, TheProps>::CAddonDll(AddonProps props)
   m_pStruct     = NULL;
   m_initialized = false;
   m_pDll        = NULL;
-  m_pInfo       = NULL;
   m_pHelpers    = NULL;
   m_needsavedsettings = false;
   m_parentLib.clear();
@@ -117,7 +115,6 @@ CAddonDll<TheDll, TheStruct, TheProps>::CAddonDll(const CAddonDll<TheDll, TheStr
   m_pStruct           = rhs.m_pStruct;
   m_initialized       = rhs.m_initialized;
   m_pDll              = rhs.m_pDll;
-  m_pInfo             = rhs.m_pInfo;
   m_pHelpers          = rhs.m_pHelpers;
   m_needsavedsettings = rhs.m_needsavedsettings;
   m_parentLib = rhs.m_parentLib;

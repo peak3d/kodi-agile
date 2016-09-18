@@ -36,6 +36,9 @@ CScreenSaver::CScreenSaver(const char *addonID)
   : ADDON::CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>(AddonProps(addonID, ADDON_UNKNOWN)),
     m_addonInstance(nullptr)
 {
+  m_pInfo.name = nullptr;
+  m_pInfo.presets = nullptr;
+  m_pInfo.profile = nullptr;
 }
 
 bool CScreenSaver::IsInUse() const
@@ -61,26 +64,25 @@ bool CScreenSaver::CreateScreenSaver()
   int iWidth = g_graphicsContext.GetWidth();
   int iHeight = g_graphicsContext.GetHeight();
 
-  m_pInfo = new SCR_PROPS;
 #ifdef HAS_DX
-  m_pInfo->device     = g_Windowing.Get3D11Context();
+  m_pInfo.device     = g_Windowing.Get3D11Context();
 #else
-  m_pInfo->device     = NULL;
+  m_pInfo.device     = nullptr;
 #endif
-  m_pInfo->x          = 0;
-  m_pInfo->y          = 0;
-  m_pInfo->width      = iWidth;
-  m_pInfo->height     = iHeight;
-  m_pInfo->pixelRatio = g_graphicsContext.GetResInfo().fPixelRatio;
-  m_pInfo->name       = strdup(Name().c_str());
-  m_pInfo->presets    = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
-  m_pInfo->profile    = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
+  m_pInfo.x          = 0;
+  m_pInfo.y          = 0;
+  m_pInfo.width      = iWidth;
+  m_pInfo.height     = iHeight;
+  m_pInfo.pixelRatio = g_graphicsContext.GetResInfo().fPixelRatio;
+  m_pInfo.name       = strdup(Name().c_str());
+  m_pInfo.presets    = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
+  m_pInfo.profile    = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
 
   status = CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>::Create();
   if (status != ADDON_STATUS_OK)
     return false;
 
-  status = CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), m_pInfo, m_pStruct, this, &m_addonInstance);
+  status = CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), &m_pInfo, m_pStruct, this, &m_addonInstance);
   if (status != ADDON_STATUS_OK && status != ADDON_STATUS_NOT_IMPLEMENTED)
     return false;
 
@@ -119,15 +121,15 @@ void CScreenSaver::Destroy()
   }
 #endif
   // Release what was allocated in method CScreenSaver::CreateScreenSaver.
-  if (m_pInfo)
-  {
-    free((void *) m_pInfo->name);
-    free((void *) m_pInfo->presets);
-    free((void *) m_pInfo->profile);
-
-    delete m_pInfo;
-    m_pInfo = NULL;
-  }
+  if (m_pInfo.name)
+    free((void *) m_pInfo.name);
+  m_pInfo.name = nullptr;
+  if (m_pInfo.presets)
+    free((void *) m_pInfo.presets);
+  m_pInfo.presets = nullptr;
+  if (m_pInfo.profile)
+  free((void *) m_pInfo.profile);
+  m_pInfo.profile = nullptr;
 
   CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>::DestroyInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), m_addonInstance);
   CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>::Destroy();

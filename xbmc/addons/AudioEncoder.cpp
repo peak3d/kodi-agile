@@ -37,7 +37,7 @@ bool CAudioEncoder::Init(audioenc_callbacks &callbacks)
   if (!Initialized())
     return false;
 
-  if (CAddonDll<DllAudioEncoder, AudioEncoder, AUDIOENC_PROPS>::CreateInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), m_pInfo, m_pStruct, this, &m_addonInstance) != ADDON_STATUS_OK)
+  if (CAddonDll<DllAudioEncoder, AudioEncoder, AUDIOENC_PROPS>::CreateInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), nullptr, m_pStruct, this, &m_addonInstance) != ADDON_STATUS_OK)
     return false;
 
   // create encoder instance

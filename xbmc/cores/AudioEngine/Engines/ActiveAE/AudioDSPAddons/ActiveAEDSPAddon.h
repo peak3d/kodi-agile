@@ -424,7 +424,8 @@ namespace ActiveAE
     CCriticalSection          m_critSection;
 
     ADDON::AddonVersion       m_apiVersion;
-    
+
+    AE_DSP_PROPERTIES m_pInfo;
     void* m_addonInstance;
   };
 }

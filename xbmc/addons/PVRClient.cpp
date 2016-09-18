@@ -88,7 +88,6 @@ CPVRClient::~CPVRClient(void)
   if (m_bAvahiServiceAdded)
     CZeroconfBrowser::GetInstance()->RemoveServiceType(m_strAvahiType);
   Destroy();
-  SAFE_DELETE(m_pInfo);
 }
 
 void CPVRClient::OnDisabled()
@@ -132,13 +131,11 @@ ADDON::AddonPtr CPVRClient::GetRunningInstance() const
 void CPVRClient::ResetProperties(int iClientId /* = PVR_INVALID_CLIENT_ID */)
 {
   /* initialise members */
-  SAFE_DELETE(m_pInfo);
-  m_pInfo = new PVR_PROPERTIES;
   m_strUserPath           = CSpecialProtocol::TranslatePath(Profile());
-  m_pInfo->strUserPath    = m_strUserPath.c_str();
+  m_pInfo.strUserPath     = m_strUserPath.c_str();
   m_strClientPath         = CSpecialProtocol::TranslatePath(Path());
-  m_pInfo->strClientPath  = m_strClientPath.c_str();
-  m_pInfo->iEpgMaxDays    = CSettings::GetInstance().GetInt(CSettings::SETTING_EPG_DAYSTODISPLAY);
+  m_pInfo.strClientPath   = m_strClientPath.c_str();
+  m_pInfo.iEpgMaxDays     = CSettings::GetInstance().GetInt(CSettings::SETTING_EPG_DAYSTODISPLAY);
   m_menuhooks.clear();
   m_timertypes.clear();
   m_bReadyToUse           = false;
@@ -174,7 +171,7 @@ ADDON_STATUS CPVRClient::Create(int iClientId)
     if ((status = CAddonDll<DllPVRClient, PVRClient, PVR_PROPERTIES>::Create()) != ADDON_STATUS_OK)
       return status;
     
-    if ((status = CAddonDll<DllPVRClient, PVRClient, PVR_PROPERTIES>::CreateInstance(ADDON_INSTANCE_PVR, ID().c_str(), m_pInfo, m_pStruct, this, &m_addonInstance)) != ADDON_STATUS_OK)
+    if ((status = CAddonDll<DllPVRClient, PVRClient, PVR_PROPERTIES>::CreateInstance(ADDON_INSTANCE_PVR, ID().c_str(), &m_pInfo, m_pStruct, this, &m_addonInstance)) != ADDON_STATUS_OK)
       return status;
 
     bReadyToUse = GetAddonProperties();

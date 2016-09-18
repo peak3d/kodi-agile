@@ -63,29 +63,38 @@ void CAudioBuffer::Set(const float* psBuffer, int iSize)
   for (int i = iSize; i < m_iLen; ++i) m_pBuffer[i] = 0;
 }
 
+CVisualisation::CVisualisation(AddonProps props)
+  : CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>(std::move(props)),
+    m_addonInstance(nullptr)
+{
+    m_pInfo.name = nullptr;
+    m_pInfo.presets = nullptr;
+    m_pInfo.profile = nullptr;
+    m_pInfo.submodule = nullptr;
+}
+    
 bool CVisualisation::Create(int x, int y, int w, int h, void *device)
 {
-  m_pInfo = new VIS_PROPS;
 #ifdef HAS_DX
-  m_pInfo->device     = g_Windowing.Get3D11Context();
+  m_pInfo.device = g_Windowing.Get3D11Context();
 #else
-  m_pInfo->device     = NULL;
+  m_pInfo.device = nullptr;
 #endif
-  m_pInfo->x = x;
-  m_pInfo->y = y;
-  m_pInfo->width = w;
-  m_pInfo->height = h;
-  m_pInfo->pixelRatio = g_graphicsContext.GetResInfo().fPixelRatio;
+  m_pInfo.x = x;
+  m_pInfo.y = y;
+  m_pInfo.width = w;
+  m_pInfo.height = h;
+  m_pInfo.pixelRatio = g_graphicsContext.GetResInfo().fPixelRatio;
 
-  m_pInfo->name = strdup(Name().c_str());
-  m_pInfo->presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
-  m_pInfo->profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
-  m_pInfo->submodule = NULL;
+  m_pInfo.name = strdup(Name().c_str());
+  m_pInfo.presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
+  m_pInfo.profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
+  m_pInfo.submodule = nullptr;
 
   if (CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>::Create() != ADDON_STATUS_OK)
     return false;
   
-  ADDON_STATUS status = CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>::CreateInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), m_pInfo, m_pStruct, this, &m_addonInstance);
+  ADDON_STATUS status = CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>::CreateInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), &m_pInfo, m_pStruct, this, &m_addonInstance);
   if (status != ADDON_STATUS_OK && status != ADDON_STATUS_NOT_IMPLEMENTED)
     return false;
   
@@ -105,9 +114,9 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   m_hasPresets = GetPresets();
 
   if (GetSubModules())
-    m_pInfo->submodule = strdup(CSpecialProtocol::TranslatePath(m_submodules.front()).c_str());
+    m_pInfo.submodule = strdup(CSpecialProtocol::TranslatePath(m_submodules.front()).c_str());
   else
-    m_pInfo->submodule = NULL;
+    m_pInfo.submodule = NULL;
 
   CreateBuffers();
 
@@ -439,18 +448,30 @@ bool CVisualisation::IsLocked()
 void CVisualisation::Destroy()
 {
   // Free what was allocated in method CVisualisation::Create
-  if (m_pInfo)
-  {
-    free((void *) m_pInfo->name);
-    free((void *) m_pInfo->presets);
-    free((void *) m_pInfo->profile);
-    free((void *) m_pInfo->submodule);
-
-    delete m_pInfo;
-    m_pInfo = NULL;
-  }
 
   CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>::DestroyInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), m_addonInstance);
+
+  if (m_pInfo.name)
+  {
+    free((void *) m_pInfo.name);
+    m_pInfo.name = nullptr;
+  }
+  if (m_pInfo.presets)
+  {
+    free((void *) m_pInfo.presets);
+    m_pInfo.presets = nullptr;
+  }
+  if (m_pInfo.profile)
+  {
+    free((void *) m_pInfo.profile);
+    m_pInfo.profile = nullptr;
+  }
+  if (m_pInfo.submodule)
+  {
+    free((void *) m_pInfo.submodule);
+    m_pInfo.submodule = nullptr;
+  }
+
   CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>::Destroy();
   m_addonInstance = nullptr;
 }

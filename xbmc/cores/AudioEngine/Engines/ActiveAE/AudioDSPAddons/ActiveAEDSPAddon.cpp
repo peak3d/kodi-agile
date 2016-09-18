@@ -45,7 +45,6 @@ CActiveAEDSPAddon::CActiveAEDSPAddon(AddonProps props) :
 CActiveAEDSPAddon::~CActiveAEDSPAddon(void)
 {
   Destroy();
-  SAFE_DELETE(m_pInfo);
 }
 
 void CActiveAEDSPAddon::OnDisabled()
@@ -93,12 +92,10 @@ void CActiveAEDSPAddon::OnPostUnInstall()
 void CActiveAEDSPAddon::ResetProperties(int iClientId /* = AE_DSP_INVALID_ADDON_ID */)
 {
   /* initialise members */
-  SAFE_DELETE(m_pInfo);
-  m_pInfo = new AE_DSP_PROPERTIES;
   m_strUserPath           = CSpecialProtocol::TranslatePath(Profile());
-  m_pInfo->strUserPath    = m_strUserPath.c_str();
+  m_pInfo.strUserPath     = m_strUserPath.c_str();
   m_strAddonPath          = CSpecialProtocol::TranslatePath(Path());
-  m_pInfo->strAddonPath   = m_strAddonPath.c_str();
+  m_pInfo.strAddonPath    = m_strAddonPath.c_str();
   m_menuhooks.clear();
   m_bReadyToUse           = false;
   m_isInUse               = false;
@@ -130,7 +127,7 @@ ADDON_STATUS CActiveAEDSPAddon::Create(int iClientId)
     if ((status = CAddonDll<DllAudioDSP, AudioDSP, AE_DSP_PROPERTIES>::Create()) != ADDON_STATUS_OK)
       return status;
     
-    if ((status = CAddonDll<DllAudioDSP, AudioDSP, AE_DSP_PROPERTIES>::CreateInstance(ADDON_INSTANCE_ADSP, ID().c_str(), m_pInfo, m_pStruct, this, &m_addonInstance)) != ADDON_STATUS_OK)
+    if ((status = CAddonDll<DllAudioDSP, AudioDSP, AE_DSP_PROPERTIES>::CreateInstance(ADDON_INSTANCE_ADSP, ID().c_str(), &m_pInfo, m_pStruct, this, &m_addonInstance)) != ADDON_STATUS_OK)
       return status;
 
     bReadyToUse = GetAddonProperties();

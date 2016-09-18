@@ -44,6 +44,7 @@ public:
   void Destroy();
 
 private:
+  SCR_PROPS m_pInfo;
   void* m_addonInstance;
 };
 

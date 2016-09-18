@@ -93,7 +93,6 @@ CPeripheralAddon::~CPeripheralAddon(void)
   m_buttonMaps.clear();
 
   Destroy();
-  SAFE_DELETE(m_pInfo);
 }
 
 void CPeripheralAddon::ResetProperties(void)
@@ -102,10 +101,8 @@ void CPeripheralAddon::ResetProperties(void)
   m_strUserPath        = CSpecialProtocol::TranslatePath(Profile());
   m_strClientPath      = CSpecialProtocol::TranslatePath(Path());
 
-  SAFE_DELETE(m_pInfo);
-  m_pInfo              = new PERIPHERAL_PROPERTIES;
-  m_pInfo->user_path   = m_strUserPath.c_str();
-  m_pInfo->addon_path  = m_strClientPath.c_str();
+  m_pInfo.user_path    = m_strUserPath.c_str();
+  m_pInfo.addon_path   = m_strClientPath.c_str();
 
   m_apiVersion = ADDON::AddonVersion("0.0.0");
 }
@@ -140,7 +137,7 @@ ADDON_STATUS CPeripheralAddon::CreateAddon(void)
 
   if (status == ADDON_STATUS_OK)
   {
-    try {status = CAddonDll<DllPeripheral, PeripheralAddon, PERIPHERAL_PROPERTIES>::CreateInstance(ADDON_INSTANCE_PERIPHERAL, ID().c_str(), m_pInfo, m_pStruct, this, &m_addonInstance);}
+    try {status = CAddonDll<DllPeripheral, PeripheralAddon, PERIPHERAL_PROPERTIES>::CreateInstance(ADDON_INSTANCE_PERIPHERAL, ID().c_str(), &m_pInfo, m_pStruct, this, &m_addonInstance);}
     catch (const std::exception& e) { LogException(e, __FUNCTION__); }
   }
 
