@@ -53,7 +53,7 @@ extern "C"
     //! \param info Channel mapping for output stream
     //! \return Context of output stream
     //! \sa ICodec::Init
-    void* (__cdecl* Init) (const char* file, unsigned int filecache,
+    void* (__cdecl* Init) (void* addonInstance, const char* file, unsigned int filecache,
                            int* channels, int* samplerate,
                            int* bitspersample, int64_t* totaltime,
                            int* bitrate, AEDataFormat* format,
@@ -66,7 +66,7 @@ extern "C"
     //! \param actualsize Actual number of bytes written to output buffer
     //! \return 0 on success, -1 on end of stream, 1 on failure
     //! \sa ICodec::ReadPCM
-    int  (__cdecl* ReadPCM) (void* context, uint8_t* buffer, int size, int* actualsize);
+    int  (__cdecl* ReadPCM) (void* addonInstance, void* context, uint8_t* buffer, int size, int* actualsize);
 
 
     //! \brief Seek in output stream
@@ -74,7 +74,7 @@ extern "C"
     //! \param time Time position to seek to in milliseconds
     //! \return Time position seek ended up on
     //! \sa ICodec::Seek
-    int64_t  (__cdecl* Seek) (void* context, int64_t time);
+    int64_t  (__cdecl* Seek) (void* addonInstance, void* context, int64_t time);
 
     //! \brief Read tag of a file
     //! \param file File to read tag for
@@ -83,19 +83,19 @@ extern "C"
     //! \param length Length of file
     //! \return True on success, false on failure
     //! \sa IMusicInfoTagLoader::ReadTag
-    bool (__cdecl* ReadTag)(const char* file, char* title,
+    bool (__cdecl* ReadTag) (void* addonInstance, const char* file, char* title,
                             char* artist, int* length);
 
     //! \brief Get number of tracks in a file
     //! \param file File to read tag for
     //! \return Number of tracks in file
     //! \sa CMusicFileDirectory
-    int  (__cdecl* TrackCount) (const char* file);
+    int  (__cdecl* TrackCount) (void* addonInstance, const char* file);
 
     //! \brief Close down an output stream
     //! \param context Context of stream
     //! \return True on success, false on failure
     //! \sa ICodec::DeInit
-    bool (__cdecl* DeInit)(void* context);
+    bool (__cdecl* DeInit)(void* addonInstance, void* context);
   };
 }

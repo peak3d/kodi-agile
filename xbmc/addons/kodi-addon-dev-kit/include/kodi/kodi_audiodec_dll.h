@@ -27,25 +27,25 @@
 extern "C"
 {
   //! \copydoc AudioDecoder::Init
-  void* Init(const char* file, unsigned int filecache, int* channels,
+  void* Init(void* addonInstance, const char* file, unsigned int filecache, int* channels,
              int* samplerate, int* bitspersample, int64_t* totaltime,
              int* bitrate, AEDataFormat* format, const AEChannel** channelinfo);
 
   //! \copydoc AudioDecoder::ReadPCM
-  int ReadPCM(void* context, uint8_t* buffer, int size, int* actualsize);
+  int ReadPCM(void* addonInstance, void* context, uint8_t* buffer, int size, int* actualsize);
 
   //! \copydoc AudioDecoder::Seek
-  int64_t Seek(void* context, int64_t time);
+  int64_t Seek(void* addonInstance, void* context, int64_t time);
 
   //! \copydoc AudioDecoder::ReadTag
-  bool ReadTag(const char* file, char* title,
+  bool ReadTag(void* addonInstance, const char* file, char* title,
                char* artist, int* length);
 
   //! \copydoc AudioDecoder::TrackCount
-  int TrackCount(const char* file);
+  int TrackCount(void* addonInstance, const char* file);
 
   //! \copydoc AudioDecoder::DeInit
-  bool DeInit(void* context);
+  bool DeInit(void* addonInstance, void* context);
 
   // function to export the above structure to XBMC
   void __declspec(dllexport) get_addon(struct AudioDecoder* pScr)
