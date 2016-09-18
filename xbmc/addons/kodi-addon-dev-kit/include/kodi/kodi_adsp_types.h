@@ -476,46 +476,46 @@ extern "C" {
    */
   struct AudioDSP
   {
-    const char*  (__cdecl* GetAudioDSPAPIVersion)                (void);
-    const char*  (__cdecl* GetMinimumAudioDSPAPIVersion)         (void);
-    const char*  (__cdecl* GetGUIAPIVersion)                     (void);
-    const char*  (__cdecl* GetMinimumGUIAPIVersion)              (void);
-    AE_DSP_ERROR (__cdecl* GetAddonCapabilities)                 (AE_DSP_ADDON_CAPABILITIES*);
-    const char*  (__cdecl* GetDSPName)                           (void);
-    const char*  (__cdecl* GetDSPVersion)                        (void);
-    AE_DSP_ERROR (__cdecl* MenuHook)                             (const AE_DSP_MENUHOOK&, const AE_DSP_MENUHOOK_DATA&);
+    const char*  (__cdecl* GetAudioDSPAPIVersion)                (void* addonInstance);
+    const char*  (__cdecl* GetMinimumAudioDSPAPIVersion)         (void* addonInstance);
+    const char*  (__cdecl* GetGUIAPIVersion)                     (void* addonInstance);
+    const char*  (__cdecl* GetMinimumGUIAPIVersion)              (void* addonInstance);
+    AE_DSP_ERROR (__cdecl* GetAddonCapabilities)                 (void* addonInstance, AE_DSP_ADDON_CAPABILITIES*);
+    const char*  (__cdecl* GetDSPName)                           (void* addonInstance);
+    const char*  (__cdecl* GetDSPVersion)                        (void* addonInstance);
+    AE_DSP_ERROR (__cdecl* MenuHook)                             (void* addonInstance, const AE_DSP_MENUHOOK&, const AE_DSP_MENUHOOK_DATA&);
 
-    AE_DSP_ERROR (__cdecl* StreamCreate)                         (const AE_DSP_SETTINGS*, const AE_DSP_STREAM_PROPERTIES*, ADDON_HANDLE);
-    AE_DSP_ERROR (__cdecl* StreamDestroy)                        (const ADDON_HANDLE);
-    AE_DSP_ERROR (__cdecl* StreamIsModeSupported)                (const ADDON_HANDLE, AE_DSP_MODE_TYPE, unsigned int, int);
-    AE_DSP_ERROR (__cdecl* StreamInitialize)                     (const ADDON_HANDLE, const AE_DSP_SETTINGS*);
+    AE_DSP_ERROR (__cdecl* StreamCreate)                         (void* addonInstance, const AE_DSP_SETTINGS*, const AE_DSP_STREAM_PROPERTIES*, ADDON_HANDLE);
+    AE_DSP_ERROR (__cdecl* StreamDestroy)                        (void* addonInstance, const ADDON_HANDLE);
+    AE_DSP_ERROR (__cdecl* StreamIsModeSupported)                (void* addonInstance, const ADDON_HANDLE, AE_DSP_MODE_TYPE, unsigned int, int);
+    AE_DSP_ERROR (__cdecl* StreamInitialize)                     (void* addonInstance, const ADDON_HANDLE, const AE_DSP_SETTINGS*);
 
-    bool         (__cdecl* InputProcess)                         (const ADDON_HANDLE, const float**, unsigned int);
+    bool         (__cdecl* InputProcess)                         (void* addonInstance, const ADDON_HANDLE, const float**, unsigned int);
 
-    unsigned int (__cdecl* InputResampleProcessNeededSamplesize) (const ADDON_HANDLE);
-    unsigned int (__cdecl* InputResampleProcess)                 (const ADDON_HANDLE, float**, float**, unsigned int);
-    float        (__cdecl* InputResampleGetDelay)                (const ADDON_HANDLE);
-    int          (__cdecl* InputResampleSampleRate)              (const ADDON_HANDLE);
+    unsigned int (__cdecl* InputResampleProcessNeededSamplesize) (void* addonInstance, const ADDON_HANDLE);
+    unsigned int (__cdecl* InputResampleProcess)                 (void* addonInstance, const ADDON_HANDLE, float**, float**, unsigned int);
+    float        (__cdecl* InputResampleGetDelay)                (void* addonInstance, const ADDON_HANDLE);
+    int          (__cdecl* InputResampleSampleRate)              (void* addonInstance, const ADDON_HANDLE);
 
-    unsigned int (__cdecl* PreProcessNeededSamplesize)           (const ADDON_HANDLE, unsigned int);
-    float        (__cdecl* PreProcessGetDelay)                   (const ADDON_HANDLE, unsigned int);
-    unsigned int (__cdecl* PreProcess)                           (const ADDON_HANDLE, unsigned int, float**, float**, unsigned int);
+    unsigned int (__cdecl* PreProcessNeededSamplesize)           (void* addonInstance, const ADDON_HANDLE, unsigned int);
+    float        (__cdecl* PreProcessGetDelay)                   (void* addonInstance, const ADDON_HANDLE, unsigned int);
+    unsigned int (__cdecl* PreProcess)                           (void* addonInstance, const ADDON_HANDLE, unsigned int, float**, float**, unsigned int);
 
-    AE_DSP_ERROR (__cdecl* MasterProcessSetMode)                 (const ADDON_HANDLE, AE_DSP_STREAMTYPE, unsigned int, int);
-    unsigned int (__cdecl* MasterProcessNeededSamplesize)        (const ADDON_HANDLE);
-    float        (__cdecl* MasterProcessGetDelay)                (const ADDON_HANDLE);
-    int          (__cdecl* MasterProcessGetOutChannels)          (const ADDON_HANDLE, unsigned long&);
-    unsigned int (__cdecl* MasterProcess)                        (const ADDON_HANDLE, float**, float**, unsigned int);
-    const char*  (__cdecl* MasterProcessGetStreamInfoString)     (const ADDON_HANDLE);
+    AE_DSP_ERROR (__cdecl* MasterProcessSetMode)                 (void* addonInstance, const ADDON_HANDLE, AE_DSP_STREAMTYPE, unsigned int, int);
+    unsigned int (__cdecl* MasterProcessNeededSamplesize)        (void* addonInstance, const ADDON_HANDLE);
+    float        (__cdecl* MasterProcessGetDelay)                (void* addonInstance, const ADDON_HANDLE);
+    int          (__cdecl* MasterProcessGetOutChannels)          (void* addonInstance, const ADDON_HANDLE, unsigned long&);
+    unsigned int (__cdecl* MasterProcess)                        (void* addonInstance, const ADDON_HANDLE, float**, float**, unsigned int);
+    const char*  (__cdecl* MasterProcessGetStreamInfoString)     (void* addonInstance, const ADDON_HANDLE);
 
-    unsigned int (__cdecl* PostProcessNeededSamplesize)          (const ADDON_HANDLE, unsigned int);
-    float        (__cdecl* PostProcessGetDelay)                  (const ADDON_HANDLE, unsigned int);
-    unsigned int (__cdecl* PostProcess)                          (const ADDON_HANDLE, unsigned int, float**, float**, unsigned int);
+    unsigned int (__cdecl* PostProcessNeededSamplesize)          (void* addonInstance, const ADDON_HANDLE, unsigned int);
+    float        (__cdecl* PostProcessGetDelay)                  (void* addonInstance, const ADDON_HANDLE, unsigned int);
+    unsigned int (__cdecl* PostProcess)                          (void* addonInstance, const ADDON_HANDLE, unsigned int, float**, float**, unsigned int);
 
-    unsigned int (__cdecl* OutputResampleProcessNeededSamplesize)(const ADDON_HANDLE);
-    unsigned int (__cdecl* OutputResampleProcess)                (const ADDON_HANDLE, float**, float**, unsigned int);
-    float        (__cdecl* OutputResampleGetDelay)               (const ADDON_HANDLE);
-    int          (__cdecl* OutputResampleSampleRate)             (const ADDON_HANDLE);
+    unsigned int (__cdecl* OutputResampleProcessNeededSamplesize)(void* addonInstance, const ADDON_HANDLE);
+    unsigned int (__cdecl* OutputResampleProcess)                (void* addonInstance, const ADDON_HANDLE, float**, float**, unsigned int);
+    float        (__cdecl* OutputResampleGetDelay)               (void* addonInstance, const ADDON_HANDLE);
+    int          (__cdecl* OutputResampleSampleRate)             (void* addonInstance, const ADDON_HANDLE);
   };
 
 #ifdef __cplusplus

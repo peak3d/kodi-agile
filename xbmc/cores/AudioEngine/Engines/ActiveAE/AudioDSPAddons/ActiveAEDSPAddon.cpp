@@ -233,7 +233,7 @@ bool CActiveAEDSPAddon::CheckAPIVersion(void)
   AddonVersion minVersion = AddonVersion(KODI_AE_DSP_MIN_API_VERSION);
   try
   {
-    m_apiVersion = AddonVersion(m_pStruct->GetAudioDSPAPIVersion());
+    m_apiVersion = AddonVersion(m_pStruct->GetAudioDSPAPIVersion(m_addonInstance));
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -253,7 +253,7 @@ bool CActiveAEDSPAddon::CheckAPIVersion(void)
   minVersion = AddonVersion(KODI_GUILIB_MIN_API_VERSION);
   try
   {
-    guiVersion = AddonVersion(m_pStruct->GetGUIAPIVersion());
+    guiVersion = AddonVersion(m_pStruct->GetGUIAPIVersion(m_addonInstance));
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -280,7 +280,7 @@ bool CActiveAEDSPAddon::GetAddonProperties(void)
   try
   {
     memset(&addonCapabilities, 0, sizeof(addonCapabilities));
-    AE_DSP_ERROR retVal = m_pStruct->GetAddonCapabilities(&addonCapabilities);
+    AE_DSP_ERROR retVal = m_pStruct->GetAddonCapabilities(m_addonInstance, &addonCapabilities);
     if (retVal != AE_DSP_ERROR_NO_ERROR)
     {
       CLog::Log(LOGERROR, "ActiveAE DSP - couldn't get the capabilities for add-on '%s'. Please contact the developer of this add-on: %s", GetFriendlyName().c_str(), Author().c_str());
@@ -297,7 +297,7 @@ bool CActiveAEDSPAddon::GetAddonProperties(void)
   /* get the name of the dsp addon */
   try
   {
-    strDSPName = m_pStruct->GetDSPName();
+    strDSPName = m_pStruct->GetDSPName(m_addonInstance);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -312,7 +312,7 @@ bool CActiveAEDSPAddon::GetAddonProperties(void)
   /* backend version number */
   try
   {
-    strAudioDSPVersion = m_pStruct->GetDSPVersion();
+    strAudioDSPVersion = m_pStruct->GetDSPVersion(m_addonInstance);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -376,7 +376,7 @@ void CActiveAEDSPAddon::CallMenuHook(const AE_DSP_MENUHOOK &hook, AE_DSP_MENUHOO
 
   try
   {
-    m_pStruct->MenuHook(hook, hookData);
+    m_pStruct->MenuHook(m_addonInstance, hook, hookData);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -392,7 +392,7 @@ AE_DSP_ERROR CActiveAEDSPAddon::StreamCreate(const AE_DSP_SETTINGS *addonSetting
 
   try
   {
-    retVal = m_pStruct->StreamCreate(addonSettings, pProperties, handle);
+    retVal = m_pStruct->StreamCreate(m_addonInstance, addonSettings, pProperties, handle);
     if (retVal == AE_DSP_ERROR_NO_ERROR)
       m_isInUse = true;
     LogError(retVal, __FUNCTION__);
@@ -411,7 +411,7 @@ void CActiveAEDSPAddon::StreamDestroy(const ADDON_HANDLE handle)
 {
   try
   {
-    m_pStruct->StreamDestroy(handle);
+    m_pStruct->StreamDestroy(m_addonInstance, handle);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -427,7 +427,7 @@ bool CActiveAEDSPAddon::StreamIsModeSupported(const ADDON_HANDLE handle, AE_DSP_
 {
   try
   {
-    AE_DSP_ERROR retVal = m_pStruct->StreamIsModeSupported(handle, type, addon_mode_id, unique_db_mode_id);
+    AE_DSP_ERROR retVal = m_pStruct->StreamIsModeSupported(m_addonInstance, handle, type, addon_mode_id, unique_db_mode_id);
     if (retVal == AE_DSP_ERROR_NO_ERROR)
       return true;
     else if (retVal != AE_DSP_ERROR_IGNORE_ME)
@@ -449,7 +449,7 @@ AE_DSP_ERROR CActiveAEDSPAddon::StreamInitialize(const ADDON_HANDLE handle, cons
 
   try
   {
-    retVal = m_pStruct->StreamInitialize(handle, addonSettings);
+    retVal = m_pStruct->StreamInitialize(m_addonInstance, handle, addonSettings);
     LogError(retVal, __FUNCTION__);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
@@ -466,7 +466,7 @@ bool CActiveAEDSPAddon::InputProcess(const ADDON_HANDLE handle, const float **ar
 {
   try
   {
-    return m_pStruct->InputProcess(handle, array_in, samples);
+    return m_pStruct->InputProcess(m_addonInstance, handle, array_in, samples);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -482,7 +482,7 @@ unsigned int CActiveAEDSPAddon::InputResampleProcessNeededSamplesize(const ADDON
 {
   try
   {
-    return m_pStruct->InputResampleProcessNeededSamplesize(handle);
+    return m_pStruct->InputResampleProcessNeededSamplesize(m_addonInstance, handle);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -498,7 +498,7 @@ unsigned int CActiveAEDSPAddon::InputResampleProcess(const ADDON_HANDLE handle, 
 {
   try
   {
-    return m_pStruct->InputResampleProcess(handle, array_in, array_out, samples);
+    return m_pStruct->InputResampleProcess(m_addonInstance, handle, array_in, array_out, samples);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -514,7 +514,7 @@ int CActiveAEDSPAddon::InputResampleSampleRate(const ADDON_HANDLE handle)
 {
   try
   {
-    return m_pStruct->InputResampleSampleRate(handle);
+    return m_pStruct->InputResampleSampleRate(m_addonInstance, handle);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -530,7 +530,7 @@ float CActiveAEDSPAddon::InputResampleGetDelay(const ADDON_HANDLE handle)
 {
   try
   {
-    return m_pStruct->InputResampleGetDelay(handle);
+    return m_pStruct->InputResampleGetDelay(m_addonInstance, handle);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -546,7 +546,7 @@ unsigned int CActiveAEDSPAddon::PreProcessNeededSamplesize(const ADDON_HANDLE ha
 {
   try
   {
-    return m_pStruct->PreProcessNeededSamplesize(handle, mode_id);
+    return m_pStruct->PreProcessNeededSamplesize(m_addonInstance, handle, mode_id);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -562,7 +562,7 @@ float CActiveAEDSPAddon::PreProcessGetDelay(const ADDON_HANDLE handle, unsigned 
 {
   try
   {
-    return m_pStruct->PreProcessGetDelay(handle, mode_id);
+    return m_pStruct->PreProcessGetDelay(m_addonInstance, handle, mode_id);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -578,7 +578,7 @@ unsigned int CActiveAEDSPAddon::PreProcess(const ADDON_HANDLE handle, unsigned i
 {
   try
   {
-    return m_pStruct->PostProcess(handle, mode_id, array_in, array_out, samples);
+    return m_pStruct->PostProcess(m_addonInstance, handle, mode_id, array_in, array_out, samples);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -596,7 +596,7 @@ AE_DSP_ERROR CActiveAEDSPAddon::MasterProcessSetMode(const ADDON_HANDLE handle, 
 
   try
   {
-    retVal = m_pStruct->MasterProcessSetMode(handle, type, mode_id, unique_db_mode_id);
+    retVal = m_pStruct->MasterProcessSetMode(m_addonInstance, handle, type, mode_id, unique_db_mode_id);
     LogError(retVal, __FUNCTION__);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
@@ -613,7 +613,7 @@ unsigned int CActiveAEDSPAddon::MasterProcessNeededSamplesize(const ADDON_HANDLE
 {
   try
   {
-    return m_pStruct->MasterProcessNeededSamplesize(handle);
+    return m_pStruct->MasterProcessNeededSamplesize(m_addonInstance, handle);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -629,7 +629,7 @@ float CActiveAEDSPAddon::MasterProcessGetDelay(const ADDON_HANDLE handle)
 {
   try
   {
-    return m_pStruct->MasterProcessGetDelay(handle);
+    return m_pStruct->MasterProcessGetDelay(m_addonInstance, handle);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -645,7 +645,7 @@ int CActiveAEDSPAddon::MasterProcessGetOutChannels(const ADDON_HANDLE handle, un
 {
   try
   {
-    return m_pStruct->MasterProcessGetOutChannels(handle, out_channel_present_flags);
+    return m_pStruct->MasterProcessGetOutChannels(m_addonInstance, handle, out_channel_present_flags);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -661,7 +661,7 @@ unsigned int CActiveAEDSPAddon::MasterProcess(const ADDON_HANDLE handle, float *
 {
   try
   {
-    return m_pStruct->MasterProcess(handle, array_in, array_out, samples);
+    return m_pStruct->MasterProcess(m_addonInstance, handle, array_in, array_out, samples);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -682,7 +682,7 @@ std::string CActiveAEDSPAddon::MasterProcessGetStreamInfoString(const ADDON_HAND
 
   try
   {
-    strReturn = m_pStruct->MasterProcessGetStreamInfoString(handle);
+    strReturn = m_pStruct->MasterProcessGetStreamInfoString(m_addonInstance, handle);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -698,7 +698,7 @@ unsigned int CActiveAEDSPAddon::PostProcessNeededSamplesize(const ADDON_HANDLE h
 {
   try
   {
-    return m_pStruct->PostProcessNeededSamplesize(handle, mode_id);
+    return m_pStruct->PostProcessNeededSamplesize(m_addonInstance, handle, mode_id);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -714,7 +714,7 @@ float CActiveAEDSPAddon::PostProcessGetDelay(const ADDON_HANDLE handle, unsigned
 {
   try
   {
-    return m_pStruct->PostProcessGetDelay(handle, mode_id);
+    return m_pStruct->PostProcessGetDelay(m_addonInstance, handle, mode_id);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -730,7 +730,7 @@ unsigned int CActiveAEDSPAddon::PostProcess(const ADDON_HANDLE handle, unsigned 
 {
   try
   {
-    return m_pStruct->PostProcess(handle, mode_id, array_in, array_out, samples);
+    return m_pStruct->PostProcess(m_addonInstance, handle, mode_id, array_in, array_out, samples);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -746,7 +746,7 @@ unsigned int CActiveAEDSPAddon::OutputResampleProcessNeededSamplesize(const ADDO
 {
   try
   {
-    return m_pStruct->OutputResampleProcessNeededSamplesize(handle);
+    return m_pStruct->OutputResampleProcessNeededSamplesize(m_addonInstance, handle);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -762,7 +762,7 @@ unsigned int CActiveAEDSPAddon::OutputResampleProcess(const ADDON_HANDLE handle,
 {
   try
   {
-    return m_pStruct->OutputResampleProcess(handle, array_in, array_out, samples);
+    return m_pStruct->OutputResampleProcess(m_addonInstance, handle, array_in, array_out, samples);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -778,7 +778,7 @@ int CActiveAEDSPAddon::OutputResampleSampleRate(const ADDON_HANDLE handle)
 {
   try
   {
-    return m_pStruct->OutputResampleSampleRate(handle);
+    return m_pStruct->OutputResampleSampleRate(m_addonInstance, handle);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
@@ -794,7 +794,7 @@ float CActiveAEDSPAddon::OutputResampleGetDelay(const ADDON_HANDLE handle)
 {
   try
   {
-    return m_pStruct->OutputResampleGetDelay(handle);
+    return m_pStruct->OutputResampleGetDelay(m_addonInstance, handle);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)
