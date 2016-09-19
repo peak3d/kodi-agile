@@ -41,14 +41,14 @@
 
 namespace ADDON
 {
-  template<class TheDll, typename TheStruct, typename TheProps>
+  template<typename TheStruct, typename TheProps>
   class CAddonDll : public CAddon
   {
   public:
     CAddonDll(AddonProps props);
 
     //FIXME: does shallow pointer copy. no copy assignment op
-    CAddonDll(const CAddonDll<TheDll, TheStruct, TheProps> &rhs);
+    CAddonDll(const CAddonDll<TheStruct, TheProps> &rhs);
     virtual ~CAddonDll();
     virtual ADDON_STATUS GetStatus();
 
@@ -78,7 +78,7 @@ namespace ADDON
     std::string m_parentLib;
 
   private:
-    TheDll* m_pDll;
+    DllAddon* m_pDll;
     bool m_initialized;
     bool LoadDll();
     bool m_needsavedsettings;
@@ -94,8 +94,8 @@ namespace ADDON
     static const char* AddOnGetUserDirectory(void *userData);
   };
 
-template<class TheDll, typename TheStruct, typename TheProps>
-CAddonDll<TheDll, TheStruct, TheProps>::CAddonDll(AddonProps props)
+template<typename TheStruct, typename TheProps>
+CAddonDll<TheStruct, TheProps>::CAddonDll(AddonProps props)
   : CAddon(std::move(props)),
     m_bIsChild(false)
 {
@@ -107,8 +107,8 @@ CAddonDll<TheDll, TheStruct, TheProps>::CAddonDll(AddonProps props)
   m_parentLib.clear();
 }
 
-template<class TheDll, typename TheStruct, typename TheProps>
-CAddonDll<TheDll, TheStruct, TheProps>::CAddonDll(const CAddonDll<TheDll, TheStruct, TheProps> &rhs)
+template<typename TheStruct, typename TheProps>
+CAddonDll<TheStruct, TheProps>::CAddonDll(const CAddonDll<TheStruct, TheProps> &rhs)
   : CAddon(rhs),
     m_bIsChild(true)
 {
@@ -120,15 +120,15 @@ CAddonDll<TheDll, TheStruct, TheProps>::CAddonDll(const CAddonDll<TheDll, TheStr
   m_parentLib = rhs.m_parentLib;
 }
 
-template<class TheDll, typename TheStruct, typename TheProps>
-CAddonDll<TheDll, TheStruct, TheProps>::~CAddonDll()
+template<typename TheStruct, typename TheProps>
+CAddonDll<TheStruct, TheProps>::~CAddonDll()
 {
   if (m_initialized)
     Destroy();
 }
 
-template<class TheDll, typename TheStruct, typename TheProps>
-bool CAddonDll<TheDll, TheStruct, TheProps>::LoadDll()
+template<typename TheStruct, typename TheProps>
+bool CAddonDll<TheStruct, TheProps>::LoadDll()
 {
   if (m_pDll)
     return true;
@@ -209,7 +209,7 @@ bool CAddonDll<TheDll, TheStruct, TheProps>::LoadDll()
   }
 
   /* Load the Dll */
-  m_pDll = new TheDll;
+  m_pDll = new DllAddon;
   m_pDll->SetFile(strFileName);
   m_pDll->EnableDelayedUnload(false);
   if (!m_pDll->Load())
@@ -242,8 +242,8 @@ bool CAddonDll<TheDll, TheStruct, TheProps>::LoadDll()
   return false;
 }
 
-template<class TheDll, typename TheStruct, typename TheProps>
-ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::Create()
+template<typename TheStruct, typename TheProps>
+ADDON_STATUS CAddonDll<TheStruct, TheProps>::Create()
 {
   /* ensure that a previous instance is destroyed */
   Destroy();
@@ -299,8 +299,8 @@ ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::Create()
   return status;
 }
 
-template<class TheDll, typename TheStruct, typename TheProps>
-void CAddonDll<TheDll, TheStruct, TheProps>::Stop()
+template<typename TheStruct, typename TheProps>
+void CAddonDll<TheStruct, TheProps>::Stop()
 {
   /* Inform dll to stop all activities */
   try
@@ -335,8 +335,8 @@ void CAddonDll<TheDll, TheStruct, TheProps>::Stop()
   }
 }
 
-template<class TheDll, typename TheStruct, typename TheProps>
-void CAddonDll<TheDll, TheStruct, TheProps>::Destroy()
+template<typename TheStruct, typename TheProps>
+void CAddonDll<TheStruct, TheProps>::Destroy()
 {
   /* Unload library file */
   try
@@ -366,14 +366,14 @@ void CAddonDll<TheDll, TheStruct, TheProps>::Destroy()
   m_initialized = false;
 }
 
-template<class TheDll, typename TheStruct, typename TheProps>
-bool CAddonDll<TheDll, TheStruct, TheProps>::DllLoaded(void) const
+template<typename TheStruct, typename TheProps>
+bool CAddonDll<TheStruct, TheProps>::DllLoaded(void) const
 {
   return m_pDll != NULL;
 }
 
-template<class TheDll, typename TheStruct, typename TheProps>
-ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::GetStatus()
+template<typename TheStruct, typename TheProps>
+ADDON_STATUS CAddonDll<TheStruct, TheProps>::GetStatus()
 {
   try
   {
@@ -386,8 +386,8 @@ ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::GetStatus()
   return ADDON_STATUS_UNKNOWN;
 }
 
-template<class TheDll, typename TheStruct, typename TheProps>
-bool CAddonDll<TheDll, TheStruct, TheProps>::LoadSettings()
+template<typename TheStruct, typename TheProps>
+bool CAddonDll<TheStruct, TheProps>::LoadSettings()
 {
   if (m_settingsLoaded)
     return true;
@@ -432,8 +432,8 @@ bool CAddonDll<TheDll, TheStruct, TheProps>::LoadSettings()
   return true;
 }
 
-template<class TheDll, typename TheStruct, typename TheProps>
-TiXmlElement CAddonDll<TheDll, TheStruct, TheProps>::MakeSetting(DllSetting& setting) const
+template<typename TheStruct, typename TheProps>
+TiXmlElement CAddonDll<TheStruct, TheProps>::MakeSetting(DllSetting& setting) const
 {
   TiXmlElement node("setting");
 
@@ -467,8 +467,8 @@ TiXmlElement CAddonDll<TheDll, TheStruct, TheProps>::MakeSetting(DllSetting& set
   return node;
 }
 
-template<class TheDll, typename TheStruct, typename TheProps>
-void CAddonDll<TheDll, TheStruct, TheProps>::SaveSettings()
+template<typename TheStruct, typename TheProps>
+void CAddonDll<TheStruct, TheProps>::SaveSettings()
 {
   // must save first, as TransferSettings() reloads saved settings!
   CAddon::SaveSettings();
@@ -476,14 +476,14 @@ void CAddonDll<TheDll, TheStruct, TheProps>::SaveSettings()
     TransferSettings();
 }
 
-template<class TheDll, typename TheStruct, typename TheProps>
-std::string CAddonDll<TheDll, TheStruct, TheProps>::GetSetting(const std::string& key)
+template<typename TheStruct, typename TheProps>
+std::string CAddonDll<TheStruct, TheProps>::GetSetting(const std::string& key)
 {
   return CAddon::GetSetting(key);
 }
 
-template<class TheDll, typename TheStruct, typename TheProps>
-ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::TransferSettings()
+template<typename TheStruct, typename TheProps>
+ADDON_STATUS CAddonDll<TheStruct, TheProps>::TransferSettings()
 {
   bool restart = false;
   ADDON_STATUS reportStatus = ADDON_STATUS_OK;
@@ -575,8 +575,8 @@ ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::TransferSettings()
   return ADDON_STATUS_OK;
 }
 
-template<class TheDll, typename TheStruct, typename TheProps>
-ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::CreateInstance(int instanceType, const char* instanceID, const void* instanceProps, void* instanceFunctions, void* kodiInstance, void** addonInstance)
+template<typename TheStruct, typename TheProps>
+ADDON_STATUS CAddonDll<TheStruct, TheProps>::CreateInstance(int instanceType, const char* instanceID, const void* instanceProps, void* instanceFunctions, void* kodiInstance, void** addonInstance)
 {
   try
   {
@@ -589,8 +589,8 @@ ADDON_STATUS CAddonDll<TheDll, TheStruct, TheProps>::CreateInstance(int instance
   return ADDON_STATUS_UNKNOWN;
 }
 
-template<class TheDll, typename TheStruct, typename TheProps>
-void CAddonDll<TheDll, TheStruct, TheProps>::DestroyInstance(int instanceType, const char* instanceID, void* instance)
+template<typename TheStruct, typename TheProps>
+void CAddonDll<TheStruct, TheProps>::DestroyInstance(int instanceType, const char* instanceID, void* instance)
 {
   try
   {
@@ -602,8 +602,8 @@ void CAddonDll<TheDll, TheStruct, TheProps>::DestroyInstance(int instanceType, c
   }
 }
 
-template<class TheDll, typename TheStruct, typename TheProps>
-void CAddonDll<TheDll, TheStruct, TheProps>::HandleException(std::exception &e, const char* context)
+template<typename TheStruct, typename TheProps>
+void CAddonDll<TheStruct, TheProps>::HandleException(std::exception &e, const char* context)
 {
   m_initialized = false;
   m_pDll->Unload();

@@ -64,7 +64,7 @@ void CAudioBuffer::Set(const float* psBuffer, int iSize)
 }
 
 CVisualisation::CVisualisation(AddonProps props)
-  : CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>(std::move(props)),
+  : CAddonDll<Visualisation, VIS_PROPS>(std::move(props)),
     m_addonInstance(nullptr)
 {
     m_pInfo.name = nullptr;
@@ -91,10 +91,10 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   m_pInfo.profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
   m_pInfo.submodule = nullptr;
 
-  if (CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>::Create() != ADDON_STATUS_OK)
+  if (CAddonDll<Visualisation, VIS_PROPS>::Create() != ADDON_STATUS_OK)
     return false;
   
-  ADDON_STATUS status = CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>::CreateInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), &m_pInfo, m_pStruct, this, &m_addonInstance);
+  ADDON_STATUS status = CAddonDll<Visualisation, VIS_PROPS>::CreateInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), &m_pInfo, m_pStruct, this, &m_addonInstance);
   if (status != ADDON_STATUS_OK && status != ADDON_STATUS_NOT_IMPLEMENTED)
     return false;
   
@@ -183,7 +183,7 @@ void CVisualisation::Stop()
   CAEFactory::UnregisterAudioCallback(this);
   if (Initialized())
   {
-    CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>::Stop();
+    CAddonDll<Visualisation, VIS_PROPS>::Stop();
   }
 }
 
@@ -449,7 +449,7 @@ void CVisualisation::Destroy()
 {
   // Free what was allocated in method CVisualisation::Create
 
-  CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>::DestroyInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), m_addonInstance);
+  CAddonDll<Visualisation, VIS_PROPS>::DestroyInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), m_addonInstance);
 
   if (m_pInfo.name)
   {
@@ -472,7 +472,7 @@ void CVisualisation::Destroy()
     m_pInfo.submodule = nullptr;
   }
 
-  CAddonDll<DllVisualisation, Visualisation, VIS_PROPS>::Destroy();
+  CAddonDll<Visualisation, VIS_PROPS>::Destroy();
   m_addonInstance = nullptr;
 }
 

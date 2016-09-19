@@ -62,7 +62,7 @@ std::unique_ptr<CPVRClient> CPVRClient::FromExtension(AddonProps props, const cp
 }
 
 CPVRClient::CPVRClient(AddonProps props)
-  : CAddonDll<DllPVRClient, PVRClient, PVR_PROPERTIES>(std::move(props)),
+  : CAddonDll<PVRClient, PVR_PROPERTIES>(std::move(props)),
     m_apiVersion("0.0.0"),
     m_bAvahiServiceAdded(false),
     m_addonInstance(nullptr)
@@ -72,7 +72,7 @@ CPVRClient::CPVRClient(AddonProps props)
 
 CPVRClient::CPVRClient(AddonProps props, const std::string& strAvahiType, const std::string& strAvahiIpSetting,
     const std::string& strAvahiPortSetting)
-  : CAddonDll<DllPVRClient, PVRClient, PVR_PROPERTIES>(std::move(props)),
+  : CAddonDll<PVRClient, PVR_PROPERTIES>(std::move(props)),
     m_strAvahiType(strAvahiType),
     m_strAvahiIpSetting(strAvahiIpSetting),
     m_strAvahiPortSetting(strAvahiPortSetting),
@@ -168,10 +168,10 @@ ADDON_STATUS CPVRClient::Create(int iClientId)
   CLog::Log(LOGDEBUG, "PVR - %s - creating PVR add-on instance '%s'", __FUNCTION__, Name().c_str());
   try
   {
-    if ((status = CAddonDll<DllPVRClient, PVRClient, PVR_PROPERTIES>::Create()) != ADDON_STATUS_OK)
+    if ((status = CAddonDll<PVRClient, PVR_PROPERTIES>::Create()) != ADDON_STATUS_OK)
       return status;
     
-    if ((status = CAddonDll<DllPVRClient, PVRClient, PVR_PROPERTIES>::CreateInstance(ADDON_INSTANCE_PVR, ID().c_str(), &m_pInfo, m_pStruct, this, &m_addonInstance)) != ADDON_STATUS_OK)
+    if ((status = CAddonDll<PVRClient, PVR_PROPERTIES>::CreateInstance(ADDON_INSTANCE_PVR, ID().c_str(), &m_pInfo, m_pStruct, this, &m_addonInstance)) != ADDON_STATUS_OK)
       return status;
 
     bReadyToUse = GetAddonProperties();
@@ -184,7 +184,7 @@ ADDON_STATUS CPVRClient::Create(int iClientId)
 
 bool CPVRClient::DllLoaded(void) const
 {
-  try { return CAddonDll<DllPVRClient, PVRClient, PVR_PROPERTIES>::DllLoaded(); }
+  try { return CAddonDll<PVRClient, PVR_PROPERTIES>::DllLoaded(); }
   catch (std::exception &e) { LogException(e, __FUNCTION__); }
 
   return false;
@@ -202,8 +202,8 @@ void CPVRClient::Destroy(void)
   /* destroy the add-on */
   try
   { 
-    CAddonDll<DllPVRClient, PVRClient, PVR_PROPERTIES>::DestroyInstance(ADDON_INSTANCE_PVR, ID().c_str(), m_addonInstance);
-    CAddonDll<DllPVRClient, PVRClient, PVR_PROPERTIES>::Destroy();
+    CAddonDll<PVRClient, PVR_PROPERTIES>::DestroyInstance(ADDON_INSTANCE_PVR, ID().c_str(), m_addonInstance);
+    CAddonDll<PVRClient, PVR_PROPERTIES>::Destroy();
     m_addonInstance = nullptr;
   }
   catch (std::exception &e) { LogException(e, __FUNCTION__); }

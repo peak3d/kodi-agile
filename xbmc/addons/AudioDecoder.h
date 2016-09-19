@@ -30,11 +30,9 @@ namespace MUSIC_INFO
   class EmbeddedArt;
 }
 
-typedef DllAddon<AudioDecoder, AUDIODEC_PROPS> DllAudioDecoder;
 namespace ADDON
 {
-  typedef CAddonDll<DllAudioDecoder,
-                    AudioDecoder, AUDIODEC_PROPS> AudioDecoderDll;
+  typedef CAddonDll<AudioDecoder, AUDIODEC_PROPS> AudioDecoderDll;
 
   class CAudioDecoder : public AudioDecoderDll,
                         public ICodec,

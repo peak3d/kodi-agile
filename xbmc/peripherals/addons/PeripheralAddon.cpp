@@ -60,7 +60,7 @@ std::unique_ptr<CPeripheralAddon> CPeripheralAddon::FromExtension(ADDON::AddonPr
 }
 
 CPeripheralAddon::CPeripheralAddon(ADDON::AddonProps props, bool bProvidesJoysticks, bool bProvidesButtonMaps) :
-  CAddonDll<DllPeripheral, PeripheralAddon, PERIPHERAL_PROPERTIES>(std::move(props)),
+  CAddonDll<PeripheralAddon, PERIPHERAL_PROPERTIES>(std::move(props)),
   m_apiVersion("0.0.0"),
   m_bProvidesJoysticks(bProvidesJoysticks),
   m_bProvidesButtonMaps(bProvidesButtonMaps),
@@ -132,12 +132,12 @@ ADDON_STATUS CPeripheralAddon::CreateAddon(void)
 
   // Initialise the add-on
   CLog::Log(LOGDEBUG, "PERIPHERAL - %s - creating peripheral add-on instance '%s'", __FUNCTION__, Name().c_str());
-  try {status = CAddonDll<DllPeripheral, PeripheralAddon, PERIPHERAL_PROPERTIES>::Create();}
+  try {status = CAddonDll<PeripheralAddon, PERIPHERAL_PROPERTIES>::Create();}
   catch (const std::exception& e) { LogException(e, __FUNCTION__); }
 
   if (status == ADDON_STATUS_OK)
   {
-    try {status = CAddonDll<DllPeripheral, PeripheralAddon, PERIPHERAL_PROPERTIES>::CreateInstance(ADDON_INSTANCE_PERIPHERAL, ID().c_str(), &m_pInfo, m_pStruct, this, &m_addonInstance);}
+    try {status = CAddonDll<PeripheralAddon, PERIPHERAL_PROPERTIES>::CreateInstance(ADDON_INSTANCE_PERIPHERAL, ID().c_str(), &m_pInfo, m_pStruct, this, &m_addonInstance);}
     catch (const std::exception& e) { LogException(e, __FUNCTION__); }
   }
 
@@ -155,8 +155,8 @@ ADDON_STATUS CPeripheralAddon::CreateAddon(void)
 
 void CPeripheralAddon::Destroy()
 {
-  CAddonDll<DllPeripheral, PeripheralAddon, PERIPHERAL_PROPERTIES>::DestroyInstance(ADDON_INSTANCE_PERIPHERAL, ID().c_str(), m_addonInstance);
-  CAddonDll<DllPeripheral, PeripheralAddon, PERIPHERAL_PROPERTIES>::Destroy();
+  CAddonDll<PeripheralAddon, PERIPHERAL_PROPERTIES>::DestroyInstance(ADDON_INSTANCE_PERIPHERAL, ID().c_str(), m_addonInstance);
+  CAddonDll<PeripheralAddon, PERIPHERAL_PROPERTIES>::Destroy();
   m_addonInstance = nullptr;
 }
 

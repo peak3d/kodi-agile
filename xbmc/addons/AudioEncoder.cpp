@@ -37,7 +37,7 @@ bool CAudioEncoder::Init(audioenc_callbacks &callbacks)
   if (!Initialized())
     return false;
 
-  if (CAddonDll<DllAudioEncoder, AudioEncoder, AUDIOENC_PROPS>::CreateInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), nullptr, m_pStruct, this, &m_addonInstance) != ADDON_STATUS_OK)
+  if (CAddonDll<AudioEncoder, AUDIOENC_PROPS>::CreateInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), nullptr, m_pStruct, this, &m_addonInstance) != ADDON_STATUS_OK)
     return false;
 
   // create encoder instance
@@ -84,8 +84,8 @@ bool CAudioEncoder::Close()
 
 void CAudioEncoder::Destroy()
 {
-  CAddonDll<DllAudioEncoder, AudioEncoder, AUDIOENC_PROPS>::DestroyInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), m_addonInstance);
-  AudioEncoderDll::Destroy();
+  CAddonDll<AudioEncoder, AUDIOENC_PROPS>::DestroyInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), m_addonInstance);
+  CAddonDll<AudioEncoder, AUDIOENC_PROPS>::Destroy();
   m_addonInstance = nullptr;
 }
 

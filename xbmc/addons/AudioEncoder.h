@@ -22,11 +22,9 @@
 #include "addons/kodi-addon-dev-kit/include/kodi/xbmc_audioenc_types.h"
 #include "cdrip/IEncoder.h"
 
-typedef DllAddon<AudioEncoder, AUDIOENC_PROPS> DllAudioEncoder;
 namespace ADDON
 {
-  typedef CAddonDll<DllAudioEncoder,
-                    AudioEncoder, AUDIOENC_PROPS> AudioEncoderDll;
+  typedef CAddonDll<AudioEncoder, AUDIOENC_PROPS> AudioEncoderDll;
 
   class CAudioEncoder : public AudioEncoderDll, public IEncoder
   {

@@ -22,15 +22,13 @@
 #include "AddonDll.h"
 #include "addons/kodi-addon-dev-kit/include/kodi/xbmc_scr_types.h"
 
-typedef DllAddon<ScreenSaver, SCR_PROPS> DllScreenSaver;
-
 namespace ADDON
 {
 
-class CScreenSaver : public ADDON::CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>
+class CScreenSaver : public ADDON::CAddonDll<ScreenSaver, SCR_PROPS>
 {
 public:
-  explicit CScreenSaver(AddonProps props) : CAddonDll<DllScreenSaver, ScreenSaver, SCR_PROPS>(std::move(props)) {};
+  explicit CScreenSaver(AddonProps props) : CAddonDll<ScreenSaver, SCR_PROPS>(std::move(props)) {};
   explicit CScreenSaver(const char *addonID);
 
   virtual ~CScreenSaver() {}

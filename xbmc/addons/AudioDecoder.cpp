@@ -58,7 +58,7 @@ bool CAudioDecoder::Init(const CFileItem& file, unsigned int filecache)
   if (!Initialized())
     return false;
 
-  if (CAddonDll<DllAudioDecoder, AudioDecoder, AUDIODEC_PROPS>::CreateInstance(ADDON_INSTANCE_AUDIODECODER, ID().c_str(), nullptr, m_pStruct, this, &m_addonInstance) != ADDON_STATUS_OK)
+  if (CAddonDll<AudioDecoder, AUDIODEC_PROPS>::CreateInstance(ADDON_INSTANCE_AUDIODECODER, ID().c_str(), nullptr, m_pStruct, this, &m_addonInstance) != ADDON_STATUS_OK)
     return false;
 
   // for replaygain
@@ -144,7 +144,7 @@ int CAudioDecoder::GetTrackCount(const std::string& strPath)
 
 void CAudioDecoder::Destroy()
 {
-  CAddonDll<DllAudioDecoder, AudioDecoder, AUDIODEC_PROPS>::DestroyInstance(ADDON_INSTANCE_AUDIODECODER, ID().c_str(), m_addonInstance);
+  CAddonDll<AudioDecoder, AUDIODEC_PROPS>::DestroyInstance(ADDON_INSTANCE_AUDIODECODER, ID().c_str(), m_addonInstance);
   AudioDecoderDll::Destroy();
   m_addonInstance = nullptr;
 }

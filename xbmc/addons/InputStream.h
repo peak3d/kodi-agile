@@ -25,13 +25,11 @@
 #include <vector>
 #include <map>
 
-typedef DllAddon<InputStreamAddonFunctions, INPUTSTREAM_PROPS> DllInputStream;
-
 class CDemuxStream;
 
 namespace ADDON
 {
-  typedef CAddonDll<DllInputStream, InputStreamAddonFunctions, INPUTSTREAM_PROPS> InputStreamDll;
+  typedef CAddonDll<InputStreamAddonFunctions, INPUTSTREAM_PROPS> InputStreamDll;
 
   class CInputStream : public InputStreamDll
   {

@@ -22,12 +22,11 @@
 #include "DynamicDll.h"
 #include "addons/kodi-addon-dev-kit/include/kodi/xbmc_addon_cpp_dll.h"
 
-template <typename TheStruct, typename Props>
 class DllAddonInterface
 {
 public:
   virtual ~DllAddonInterface() {}
-  virtual void GetAddon(TheStruct* pAddon) =0;
+  virtual void GetAddon(void* pAddon) =0;
   virtual ADDON_STATUS Create(void *cb) =0;
   virtual void Stop() =0;
   virtual void Destroy() =0;
@@ -40,8 +39,7 @@ public:
   virtual void DestroyInstance(int instanceType, const char* instanceID, void* instance) =0;
 };
 
-template <typename TheStruct, typename Props>
-class DllAddon : public DllDynamic, public DllAddonInterface<TheStruct, Props>
+class DllAddon : public DllDynamic, public DllAddonInterface
 {
 public:
   DECLARE_DLL_WRAPPER_TEMPLATE(DllAddon)
@@ -55,7 +53,7 @@ public:
   DEFINE_METHOD2(ADDON_STATUS, SetSetting, (const char *p1, const void *p2))
   DEFINE_METHOD6(ADDON_STATUS, CreateInstance, (int p1, const char* p2, const void* p3, void* p4, void* p5, void** p6))
   DEFINE_METHOD3(void, DestroyInstance, (int p1, const char* p2, void* p3))
-  DEFINE_METHOD1(void, GetAddon, (TheStruct* p1))
+  DEFINE_METHOD1(void, GetAddon, (void* p1))
   BEGIN_METHOD_RESOLVE()
     RESOLVE_METHOD_RENAME(get_addon,GetAddon)
     RESOLVE_METHOD_RENAME(ADDON_Create, Create)
