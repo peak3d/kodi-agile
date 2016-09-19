@@ -741,6 +741,7 @@ namespace PVR
     ADDON::AddonVersion m_apiVersion;
     bool                m_bAvahiServiceAdded;
     PVR_PROPERTIES m_pInfo;
+    PVRClient m_pStruct;
     void* m_addonInstance;
   };
 }

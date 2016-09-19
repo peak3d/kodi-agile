@@ -45,6 +45,7 @@ namespace ADDON
 
   private:
     void *m_context; ///< audio encoder context
+    AudioEncoder m_pStruct;
     void* m_addonInstance;
   };
 

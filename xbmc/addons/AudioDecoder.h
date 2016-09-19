@@ -83,6 +83,7 @@ namespace ADDON
     const AEChannel* m_channel;
 
   private:
+    AudioDecoder m_pStruct;
     void* m_addonInstance;
   };
 

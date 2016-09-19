@@ -82,7 +82,7 @@ bool CScreenSaver::CreateScreenSaver()
   if (status != ADDON_STATUS_OK)
     return false;
 
-  status = CAddonDll<ScreenSaver, SCR_PROPS>::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), &m_pInfo, m_pStruct, this, &m_addonInstance);
+  status = CAddonDll<ScreenSaver, SCR_PROPS>::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), &m_pInfo, &m_pStruct, this, &m_addonInstance);
   if (status != ADDON_STATUS_OK && status != ADDON_STATUS_NOT_IMPLEMENTED)
     return false;
 
@@ -92,19 +92,19 @@ bool CScreenSaver::CreateScreenSaver()
 void CScreenSaver::Start()
 {
   // notify screen saver that they should start
-  if (Initialized()) m_pStruct->Start(m_addonInstance);
+  if (Initialized()) m_pStruct.Start(m_addonInstance);
 }
 
 void CScreenSaver::Render()
 {
   // ask screensaver to render itself
-  if (Initialized()) m_pStruct->Render(m_addonInstance);
+  if (Initialized()) m_pStruct.Render(m_addonInstance);
 }
 
 void CScreenSaver::GetInfo(SCR_INFO *info)
 {
   // get info from screensaver
-  if (Initialized()) m_pStruct->GetInfo(m_addonInstance, info);
+  if (Initialized()) m_pStruct.GetInfo(m_addonInstance, info);
 }
 
 void CScreenSaver::Destroy()

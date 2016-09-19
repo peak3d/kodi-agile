@@ -105,6 +105,8 @@ void CPeripheralAddon::ResetProperties(void)
   m_pInfo.addon_path   = m_strClientPath.c_str();
 
   m_apiVersion = ADDON::AddonVersion("0.0.0");
+  
+  memset(&m_pStruct, 0, sizeof(m_pStruct));
 }
 
 ADDON::AddonPtr CPeripheralAddon::GetRunningInstance(void) const
@@ -137,7 +139,7 @@ ADDON_STATUS CPeripheralAddon::CreateAddon(void)
 
   if (status == ADDON_STATUS_OK)
   {
-    try {status = CAddonDll<PeripheralAddon, PERIPHERAL_PROPERTIES>::CreateInstance(ADDON_INSTANCE_PERIPHERAL, ID().c_str(), &m_pInfo, m_pStruct, this, &m_addonInstance);}
+    try {status = CAddonDll<PeripheralAddon, PERIPHERAL_PROPERTIES>::CreateInstance(ADDON_INSTANCE_PERIPHERAL, ID().c_str(), &m_pInfo, &m_pStruct, this, &m_addonInstance);}
     catch (const std::exception& e) { LogException(e, __FUNCTION__); }
   }
 
@@ -168,7 +170,7 @@ bool CPeripheralAddon::GetAddonProperties(void)
   // Get the capabilities
   try
   {
-    PERIPHERAL_ERROR retVal = m_pStruct->GetAddonCapabilities(m_addonInstance, &addonCapabilities);
+    PERIPHERAL_ERROR retVal = m_pStruct.GetAddonCapabilities(m_addonInstance, &addonCapabilities);
     if (retVal != PERIPHERAL_NO_ERROR)
     {
       CLog::Log(LOGERROR, "PERIPHERAL - couldn't get the capabilities for add-on '%s'. Please contact the developer of this add-on: %s",
@@ -201,7 +203,7 @@ bool CPeripheralAddon::CheckAPIVersion(void)
 {
   // Check the API version
   ADDON::AddonVersion minVersion = ADDON::AddonVersion(PERIPHERAL_MIN_API_VERSION);
-  try { m_apiVersion = ADDON::AddonVersion(m_pStruct->GetPeripheralAPIVersion(m_addonInstance)); }
+  try { m_apiVersion = ADDON::AddonVersion(m_pStruct.GetPeripheralAPIVersion(m_addonInstance)); }
   catch (std::exception &e) { LogException(e, "GetPeripheralAPIVersion()"); return false; }
 
   if (!IsCompatibleAPIVersion(minVersion, m_apiVersion))
@@ -370,7 +372,7 @@ bool CPeripheralAddon::PerformDeviceScan(PeripheralScanResults &results)
   PERIPHERAL_INFO*  pScanResults;
   PERIPHERAL_ERROR  retVal;
 
-  try { LogError(retVal = m_pStruct->PerformDeviceScan(m_addonInstance, &peripheralCount, &pScanResults), "PerformDeviceScan()"); }
+  try { LogError(retVal = m_pStruct.PerformDeviceScan(m_addonInstance, &peripheralCount, &pScanResults), "PerformDeviceScan()"); }
   catch (std::exception &e) { LogException(e, "PerformDeviceScan()"); return false;  }
 
   if (retVal == PERIPHERAL_NO_ERROR)
@@ -401,7 +403,7 @@ bool CPeripheralAddon::PerformDeviceScan(PeripheralScanResults &results)
         results.m_results.push_back(result);
     }
 
-    try { m_pStruct->FreeScanResults(m_addonInstance, peripheralCount, pScanResults); }
+    try { m_pStruct.FreeScanResults(m_addonInstance, peripheralCount, pScanResults); }
     catch (std::exception &e) { LogException(e, "FreeJoysticks()"); }
 
     return true;
@@ -420,7 +422,7 @@ bool CPeripheralAddon::ProcessEvents(void)
   unsigned int      eventCount = 0;
   PERIPHERAL_EVENT* pEvents = NULL;
 
-  try { LogError(retVal = m_pStruct->GetEvents(m_addonInstance, &eventCount, &pEvents), "GetEvents()"); }
+  try { LogError(retVal = m_pStruct.GetEvents(m_addonInstance, &eventCount, &pEvents), "GetEvents()"); }
   catch (std::exception &e) { LogException(e, "GetEvents()"); return false;  }
 
   if (retVal == PERIPHERAL_NO_ERROR)
@@ -479,7 +481,7 @@ bool CPeripheralAddon::ProcessEvents(void)
         static_cast<CPeripheralJoystick*>(it->second)->ProcessAxisMotions();
     }
 
-    try { m_pStruct->FreeEvents(m_addonInstance, eventCount, pEvents); }
+    try { m_pStruct.FreeEvents(m_addonInstance, eventCount, pEvents); }
     catch (std::exception &e) { LogException(e, "FreeEvents()"); }
 
     return true;
@@ -499,7 +501,7 @@ bool CPeripheralAddon::SendRumbleEvent(unsigned int peripheralIndex, unsigned in
   eventStruct.driver_index     = driverIndex;
   eventStruct.motor_state      = magnitude;
 
-  try { bHandled = m_pStruct->SendEvent(m_addonInstance, &eventStruct); }
+  try { bHandled = m_pStruct.SendEvent(m_addonInstance, &eventStruct); }
   catch (std::exception &e) { LogException(e, "SendEvent()"); }
 
   return bHandled;
@@ -514,7 +516,7 @@ bool CPeripheralAddon::GetJoystickProperties(unsigned int index, CPeripheralJoys
 
   JOYSTICK_INFO joystickStruct;
 
-  try { LogError(retVal = m_pStruct->GetJoystickInfo(m_addonInstance, index, &joystickStruct), "GetJoystickInfo()"); }
+  try { LogError(retVal = m_pStruct.GetJoystickInfo(m_addonInstance, index, &joystickStruct), "GetJoystickInfo()"); }
   catch (std::exception &e) { LogException(e, "GetJoystickInfo()"); return false;  }
 
   if (retVal == PERIPHERAL_NO_ERROR)
@@ -522,7 +524,7 @@ bool CPeripheralAddon::GetJoystickProperties(unsigned int index, CPeripheralJoys
     ADDON::Joystick addonJoystick(joystickStruct);
     SetJoystickInfo(joystick, addonJoystick);
 
-    try { m_pStruct->FreeJoystickInfo(m_addonInstance, &joystickStruct); }
+    try { m_pStruct.FreeJoystickInfo(m_addonInstance, &joystickStruct); }
     catch (std::exception &e) { LogException(e, "FreeJoystickInfo()"); }
 
     return true;
@@ -549,7 +551,7 @@ bool CPeripheralAddon::GetFeatures(const CPeripheral* device,
   unsigned int      featureCount = 0;
   JOYSTICK_FEATURE* pFeatures = NULL;
 
-  try { LogError(retVal = m_pStruct->GetFeatures(m_addonInstance, &joystickStruct, strControllerId.c_str(),
+  try { LogError(retVal = m_pStruct.GetFeatures(m_addonInstance, &joystickStruct, strControllerId.c_str(),
                                                  &featureCount, &pFeatures), "GetFeatures()"); }
   catch (std::exception &e) { LogException(e, "GetFeatures()"); return false;  }
 
@@ -562,7 +564,7 @@ bool CPeripheralAddon::GetFeatures(const CPeripheral* device,
         features[feature.Name()] = std::move(feature);
     }
 
-    try { m_pStruct->FreeFeatures(m_addonInstance, featureCount, pFeatures); }
+    try { m_pStruct.FreeFeatures(m_addonInstance, featureCount, pFeatures); }
     catch (std::exception &e) { LogException(e, "FreeFeatures()"); }
 
     return true;
@@ -589,7 +591,7 @@ bool CPeripheralAddon::MapFeature(const CPeripheral* device,
   JOYSTICK_FEATURE addonFeature;
   feature.ToStruct(addonFeature);
 
-  try { LogError(retVal = m_pStruct->MapFeatures(m_addonInstance, &joystickStruct, strControllerId.c_str(),
+  try { LogError(retVal = m_pStruct.MapFeatures(m_addonInstance, &joystickStruct, strControllerId.c_str(),
                                                  1, &addonFeature), "MapFeatures()"); }
   catch (std::exception &e) { LogException(e, "MapFeatures()"); return false;  }
 
@@ -613,7 +615,7 @@ void CPeripheralAddon::SaveButtonMap(const CPeripheral* device)
   JOYSTICK_INFO joystickStruct;
   joystickInfo.ToStruct(joystickStruct);
 
-  try { m_pStruct->SaveButtonMap(m_addonInstance, &joystickStruct); }
+  try { m_pStruct.SaveButtonMap(m_addonInstance, &joystickStruct); }
   catch (std::exception &e) { LogException(e, "SaveMap()"); return; }
 }
 
@@ -628,7 +630,7 @@ void CPeripheralAddon::ResetButtonMap(const CPeripheral* device, const std::stri
   JOYSTICK_INFO joystickStruct;
   joystickInfo.ToStruct(joystickStruct);
 
-  try { m_pStruct->ResetButtonMap(m_addonInstance, &joystickStruct, strControllerId.c_str()); }
+  try { m_pStruct.ResetButtonMap(m_addonInstance, &joystickStruct, strControllerId.c_str()); }
   catch (std::exception &e) { LogException(e, "ResetButtonMap()"); return; }
 }
 
@@ -637,7 +639,7 @@ void CPeripheralAddon::PowerOffJoystick(unsigned int index)
   if (!HasFeature(FEATURE_JOYSTICK))
     return;
 
-  try { m_pStruct->PowerOffJoystick(m_addonInstance, index); }
+  try { m_pStruct.PowerOffJoystick(m_addonInstance, index); }
   catch (std::exception &e) { LogException(e, "PowerOffJoystick()"); return; }
 }
 

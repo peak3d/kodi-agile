@@ -151,6 +151,7 @@ namespace PERIPHERALS
     
   private:
     PERIPHERAL_PROPERTIES m_pInfo;
+    PeripheralAddon m_pStruct;
     void* m_addonInstance;
   };
 }

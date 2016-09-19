@@ -26,7 +26,6 @@ class DllAddonInterface
 {
 public:
   virtual ~DllAddonInterface() {}
-  virtual void GetAddon(void* pAddon) =0;
   virtual ADDON_STATUS Create(void *cb) =0;
   virtual void Stop() =0;
   virtual void Destroy() =0;
@@ -53,9 +52,7 @@ public:
   DEFINE_METHOD2(ADDON_STATUS, SetSetting, (const char *p1, const void *p2))
   DEFINE_METHOD6(ADDON_STATUS, CreateInstance, (int p1, const char* p2, const void* p3, void* p4, void* p5, void** p6))
   DEFINE_METHOD3(void, DestroyInstance, (int p1, const char* p2, void* p3))
-  DEFINE_METHOD1(void, GetAddon, (void* p1))
   BEGIN_METHOD_RESOLVE()
-    RESOLVE_METHOD_RENAME(get_addon,GetAddon)
     RESOLVE_METHOD_RENAME(ADDON_Create, Create)
     RESOLVE_METHOD_RENAME(ADDON_Stop, Stop)
     RESOLVE_METHOD_RENAME(ADDON_Destroy, Destroy)

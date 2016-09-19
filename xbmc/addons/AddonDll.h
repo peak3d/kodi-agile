@@ -72,7 +72,6 @@ namespace ADDON
     bool Initialized() { return m_initialized; }
     virtual bool LoadSettings();
     static uint32_t GetChildCount() { static uint32_t childCounter = 0; return childCounter++; }
-    TheStruct* m_pStruct;
     CAddonInterfaces* m_pHelpers;
     bool m_bIsChild;
     std::string m_parentLib;
@@ -99,7 +98,6 @@ CAddonDll<TheStruct, TheProps>::CAddonDll(AddonProps props)
   : CAddon(std::move(props)),
     m_bIsChild(false)
 {
-  m_pStruct     = NULL;
   m_initialized = false;
   m_pDll        = NULL;
   m_pHelpers    = NULL;
@@ -112,7 +110,6 @@ CAddonDll<TheStruct, TheProps>::CAddonDll(const CAddonDll<TheStruct, TheProps> &
   : CAddon(rhs),
     m_bIsChild(true)
 {
-  m_pStruct           = rhs.m_pStruct;
   m_initialized       = rhs.m_initialized;
   m_pDll              = rhs.m_pDll;
   m_pHelpers          = rhs.m_pHelpers;
@@ -231,15 +228,7 @@ bool CAddonDll<TheStruct, TheProps>::LoadDll()
     return false;
   }
 
-  m_pStruct = (TheStruct*)malloc(sizeof(TheStruct));
-  if (m_pStruct)
-  {
-    ZeroMemory(m_pStruct, sizeof(TheStruct));
-    m_pDll->GetAddon(m_pStruct);
-    return true;
-  }
-
-  return false;
+  return true;
 }
 
 template<typename TheStruct, typename TheProps>
@@ -353,8 +342,6 @@ void CAddonDll<TheStruct, TheProps>::Destroy()
   }
   delete m_pHelpers;
   m_pHelpers = NULL;
-  free(m_pStruct);
-  m_pStruct = NULL;
   if (m_pDll)
   {
     if (m_bIsChild)

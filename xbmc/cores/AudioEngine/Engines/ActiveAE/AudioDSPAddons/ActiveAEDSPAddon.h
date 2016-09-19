@@ -426,6 +426,7 @@ namespace ActiveAE
     ADDON::AddonVersion       m_apiVersion;
 
     AE_DSP_PROPERTIES m_pInfo;
+    AudioDSP m_pStruct;
     void* m_addonInstance;
   };
 }

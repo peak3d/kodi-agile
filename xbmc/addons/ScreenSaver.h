@@ -43,6 +43,7 @@ public:
 
 private:
   SCR_PROPS m_pInfo;
+  ScreenSaver m_pStruct;
   void* m_addonInstance;
 };
 

@@ -113,6 +113,7 @@ namespace ADDON
     static std::map<std::string, Config> m_configMap;
 
   private:
+    InputStreamAddonFunctions m_pStruct;
     void* m_addonInstance;
   };
 
