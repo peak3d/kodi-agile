@@ -47,7 +47,7 @@ CInputStream::CInputStream(const AddonProps& props,
                            const std::string& listitemprops,
                            const std::string& extensions,
                            const std::string& protocols)
-: InputStreamDll(std::move(props))
+: CAddonDll(std::move(props))
 {
   m_fileItemProps = StringUtils::Tokenize(listitemprops, "|");
   for (auto &key : m_fileItemProps)
@@ -76,8 +76,8 @@ void CInputStream::Destroy(void)
   /* destroy the add-on */
   try
   {
-    InputStreamDll::DestroyInstance(ADDON_INSTANCE_INPUTSTREAM, ID().c_str(), m_addonInstance);
-    InputStreamDll::Destroy();
+    CAddonDll::DestroyInstance(ADDON_INSTANCE_INPUTSTREAM, ID().c_str(), m_addonInstance);
+    CAddonDll::Destroy();
     m_addonInstance = nullptr;
     memset(&m_pStruct, 0, sizeof(m_pStruct));
   }
@@ -125,7 +125,7 @@ void CInputStream::UpdateConfig()
   std::string pathList;
   ADDON_STATUS status = Create();
   if (status == ADDON_STATUS_OK)
-    status = InputStreamDll::CreateInstance(ADDON_INSTANCE_INPUTSTREAM, ID().c_str(), nullptr, &m_pStruct, this, &m_addonInstance);
+    status = CAddonDll::CreateInstance(ADDON_INSTANCE_INPUTSTREAM, ID().c_str(), nullptr, &m_pStruct, this, &m_addonInstance);
 
   if (status != ADDON_STATUS_PERMANENT_FAILURE)
   {

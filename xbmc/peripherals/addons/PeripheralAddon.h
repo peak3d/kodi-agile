@@ -42,7 +42,7 @@ namespace PERIPHERALS
 
   typedef std::map<JOYSTICK::FeatureName, ADDON::JoystickFeature> FeatureMap;
 
-  class CPeripheralAddon : public ADDON::CAddonDll<PeripheralAddon, PERIPHERAL_PROPERTIES>
+  class CPeripheralAddon : public ADDON::CAddonDll
   {
   public:
     static std::unique_ptr<CPeripheralAddon> FromExtension(ADDON::AddonProps props, const cp_extension_t* ext);

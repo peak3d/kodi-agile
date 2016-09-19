@@ -28,7 +28,7 @@ std::unique_ptr<CAudioEncoder> CAudioEncoder::FromExtension(AddonProps props, co
 }
 
 CAudioEncoder::CAudioEncoder(AddonProps props, std::string _extension)
-    : AudioEncoderDll(std::move(props)), extension(std::move(_extension)), m_context(nullptr), m_addonInstance(nullptr)
+    : CAddonDll(std::move(props)), extension(std::move(_extension)), m_context(nullptr), m_addonInstance(nullptr)
 {
   memset(&m_pStruct, 0, sizeof(m_pStruct));
 }
@@ -38,7 +38,7 @@ bool CAudioEncoder::Init(audioenc_callbacks &callbacks)
   if (!Initialized())
     return false;
 
-  if (CAddonDll<AudioEncoder, AUDIOENC_PROPS>::CreateInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), nullptr, &m_pStruct, this, &m_addonInstance) != ADDON_STATUS_OK)
+  if (CAddonDll::CreateInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), nullptr, &m_pStruct, this, &m_addonInstance) != ADDON_STATUS_OK)
     return false;
 
   // create encoder instance
@@ -85,8 +85,8 @@ bool CAudioEncoder::Close()
 
 void CAudioEncoder::Destroy()
 {
-  CAddonDll<AudioEncoder, AUDIOENC_PROPS>::DestroyInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), m_addonInstance);
-  CAddonDll<AudioEncoder, AUDIOENC_PROPS>::Destroy();
+  CAddonDll::DestroyInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), m_addonInstance);
+  CAddonDll::Destroy();
   memset(&m_pStruct, 0, sizeof(m_pStruct));
   m_addonInstance = nullptr;
 }

@@ -64,7 +64,7 @@ void CAudioBuffer::Set(const float* psBuffer, int iSize)
 }
 
 CVisualisation::CVisualisation(AddonProps props)
-  : CAddonDll<Visualisation, VIS_PROPS>(std::move(props)),
+  : CAddonDll(std::move(props)),
     m_addonInstance(nullptr)
 {
     m_pInfo.name = nullptr;
@@ -92,10 +92,10 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   m_pInfo.profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
   m_pInfo.submodule = nullptr;
 
-  if (CAddonDll<Visualisation, VIS_PROPS>::Create() != ADDON_STATUS_OK)
+  if (CAddonDll::Create() != ADDON_STATUS_OK)
     return false;
   
-  ADDON_STATUS status = CAddonDll<Visualisation, VIS_PROPS>::CreateInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), &m_pInfo, &m_pStruct, this, &m_addonInstance);
+  ADDON_STATUS status = CAddonDll::CreateInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), &m_pInfo, &m_pStruct, this, &m_addonInstance);
   if (status != ADDON_STATUS_OK && status != ADDON_STATUS_NOT_IMPLEMENTED)
     return false;
   
@@ -184,7 +184,7 @@ void CVisualisation::Stop()
   CAEFactory::UnregisterAudioCallback(this);
   if (Initialized())
   {
-    CAddonDll<Visualisation, VIS_PROPS>::Stop();
+    CAddonDll::Stop();
   }
 }
 
@@ -442,7 +442,7 @@ void CVisualisation::Destroy()
 {
   // Free what was allocated in method CVisualisation::Create
 
-  CAddonDll<Visualisation, VIS_PROPS>::DestroyInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), m_addonInstance);
+  CAddonDll::DestroyInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), m_addonInstance);
   memset(&m_pStruct, 0, sizeof(m_pStruct));
 
   if (m_pInfo.name)
@@ -466,7 +466,7 @@ void CVisualisation::Destroy()
     m_pInfo.submodule = nullptr;
   }
 
-  CAddonDll<Visualisation, VIS_PROPS>::Destroy();
+  CAddonDll::Destroy();
   m_addonInstance = nullptr;
 }
 

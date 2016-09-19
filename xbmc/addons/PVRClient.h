@@ -58,7 +58,7 @@ namespace PVR
    *
    * Also translates XBMC's C++ structures to the addon's C structures.
    */
-  class CPVRClient : public ADDON::CAddonDll<PVRClient, PVR_PROPERTIES>
+  class CPVRClient : public ADDON::CAddonDll
   {
   public:
     static std::unique_ptr<CPVRClient> FromExtension(ADDON::AddonProps props, const cp_extension_t* ext);

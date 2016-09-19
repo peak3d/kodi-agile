@@ -33,7 +33,7 @@ namespace ADDON
 {
 
 CScreenSaver::CScreenSaver(const char *addonID)
-  : ADDON::CAddonDll<ScreenSaver, SCR_PROPS>(AddonProps(addonID, ADDON_UNKNOWN)),
+  : ADDON::CAddonDll(AddonProps(addonID, ADDON_UNKNOWN)),
     m_addonInstance(nullptr)
 {
   m_pInfo.name = nullptr;
@@ -78,11 +78,11 @@ bool CScreenSaver::CreateScreenSaver()
   m_pInfo.presets    = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
   m_pInfo.profile    = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
 
-  status = CAddonDll<ScreenSaver, SCR_PROPS>::Create();
+  status = CAddonDll::Create();
   if (status != ADDON_STATUS_OK)
     return false;
 
-  status = CAddonDll<ScreenSaver, SCR_PROPS>::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), &m_pInfo, &m_pStruct, this, &m_addonInstance);
+  status = CAddonDll::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), &m_pInfo, &m_pStruct, this, &m_addonInstance);
   if (status != ADDON_STATUS_OK && status != ADDON_STATUS_NOT_IMPLEMENTED)
     return false;
 
@@ -131,8 +131,8 @@ void CScreenSaver::Destroy()
   free((void *) m_pInfo.profile);
   m_pInfo.profile = nullptr;
 
-  CAddonDll<ScreenSaver, SCR_PROPS>::DestroyInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), m_addonInstance);
-  CAddonDll<ScreenSaver, SCR_PROPS>::Destroy();
+  CAddonDll::DestroyInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), m_addonInstance);
+  CAddonDll::Destroy();
   m_addonInstance = nullptr;
 }
 
