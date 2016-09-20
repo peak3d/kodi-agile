@@ -17,25 +17,22 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-#include "system.h"
+
 #include "Visualisation.h"
+
+#include "Application.h"
 #include "GUIInfoManager.h"
 #include "addons/interfaces/ExceptionHandling.h"
+#include "cores/AudioEngine/AEFactory.h"
 #include "guiinfo/GUIInfoLabels.h"
-#include "Application.h"
 #include "guilib/GraphicContext.h"
 #include "guilib/WindowIDs.h"
 #include "music/tags/MusicInfoTag.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
-#include "windowing/WindowingFactory.h"
 #include "utils/URIUtils.h"
 #include "utils/StringUtils.h"
-#include "cores/AudioEngine/AEFactory.h"
-#ifdef TARGET_POSIX
-#include <dlfcn.h>
-#include "filesystem/SpecialProtocol.h"
-#endif
+#include "windowing/WindowingFactory.h"
 
 using namespace MUSIC_INFO;
 using namespace ADDON;
@@ -58,25 +55,30 @@ const float* CAudioBuffer::Get() const
 
 void CAudioBuffer::Set(const float* psBuffer, int iSize)
 {
-  if (iSize<0)
+  if (iSize < 0)
     return;
+
   memcpy(m_pBuffer, psBuffer, iSize * sizeof(float));
-  for (int i = iSize; i < m_iLen; ++i) m_pBuffer[i] = 0;
+  for (int i = iSize; i < m_iLen; ++i)
+    m_pBuffer[i] = 0;
 }
 
 CVisualisation::CVisualisation(AddonProps props)
   : CAddonDll(std::move(props)),
     m_addonInstance(nullptr)
 {
-    m_props.name = nullptr;
-    m_props.presets = nullptr;
-    m_props.profile = nullptr;
-    m_props.submodule = nullptr;
-    memset(&m_struct, 0, sizeof(m_struct));
+  m_props.name = nullptr;
+  m_props.presets = nullptr;
+  m_props.profile = nullptr;
+  m_props.submodule = nullptr;
+  memset(&m_struct, 0, sizeof(m_struct));
 }
     
 bool CVisualisation::Create(int x, int y, int w, int h, void *device)
 {
+  if (CAddonDll::Create() != ADDON_STATUS_OK)
+    return false;
+
 #ifdef HAS_DX
   m_props.device = g_Windowing.Get3D11Context();
 #else
@@ -92,12 +94,9 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   m_props.presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
   m_props.profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
   m_props.submodule = nullptr;
-
-  if (CAddonDll::Create() != ADDON_STATUS_OK)
-    return false;
   
   ADDON_STATUS status = CAddonDll::CreateInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), &m_props, &m_struct, this, &m_addonInstance);
-  if (status != ADDON_STATUS_OK && status != ADDON_STATUS_NOT_IMPLEMENTED)
+  if (status != ADDON_STATUS_OK)
     return false;
   
   // Start the visualisation
@@ -277,7 +276,7 @@ void CVisualisation::OnInitialize(int iChannels, int iSamplesPerSec, int iBitsPe
 void CVisualisation::OnAudioData(const float* pAudioData, int iAudioDataLength)
 {
   // FIXME: iAudioDataLength should never be less than 0
-  if (iAudioDataLength<0)
+  if (iAudioDataLength < 0)
     return;
 
   // Save our audio data in the buffers
@@ -285,7 +284,8 @@ void CVisualisation::OnAudioData(const float* pAudioData, int iAudioDataLength)
   pBuffer->Set(pAudioData, iAudioDataLength);
   m_vecBuffers.push_back( pBuffer.release() );
 
-  if ( (int)m_vecBuffers.size() < m_iNumBuffers) return ;
+  if ((int)m_vecBuffers.size() < m_iNumBuffers)
+    return;
 
   std::unique_ptr<CAudioBuffer> ptrAudioBuffer ( m_vecBuffers.front() );
   m_vecBuffers.pop_front();
@@ -306,7 +306,6 @@ void CVisualisation::OnAudioData(const float* pAudioData, int iAudioDataLength)
   { // Transfer data to our visualisation
     AudioData(ptrAudioBuffer->Get(), iAudioDataLength, NULL, 0);
   }
-  return ;
 }
 
 void CVisualisation::CreateBuffers()
@@ -389,7 +388,7 @@ bool CVisualisation::GetPresetList(std::vector<std::string> &vecpresets)
 bool CVisualisation::GetPresets()
 {
   m_presets.clear();
-  char **presets = NULL;
+  char **presets = nullptr;
   unsigned int entries = 0;
   try
   {
@@ -425,7 +424,7 @@ bool CVisualisation::GetSubModuleList(std::vector<std::string> &vecmodules)
 bool CVisualisation::GetSubModules()
 {
   m_submodules.clear();
-  char **modules = NULL;
+  char **modules = nullptr;
   unsigned int entries = 0;
   try
   {

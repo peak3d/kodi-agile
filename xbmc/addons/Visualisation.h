@@ -1,3 +1,4 @@
+#pragma once
 /*
  *      Copyright (C) 2005-2013 Team XBMC
  *      http://xbmc.org
@@ -17,11 +18,10 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-#pragma once
 
 #include "AddonDll.h"
-#include "cores/AudioEngine/Interfaces/IAudioCallback.h"
 #include "addons/kodi-addon-dev-kit/include/kodi/xbmc_vis_types.h"
+#include "cores/AudioEngine/Interfaces/IAudioCallback.h"
 #include "guilib/IRenderingCallback.h"
 #include "utils/rfft.h"
 
