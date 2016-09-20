@@ -46,7 +46,7 @@ extern "C"
   void Free(void* addonInstance, void* context);
 
   // function to export the above structure to XBMC
-  void SetAudioEncoderFuncTable(struct AudioEncoder* pScr)
+  void SetAudioEncoderFuncTable(struct sKodiToAddonFuncTable_AudioEncoder* pScr)
   {
     pScr->Create = Create;
     pScr->Start  = Start;

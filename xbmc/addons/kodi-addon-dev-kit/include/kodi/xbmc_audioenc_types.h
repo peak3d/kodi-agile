@@ -55,7 +55,7 @@ extern "C"
     audioenc_seek_callback  seek;
   } audioenc_callbacks;
 
-  struct AudioEncoder
+  struct sKodiToAddonFuncTable_AudioEncoder
   {
     /*! \brief Create encoder context
      \param callbacks Pointer to audioenc_callbacks structure.
