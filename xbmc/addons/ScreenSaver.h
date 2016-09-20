@@ -41,7 +41,7 @@ public:
   void Destroy();
 
 private:
-  SCR_PROPS m_pInfo;
+  SCR_PROPS m_props;
   ScreenSaver m_pStruct;
   void* m_addonInstance;
 };

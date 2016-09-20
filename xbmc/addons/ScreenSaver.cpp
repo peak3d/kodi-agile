@@ -37,9 +37,9 @@ CScreenSaver::CScreenSaver(const char *addonID)
   : ADDON::CAddonDll(AddonProps(addonID, ADDON_UNKNOWN)),
     m_addonInstance(nullptr)
 {
-  m_pInfo.name = nullptr;
-  m_pInfo.presets = nullptr;
-  m_pInfo.profile = nullptr;
+  m_props.name = nullptr;
+  m_props.presets = nullptr;
+  m_props.profile = nullptr;
 }
 
 bool CScreenSaver::IsInUse() const
@@ -66,20 +66,20 @@ bool CScreenSaver::CreateScreenSaver()
   
   // pass it the screen width,height and the name of the screensaver
 #ifdef HAS_DX
-  m_pInfo.device = g_Windowing.Get3D11Context();
+  m_props.device = g_Windowing.Get3D11Context();
 #else
-  m_pInfo.device = nullptr;
+  m_props.device = nullptr;
 #endif
-  m_pInfo.x = 0;
-  m_pInfo.y = 0;
-  m_pInfo.width = g_graphicsContext.GetWidth();
-  m_pInfo.height = g_graphicsContext.GetHeight();
-  m_pInfo.pixelRatio = g_graphicsContext.GetResInfo().fPixelRatio;
-  m_pInfo.name = strdup(Name().c_str());
-  m_pInfo.presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
-  m_pInfo.profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
+  m_props.x = 0;
+  m_props.y = 0;
+  m_props.width = g_graphicsContext.GetWidth();
+  m_props.height = g_graphicsContext.GetHeight();
+  m_props.pixelRatio = g_graphicsContext.GetResInfo().fPixelRatio;
+  m_props.name = strdup(Name().c_str());
+  m_props.presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
+  m_props.profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
 
-  return (CAddonDll::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), &m_pInfo, &m_pStruct, this, &m_addonInstance) == ADDON_STATUS_OK);
+  return (CAddonDll::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), &m_props, &m_pStruct, this, &m_addonInstance) == ADDON_STATUS_OK);
 }
 
 void CScreenSaver::Start()
@@ -112,20 +112,20 @@ void CScreenSaver::Destroy()
 
   // Release what was allocated in method CScreenSaver::CreateScreenSaver in 
   // case of a binary add-on.
-  if (m_pInfo.name)
+  if (m_props.name)
   {
-    free((void *) m_pInfo.name);
-    m_pInfo.name = nullptr;
+    free((void *) m_props.name);
+    m_props.name = nullptr;
   }
-  if (m_pInfo.presets)
+  if (m_props.presets)
   {
-    free((void *) m_pInfo.presets);
-    m_pInfo.presets = nullptr;
+    free((void *) m_props.presets);
+    m_props.presets = nullptr;
   }
-  if (m_pInfo.profile)
+  if (m_props.profile)
   {
-    free((void *) m_pInfo.profile);
-    m_pInfo.profile = nullptr;
+    free((void *) m_props.profile);
+    m_props.profile = nullptr;
   }
 
   // Destroy the from binary add-on opened instance of screensaver.
