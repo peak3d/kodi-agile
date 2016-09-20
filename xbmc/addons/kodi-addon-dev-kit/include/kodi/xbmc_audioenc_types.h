@@ -35,15 +35,6 @@
 
 extern "C"
 {
-  struct AUDIOENC_INFO
-  {
-    int dummy;
-  };
-
-  struct AUDIOENC_PROPS
-  {
-    int dummy;
-  };
 
   typedef struct sAddonToKodiFuncTable_AudioEncoder
   {
