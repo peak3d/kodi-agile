@@ -40,7 +40,9 @@ std::unique_ptr<CAudioDecoder> CAudioDecoder::FromExtension(AddonProps props, co
 CAudioDecoder::CAudioDecoder(AddonProps props, std::string extension, std::string mimetype,
     bool tags, bool tracks, std::string codecName, std::string strExt)
     : AudioDecoderDll(std::move(props)), m_extension(extension), m_mimetype(mimetype),
-      m_context(nullptr), m_tags(tags), m_tracks(tracks), m_channel(nullptr)
+      m_context(nullptr), m_tags(tags), m_tracks(tracks), m_channel(nullptr),
+      m_addonInstance(nullptr)
+
 {
   m_CodecName = std::move(codecName);
   m_strExt = std::move(strExt);
@@ -54,6 +56,9 @@ CAudioDecoder::~CAudioDecoder()
 bool CAudioDecoder::Init(const CFileItem& file, unsigned int filecache)
 {
   if (!Initialized())
+    return false;
+
+  if (CAddonDll<DllAudioDecoder, AudioDecoder, AUDIODEC_PROPS>::CreateInstance(ADDON_INSTANCE_AUDIODECODER, ID().c_str(), m_pInfo, m_pStruct, this, &m_addonInstance) != ADDON_STATUS_OK)
     return false;
 
   // for replaygain
@@ -139,7 +144,9 @@ int CAudioDecoder::GetTrackCount(const std::string& strPath)
 
 void CAudioDecoder::Destroy()
 {
+  CAddonDll<DllAudioDecoder, AudioDecoder, AUDIODEC_PROPS>::DestroyInstance(ADDON_INSTANCE_AUDIODECODER, ID().c_str(), m_addonInstance);
   AudioDecoderDll::Destroy();
+  m_addonInstance = nullptr;
 }
 
 } /*namespace ADDON*/

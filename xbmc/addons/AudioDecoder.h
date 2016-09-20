@@ -51,6 +51,8 @@ namespace ADDON
       , m_tags{false}
       , m_tracks{false}
       , m_channel{nullptr}
+      , m_addonInstance{nullptr}
+
     {}
 
     CAudioDecoder(AddonProps props, std::string extension, std::string mimetype, bool tags,
@@ -81,6 +83,9 @@ namespace ADDON
     bool m_tags;
     bool m_tracks;
     const AEChannel* m_channel;
+
+  private:
+    void* m_addonInstance;
   };
 
 } /*namespace ADDON*/
