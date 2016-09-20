@@ -1,3 +1,4 @@
+#pragma once
 /*
  *      Copyright (C) 2005-2013 Team XBMC
  *      http://xbmc.org
@@ -17,7 +18,6 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-#pragma once
 
 #include "AddonDll.h"
 #include "addons/kodi-addon-dev-kit/include/kodi/xbmc_scr_types.h"
@@ -47,4 +47,4 @@ private:
   void* m_addonInstance;
 };
 
-} /*namespace ADDON*/
+} /* namespace ADDON */

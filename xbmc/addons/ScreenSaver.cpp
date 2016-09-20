@@ -17,6 +17,7 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
+
 #include "ScreenSaver.h"
 #include "guilib/GraphicContext.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
@@ -59,57 +60,53 @@ bool CScreenSaver::CreateScreenSaver()
       CScriptInvocationManager::GetInstance().ExecuteAsync(LibPath(), AddonPtr(new CScreenSaver(*this)));
     return true;
   }
- // pass it the screen width,height
- // and the name of the screensaver
-  int iWidth = g_graphicsContext.GetWidth();
-  int iHeight = g_graphicsContext.GetHeight();
 
+  if (CAddonDll::Create() != ADDON_STATUS_OK)
+    return false;
+  
+  // pass it the screen width,height and the name of the screensaver
 #ifdef HAS_DX
-  m_pInfo.device     = g_Windowing.Get3D11Context();
+  m_pInfo.device = g_Windowing.Get3D11Context();
 #else
-  m_pInfo.device     = nullptr;
+  m_pInfo.device = nullptr;
 #endif
-  m_pInfo.x          = 0;
-  m_pInfo.y          = 0;
-  m_pInfo.width      = iWidth;
-  m_pInfo.height     = iHeight;
+  m_pInfo.x = 0;
+  m_pInfo.y = 0;
+  m_pInfo.width = g_graphicsContext.GetWidth();
+  m_pInfo.height = g_graphicsContext.GetHeight();
   m_pInfo.pixelRatio = g_graphicsContext.GetResInfo().fPixelRatio;
-  m_pInfo.name       = strdup(Name().c_str());
-  m_pInfo.presets    = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
-  m_pInfo.profile    = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
+  m_pInfo.name = strdup(Name().c_str());
+  m_pInfo.presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
+  m_pInfo.profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
 
-  status = CAddonDll::Create();
-  if (status != ADDON_STATUS_OK)
-    return false;
-
-  status = CAddonDll::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), &m_pInfo, &m_pStruct, this, &m_addonInstance);
-  if (status != ADDON_STATUS_OK && status != ADDON_STATUS_NOT_IMPLEMENTED)
-    return false;
-
-  return true;
+  return (CAddonDll::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), &m_pInfo, &m_pStruct, this, &m_addonInstance) == ADDON_STATUS_OK);
 }
 
 void CScreenSaver::Start()
 {
   // notify screen saver that they should start
-  if (Initialized()) m_pStruct.Start(m_addonInstance);
+  if (m_pStruct.Start)
+    m_pStruct.Start(m_addonInstance);
 }
 
 void CScreenSaver::Render()
 {
   // ask screensaver to render itself
-  if (Initialized()) m_pStruct.Render(m_addonInstance);
+  if (m_pStruct.Render)
+    m_pStruct.Render(m_addonInstance);
 }
 
 void CScreenSaver::GetInfo(SCR_INFO *info)
 {
   // get info from screensaver
-  if (Initialized()) m_pStruct.GetInfo(m_addonInstance, info);
+  if (m_pStruct.GetInfo)
+    m_pStruct.GetInfo(m_addonInstance, info);
 }
 
 void CScreenSaver::Destroy()
 {
-#ifdef HAS_PYTHON
+  // Check first screensaver is based upon python, if yes are the other parts
+  // not used and return in 'if'
   if (URIUtils::HasExtension(LibPath(), ".py"))
   {
     /* FIXME: This is a hack but a proper fix is non-trivial. Basically this code
@@ -119,22 +116,28 @@ void CScreenSaver::Destroy()
     g_alarmClock.Start(SCRIPT_ALARM, SCRIPT_TIMEOUT, "StopScript(" + LibPath() + ")", true, false);
     return;
   }
-#endif
-  // Release what was allocated in method CScreenSaver::CreateScreenSaver.
-  if (m_pInfo.name)
-    free((void *) m_pInfo.name);
-  m_pInfo.name = nullptr;
-  if (m_pInfo.presets)
-    free((void *) m_pInfo.presets);
-  m_pInfo.presets = nullptr;
-  if (m_pInfo.profile)
-  free((void *) m_pInfo.profile);
-  m_pInfo.profile = nullptr;
 
+  // Release what was allocated in method CScreenSaver::CreateScreenSaver in 
+  // case of a binary add-on.
+  if (m_pInfo.name)
+  {
+    free((void *) m_pInfo.name);
+    m_pInfo.name = nullptr;
+  }
+  if (m_pInfo.presets)
+  {
+    free((void *) m_pInfo.presets);
+    m_pInfo.presets = nullptr;
+  }
+  if (m_pInfo.profile)
+  {
+    free((void *) m_pInfo.profile);
+    m_pInfo.profile = nullptr;
+  }
+
+  // Destroy the from binary add-on opened instance of screensaver.
   CAddonDll::DestroyInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), m_addonInstance);
-  CAddonDll::Destroy();
   m_addonInstance = nullptr;
 }
 
-} /*namespace ADDON*/
-
+} /* namespace ADDON */
