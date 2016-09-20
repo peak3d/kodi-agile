@@ -38,22 +38,15 @@ extern "C"
 
   typedef struct sAddonToKodiFuncTable_AudioEncoder
   {
-    void* opaque;
-    int (*write) (void* opaque, uint8_t* data, int len);
-    int64_t (*seek)(void* opaque, int64_t pos, int whence);
+    void* kodiInstance;
+    int (*write) (void* kodiInstance, uint8_t* data, int len);
+    int64_t (*seek)(void* kodiInstance, int64_t pos, int whence);
   } sAddonToKodiFuncTable_AudioEncoder;
 
   typedef struct sKodiToAddonFuncTable_AudioEncoder
   {
-    /*! \brief Create encoder context
-     \param callbacks Pointer to sAddonToKodiFuncTable_AudioEncoder structure.
-     \return opaque pointer to encoder context, to be passed to other methods.
-     \sa IEncoder::Init
-     */
-    void (*(__cdecl *Create) (void* addonInstance, sAddonToKodiFuncTable_AudioEncoder* callbacks));
-
     /*! \brief Start encoder
-     \param context Encoder context from Create.
+     \param addonInstance Encoder context from Create.
      \param iInChannels Number of channels
      \param iInRate Sample rate of input data
      \param iInBits Bits per sample in input data
@@ -67,7 +60,7 @@ extern "C"
      \param iTrackLength Total track length in seconds
      \sa IEncoder::Init
      */
-    bool (__cdecl* Start) (void* addonInstance, void* context, int iInChannels, int iInRate, int iInBits,
+    bool (__cdecl* Start) (void* addonInstance, int iInChannels, int iInRate, int iInBits,
                            const char* title, const char* artist,
                            const char* albumartist, const char* album,
                            const char* year, const char* track,
@@ -75,24 +68,19 @@ extern "C"
                            int iTrackLength);
 
     /*! \brief Encode a chunk of audio
-     \param context Encoder context from Create.
+     \param addonInstance Encoder context from Create.
      \param nNumBytesRead Number of bytes in input buffer
      \param pbtStream the input buffer
      \return Number of bytes consumed
      \sa IEncoder::Encode
      */
-    int  (__cdecl* Encode) (void* addonInstance, void* context, int nNumBytesRead, uint8_t* pbtStream);
+    int  (__cdecl* Encode) (void* addonInstance, int nNumBytesRead, uint8_t* pbtStream);
 
     /*! \brief Finalize encoding
-     \param context Encoder context from Create.
+     \param addonInstance Encoder context from Create.
      \return True on success, false on failure.
      */
-    bool (__cdecl* Finish) (void* addonInstance, void* context);
-
-    /*! \brief Free encoder context
-     \param context Encoder context to free.
-     */
-    void (__cdecl* Free)(void* addonInstance, void* context);
+    bool (__cdecl* Finish) (void* addonInstance);
   } sKodiToAddonFuncTable_AudioEncoder;
   
   typedef struct sFuncTable_AudioEncoder

@@ -30,7 +30,7 @@ namespace ADDON
   public:
     static std::unique_ptr<CAudioEncoder> FromExtension(AddonProps, const cp_extension_t* ext);
 
-    explicit CAudioEncoder(AddonProps props) : CAddonDll(std::move(props)), m_context{nullptr}, m_addonInstance{nullptr} {};
+    explicit CAudioEncoder(AddonProps props) : CAddonDll(std::move(props)), m_addonInstance{nullptr} {};
     CAudioEncoder(AddonProps props, std::string extension);
     virtual ~CAudioEncoder() {}
 
@@ -43,7 +43,6 @@ namespace ADDON
     const std::string extension;
 
   private:
-    void *m_context; ///< audio encoder context
     sFuncTable_AudioEncoder m_struct;
     void* m_addonInstance;
   };
