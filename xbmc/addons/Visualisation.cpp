@@ -71,7 +71,7 @@ CVisualisation::CVisualisation(AddonProps props)
     m_props.presets = nullptr;
     m_props.profile = nullptr;
     m_props.submodule = nullptr;
-    memset(&m_pStruct, 0, sizeof(m_pStruct));
+    memset(&m_struct, 0, sizeof(m_struct));
 }
     
 bool CVisualisation::Create(int x, int y, int w, int h, void *device)
@@ -95,7 +95,7 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   if (CAddonDll::Create() != ADDON_STATUS_OK)
     return false;
   
-  ADDON_STATUS status = CAddonDll::CreateInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), &m_props, &m_pStruct, this, &m_addonInstance);
+  ADDON_STATUS status = CAddonDll::CreateInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), &m_props, &m_struct, this, &m_addonInstance);
   if (status != ADDON_STATUS_OK && status != ADDON_STATUS_NOT_IMPLEMENTED)
     return false;
   
@@ -104,11 +104,11 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   CLog::Log(LOGDEBUG, "Visualisation::Start()\n");
   try
   {
-    m_pStruct.Start(m_addonInstance, m_iChannels, m_iSamplesPerSec, m_iBitsPerSample, strFile.c_str());
+    m_struct.Start(m_addonInstance, m_iChannels, m_iSamplesPerSec, m_iBitsPerSample, strFile.c_str());
   }
   catch (std::exception e)
   {
-    HandleException(e, "m_pStruct.Start() (CVisualisation::Create)");
+    HandleException(e, "m_struct.Start() (CVisualisation::Create)");
     return false;
   }
 
@@ -134,11 +134,11 @@ void CVisualisation::Start(int iChannels, int iSamplesPerSec, int iBitsPerSample
   {
     try
     {
-      m_pStruct.Start(m_addonInstance, iChannels, iSamplesPerSec, iBitsPerSample, strSongName.c_str());
+      m_struct.Start(m_addonInstance, iChannels, iSamplesPerSec, iBitsPerSample, strSongName.c_str());
     }
     catch (std::exception e)
     {
-      HandleException(e, "m_pStruct.Start (CVisualisation::Start)");
+      HandleException(e, "m_struct.Start (CVisualisation::Start)");
     }
   }
 }
@@ -154,11 +154,11 @@ void CVisualisation::AudioData(const float* pAudioData, int iAudioDataLength, fl
   {
     try
     {
-      m_pStruct.AudioData(m_addonInstance, pAudioData, iAudioDataLength, pFreqData, iFreqDataLength);
+      m_struct.AudioData(m_addonInstance, pAudioData, iAudioDataLength, pFreqData, iFreqDataLength);
     }
     catch (std::exception e)
     {
-      HandleException(e, "m_pStruct.AudioData (CVisualisation::AudioData)");
+      HandleException(e, "m_struct.AudioData (CVisualisation::AudioData)");
     }
   }
 }
@@ -170,11 +170,11 @@ void CVisualisation::Render()
   {
     try
     {
-      m_pStruct.Render(m_addonInstance);
+      m_struct.Render(m_addonInstance);
     }
     catch (std::exception e)
     {
-      HandleException(e, "m_pStruct.Render (CVisualisation::Render)");
+      HandleException(e, "m_struct.Render (CVisualisation::Render)");
     }
   }
 }
@@ -194,11 +194,11 @@ void CVisualisation::GetInfo(VIS_INFO *info)
   {
     try
     {
-      m_pStruct.GetInfo(m_addonInstance, info);
+      m_struct.GetInfo(m_addonInstance, info);
     }
     catch (std::exception e)
     {
-      HandleException(e, "m_pStruct.GetInfo (CVisualisation::GetInfo)");
+      HandleException(e, "m_struct.GetInfo (CVisualisation::GetInfo)");
     }
   }
 }
@@ -213,7 +213,7 @@ bool CVisualisation::OnAction(VIS_ACTION action, void *param)
   // returns true if vis handled the input
   try
   {
-    if (action != VIS_ACTION_NONE && m_pStruct.OnAction)
+    if (action != VIS_ACTION_NONE && m_struct.OnAction)
     {
       // if this is a VIS_ACTION_UPDATE_TRACK action, copy relevant
       // tags from CMusicInfoTag to VisTag
@@ -238,14 +238,14 @@ bool CVisualisation::OnAction(VIS_ACTION action, void *param)
         track.year        = tag->GetYear();
         track.rating      = tag->GetUserrating();
 
-        return m_pStruct.OnAction(m_addonInstance, action, &track);
+        return m_struct.OnAction(m_addonInstance, action, &track);
       }
-      return m_pStruct.OnAction(m_addonInstance, (int)action, param);
+      return m_struct.OnAction(m_addonInstance, (int)action, param);
     }
   }
   catch (std::exception e)
   {
-    HandleException(e, "m_pStruct.OnAction (CVisualisation::OnAction)");
+    HandleException(e, "m_struct.OnAction (CVisualisation::OnAction)");
   }
   return false;
 }
@@ -303,7 +303,7 @@ void CVisualisation::CreateBuffers()
 
   // Get the number of buffers from the current vis
   VIS_INFO info;
-  m_pStruct.GetInfo(m_addonInstance, &info);
+  m_struct.GetInfo(m_addonInstance, &info);
   m_iNumBuffers = info.iSyncDelay + 1;
   m_bWantsFreq = (info.bWantsFreq != 0);
   if (m_iNumBuffers > MAX_AUDIO_BUFFERS)
@@ -369,11 +369,11 @@ bool CVisualisation::GetPresets()
   unsigned int entries = 0;
   try
   {
-    entries = m_pStruct.GetPresets(m_addonInstance, &presets);
+    entries = m_struct.GetPresets(m_addonInstance, &presets);
   }
   catch (std::exception e)
   {
-    HandleException(e, "m_pStruct.OnAction (CVisualisation::GetPresets)");
+    HandleException(e, "m_struct.OnAction (CVisualisation::GetPresets)");
     return false;
   }
   if (presets && entries > 0)
@@ -402,7 +402,7 @@ bool CVisualisation::GetSubModules()
   unsigned int entries = 0;
   try
   {
-    entries = m_pStruct.GetSubModules(m_addonInstance, &modules);
+    entries = m_struct.GetSubModules(m_addonInstance, &modules);
   }
   catch (...)
   {
@@ -433,7 +433,7 @@ bool CVisualisation::IsLocked()
 {
   if (!m_presets.empty())
   {
-    return m_pStruct.IsLocked(m_addonInstance);
+    return m_struct.IsLocked(m_addonInstance);
   }
   return false;
 }
@@ -443,7 +443,7 @@ void CVisualisation::Destroy()
   // Free what was allocated in method CVisualisation::Create
 
   CAddonDll::DestroyInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), m_addonInstance);
-  memset(&m_pStruct, 0, sizeof(m_pStruct));
+  memset(&m_struct, 0, sizeof(m_struct));
 
   if (m_props.name)
   {
@@ -475,7 +475,7 @@ unsigned CVisualisation::GetPreset()
   unsigned index = 0;
   try
   {
-    index = m_pStruct.GetPreset(m_addonInstance);
+    index = m_struct.GetPreset(m_addonInstance);
   }
   catch(...)
   {
