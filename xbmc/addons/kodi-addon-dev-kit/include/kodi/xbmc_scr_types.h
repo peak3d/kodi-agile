@@ -35,10 +35,10 @@ extern "C"
     const char *profile;
   };
 
-  struct ScreenSaver
+  typedef struct sKodiToAddonFuncTable_ScreenSaver
   {
     void (__cdecl* Start) (void* addonInstance);
     void (__cdecl* Render) (void* addonInstance);
-  };
+  } sKodiToAddonFuncTable_ScreenSaver;
 }
 
