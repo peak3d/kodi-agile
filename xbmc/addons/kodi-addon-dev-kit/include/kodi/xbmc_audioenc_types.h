@@ -48,21 +48,21 @@ extern "C"
   typedef int (*audioenc_write_callback)(void* opaque, uint8_t* data, int len);
   typedef int64_t (*audioenc_seek_callback)(void* opaque, int64_t pos, int whence);
 
-  typedef struct
+  typedef struct sAddonToKodiFuncTable_AudioEncoder
   {
     void*                   opaque;
     audioenc_write_callback write;
     audioenc_seek_callback  seek;
-  } audioenc_callbacks;
+  } sAddonToKodiFuncTable_AudioEncoder;
 
   typedef struct sKodiToAddonFuncTable_AudioEncoder
   {
     /*! \brief Create encoder context
-     \param callbacks Pointer to audioenc_callbacks structure.
+     \param callbacks Pointer to sAddonToKodiFuncTable_AudioEncoder structure.
      \return opaque pointer to encoder context, to be passed to other methods.
      \sa IEncoder::Init
      */
-    void (*(__cdecl *Create) (void* addonInstance, audioenc_callbacks* callbacks));
+    void (*(__cdecl *Create) (void* addonInstance, sAddonToKodiFuncTable_AudioEncoder* callbacks));
 
     /*! \brief Start encoder
      \param context Encoder context from Create.

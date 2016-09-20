@@ -56,7 +56,7 @@ CEncoderFFmpeg::CEncoderFFmpeg():
   memset(&m_callbacks, 0, sizeof(m_callbacks));
 }
 
-bool CEncoderFFmpeg::Init(audioenc_callbacks &callbacks)
+bool CEncoderFFmpeg::Init(sAddonToKodiFuncTable_AudioEncoder &callbacks)
 {
   if (!callbacks.opaque || !callbacks.write || !callbacks.seek)
     return false;

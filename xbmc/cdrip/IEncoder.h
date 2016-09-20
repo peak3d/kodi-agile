@@ -34,7 +34,7 @@ public:
   {
   }
   virtual ~IEncoder() {}
-  virtual bool Init(audioenc_callbacks &callbacks) = 0;
+  virtual bool Init(sAddonToKodiFuncTable_AudioEncoder &callbacks) = 0;
   virtual int Encode(int nNumBytesRead, uint8_t* pbtStream) = 0;
   virtual bool Close() = 0;
 

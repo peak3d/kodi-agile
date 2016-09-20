@@ -27,7 +27,7 @@
 extern "C"
 {
   //! \copydoc AudioEncoder::Create
-  void* Create(void* addonInstance, audioenc_callbacks *callbacks);
+  void* Create(void* addonInstance, sAddonToKodiFuncTable_AudioEncoder *callbacks);
 
   //! \copydoc AudioEncoder::Start
   bool Start(void* addonInstance, void* context, int iInChannels, int iInRate, int iInBits,
