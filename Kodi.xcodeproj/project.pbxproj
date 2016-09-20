@@ -336,6 +336,7 @@
 		76AEFB3E1C8F79D900EF2EC0 /* AddonCallbacksInputStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76F4C37C1C8E92E000A1E64B /* AddonCallbacksInputStream.cpp */; };
 		76AEFB3F1C8F79DC00EF2EC0 /* AddonCallbacksPVR.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EDED2E861C878DE8000F5E80 /* AddonCallbacksPVR.cpp */; };
 		76E850A81D903EAF0007F630 /* AddonDll.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76E850A71D903EAF0007F630 /* AddonDll.cpp */; };
+		76E850AF1D9145C60007F630 /* ExceptionHandling.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76E850AD1D9145C60007F630 /* ExceptionHandling.cpp */; };
 		76EC19C61D15514200D4AF19 /* ActiveAEDSP.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76EC19BC1D15514200D4AF19 /* ActiveAEDSP.cpp */; };
 		76EC19C71D15514200D4AF19 /* ActiveAEDSPAddon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76EC19BE1D15514200D4AF19 /* ActiveAEDSPAddon.cpp */; };
 		76EC19C81D15514200D4AF19 /* ActiveAEDSPDatabase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 76EC19C01D15514200D4AF19 /* ActiveAEDSPDatabase.cpp */; };
@@ -2859,6 +2860,8 @@
 		7611708E1C8B85F8006C6366 /* AddonGUIWindow.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AddonGUIWindow.cpp; path = addons/interfaces/GUI/AddonGUIWindow.cpp; sourceTree = "<group>"; };
 		7611708F1C8B85F8006C6366 /* AddonGUIWindow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AddonGUIWindow.h; path = addons/interfaces/GUI/AddonGUIWindow.h; sourceTree = "<group>"; };
 		76E850A71D903EAF0007F630 /* AddonDll.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AddonDll.cpp; sourceTree = "<group>"; };
+		76E850AD1D9145C60007F630 /* ExceptionHandling.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ExceptionHandling.cpp; path = addons/interfaces/ExceptionHandling.cpp; sourceTree = "<group>"; };
+		76E850AE1D9145C60007F630 /* ExceptionHandling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ExceptionHandling.h; path = addons/interfaces/ExceptionHandling.h; sourceTree = "<group>"; };
 		76EC19BC1D15514200D4AF19 /* ActiveAEDSP.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ActiveAEDSP.cpp; path = AudioDSPAddons/ActiveAEDSP.cpp; sourceTree = "<group>"; };
 		76EC19BD1D15514200D4AF19 /* ActiveAEDSP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ActiveAEDSP.h; path = AudioDSPAddons/ActiveAEDSP.h; sourceTree = "<group>"; };
 		76EC19BE1D15514200D4AF19 /* ActiveAEDSPAddon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ActiveAEDSPAddon.cpp; path = AudioDSPAddons/ActiveAEDSPAddon.cpp; sourceTree = "<group>"; };
@@ -9166,6 +9169,8 @@
 				EDED2E991C878F61000F5E80 /* AddonInterfaces.cpp */,
 				EDED2E9A1C878F61000F5E80 /* AddonInterfaces.h */,
 				EDED2E9C1C878F70000F5E80 /* IAddonInterface.h */,
+				76E850AD1D9145C60007F630 /* ExceptionHandling.cpp */,
+				76E850AE1D9145C60007F630 /* ExceptionHandling.h */,
 			);
 			name = interfaces;
 			sourceTree = "<group>";
@@ -10424,6 +10429,7 @@
 				F5E1138014357F3800175026 /* PeripheralCecAdapter.cpp in Sources */,
 				DF673AA51443819600A5A509 /* AddonManager.cpp in Sources */,
 				7C8E022B1BA35D0B0072E8B2 /* GUIContainerBuiltins.cpp in Sources */,
+				76E850AF1D9145C60007F630 /* ExceptionHandling.cpp in Sources */,
 				68B7E5E81D5FA9B300A5AEC0 /* GUIFeatureControls.cpp in Sources */,
 				DFDE5D511AE5658200EE53AD /* PictureScalingAlgorithm.cpp in Sources */,
 				F5BD02F6148D3A7E001B5583 /* CryptThreading.cpp in Sources */,

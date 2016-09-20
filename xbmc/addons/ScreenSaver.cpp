@@ -19,6 +19,7 @@
  */
 
 #include "ScreenSaver.h"
+#include "addons/interfaces/ExceptionHandling.h"
 #include "guilib/GraphicContext.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "settings/Settings.h"
@@ -97,15 +98,31 @@ bool CScreenSaver::CreateScreenSaver()
 void CScreenSaver::Start()
 {
   // notify screen saver that they should start
-  if (m_pStruct.Start)
-    m_pStruct.Start(m_addonInstance);
+  try
+  {
+    if (m_pStruct.Start)
+      m_pStruct.Start(m_addonInstance);
+  }
+  catch (std::exception& ex)
+  {
+    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception and disable add-on
+    memset(&m_pStruct, 0, sizeof(m_pStruct)); // reset function table to prevent further exception call
+  }
 }
 
 void CScreenSaver::Render()
 {
   // ask screensaver to render itself
-  if (m_pStruct.Render)
-    m_pStruct.Render(m_addonInstance);
+  try
+  {
+    if (m_pStruct.Render)
+      m_pStruct.Render(m_addonInstance);
+  }
+  catch (std::exception& ex)
+  {
+    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception and disable add-on
+    memset(&m_pStruct, 0, sizeof(m_pStruct)); // reset function table to prevent further exception call
+  }
 }
 
 void CScreenSaver::Destroy()
