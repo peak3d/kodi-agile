@@ -132,10 +132,10 @@ void CPVRClient::ResetProperties(int iClientId /* = PVR_INVALID_CLIENT_ID */)
 {
   /* initialise members */
   m_strUserPath           = CSpecialProtocol::TranslatePath(Profile());
-  m_pInfo.strUserPath     = m_strUserPath.c_str();
+  m_props.strUserPath     = m_strUserPath.c_str();
   m_strClientPath         = CSpecialProtocol::TranslatePath(Path());
-  m_pInfo.strClientPath   = m_strClientPath.c_str();
-  m_pInfo.iEpgMaxDays     = CSettings::GetInstance().GetInt(CSettings::SETTING_EPG_DAYSTODISPLAY);
+  m_props.strClientPath   = m_strClientPath.c_str();
+  m_props.iEpgMaxDays     = CSettings::GetInstance().GetInt(CSettings::SETTING_EPG_DAYSTODISPLAY);
   m_menuhooks.clear();
   m_timertypes.clear();
   m_bReadyToUse           = false;
@@ -173,7 +173,7 @@ ADDON_STATUS CPVRClient::Create(int iClientId)
     if ((status = CAddonDll::Create()) != ADDON_STATUS_OK)
       return status;
     
-    if ((status = CAddonDll::CreateInstance(ADDON_INSTANCE_PVR, ID().c_str(), &m_pInfo, &m_struct, this, &m_addonInstance)) != ADDON_STATUS_OK)
+    if ((status = CAddonDll::CreateInstance(ADDON_INSTANCE_PVR, ID().c_str(), &m_props, &m_struct, this, &m_addonInstance)) != ADDON_STATUS_OK)
       return status;
 
     bReadyToUse = GetAddonProperties();

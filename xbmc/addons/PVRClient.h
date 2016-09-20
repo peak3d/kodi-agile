@@ -740,7 +740,7 @@ namespace PVR
     CPVRRecordingPtr    m_playingRecording;
     ADDON::AddonVersion m_apiVersion;
     bool                m_bAvahiServiceAdded;
-    PVR_PROPERTIES m_pInfo;
+    PVR_PROPERTIES m_props;
     PVRClient m_struct;
     void* m_addonInstance;
   };
