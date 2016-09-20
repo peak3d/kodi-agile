@@ -94,7 +94,7 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   CLog::Log(LOGDEBUG, "Visualisation::Start()\n");
   try
   {
-    m_pStruct->Start(m_iChannels, m_iSamplesPerSec, m_iBitsPerSample, strFile.c_str());
+    m_pStruct->Start(m_addonInstance, m_iChannels, m_iSamplesPerSec, m_iBitsPerSample, strFile.c_str());
   }
   catch (std::exception e)
   {
@@ -124,7 +124,7 @@ void CVisualisation::Start(int iChannels, int iSamplesPerSec, int iBitsPerSample
   {
     try
     {
-      m_pStruct->Start(iChannels, iSamplesPerSec, iBitsPerSample, strSongName.c_str());
+      m_pStruct->Start(m_addonInstance, iChannels, iSamplesPerSec, iBitsPerSample, strSongName.c_str());
     }
     catch (std::exception e)
     {
@@ -144,7 +144,7 @@ void CVisualisation::AudioData(const float* pAudioData, int iAudioDataLength, fl
   {
     try
     {
-      m_pStruct->AudioData(pAudioData, iAudioDataLength, pFreqData, iFreqDataLength);
+      m_pStruct->AudioData(m_addonInstance, pAudioData, iAudioDataLength, pFreqData, iFreqDataLength);
     }
     catch (std::exception e)
     {
@@ -160,7 +160,7 @@ void CVisualisation::Render()
   {
     try
     {
-      m_pStruct->Render();
+      m_pStruct->Render(m_addonInstance);
     }
     catch (std::exception e)
     {
@@ -184,7 +184,7 @@ void CVisualisation::GetInfo(VIS_INFO *info)
   {
     try
     {
-      m_pStruct->GetInfo(info);
+      m_pStruct->GetInfo(m_addonInstance, info);
     }
     catch (std::exception e)
     {
@@ -228,9 +228,9 @@ bool CVisualisation::OnAction(VIS_ACTION action, void *param)
         track.year        = tag->GetYear();
         track.rating      = tag->GetUserrating();
 
-        return m_pStruct->OnAction(action, &track);
+        return m_pStruct->OnAction(m_addonInstance, action, &track);
       }
-      return m_pStruct->OnAction((int)action, param);
+      return m_pStruct->OnAction(m_addonInstance, (int)action, param);
     }
   }
   catch (std::exception e)
@@ -298,7 +298,7 @@ void CVisualisation::CreateBuffers()
 
   // Get the number of buffers from the current vis
   VIS_INFO info;
-  m_pStruct->GetInfo(&info);
+  m_pStruct->GetInfo(m_addonInstance, &info);
   m_iNumBuffers = info.iSyncDelay + 1;
   m_bWantsFreq = (info.bWantsFreq != 0);
   if (m_iNumBuffers > MAX_AUDIO_BUFFERS)
@@ -364,7 +364,7 @@ bool CVisualisation::GetPresets()
   unsigned int entries = 0;
   try
   {
-    entries = m_pStruct->GetPresets(&presets);
+    entries = m_pStruct->GetPresets(m_addonInstance, &presets);
   }
   catch (std::exception e)
   {
@@ -397,7 +397,7 @@ bool CVisualisation::GetSubModules()
   unsigned int entries = 0;
   try
   {
-    entries = m_pStruct->GetSubModules(&modules);
+    entries = m_pStruct->GetSubModules(m_addonInstance, &modules);
   }
   catch (...)
   {
@@ -431,7 +431,7 @@ bool CVisualisation::IsLocked()
     if (!m_pStruct)
       return false;
 
-    return m_pStruct->IsLocked();
+    return m_pStruct->IsLocked(m_addonInstance);
   }
   return false;
 }
@@ -460,7 +460,7 @@ unsigned CVisualisation::GetPreset()
   unsigned index = 0;
   try
   {
-    index = m_pStruct->GetPreset();
+    index = m_pStruct->GetPreset(m_addonInstance);
   }
   catch(...)
   {
