@@ -105,7 +105,7 @@ namespace ADDON
     // track information
     std::string m_AlbumThumb;
 
-    VIS_PROPS m_pInfo;
+    VIS_PROPS m_props;
     sKodiToAddonFuncTable_Visualization m_pStruct;
     void* m_addonInstance;
   };
