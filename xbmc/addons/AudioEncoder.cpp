@@ -16,7 +16,9 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
+
 #include "AudioEncoder.h"
+#include "addons/interfaces/ExceptionHandling.h"
 
 namespace ADDON
 {
@@ -35,18 +37,33 @@ CAudioEncoder::CAudioEncoder(AddonProps props, std::string _extension)
 
 bool CAudioEncoder::Init(audioenc_callbacks &callbacks)
 {
+  bool ret = false;
+
   if (!Initialized())
-    return false;
+    return ret;
 
   if (CAddonDll::CreateInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), nullptr, &m_struct, this, &m_addonInstance) != ADDON_STATUS_OK)
-    return false;
+    return ret;
 
   // create encoder instance
-  m_context = m_struct.Create(m_addonInstance, &callbacks);
-  if (!m_context)
-    return false;
-
-  return m_struct.Start(m_addonInstance, m_context,
+  try
+  {
+    m_context = nullptr;
+    if (m_struct.Create)
+      m_context = m_struct.Create(m_addonInstance, &callbacks);
+    if (!m_context)
+      return ret;
+  }
+  catch (std::exception& ex)
+  {
+    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception and disable add-on
+    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
+  }
+ 
+  try
+  {
+    if (m_struct.Start)
+      ret = m_struct.Start(m_addonInstance, m_context,
                           m_iInChannels,
                           m_iInSampleRate,
                           m_iInBitsPerSample,
@@ -59,14 +76,34 @@ bool CAudioEncoder::Init(audioenc_callbacks &callbacks)
                           m_strGenre.c_str(),
                           m_strComment.c_str(),
                           m_iTrackLength);
+  }
+  catch (std::exception& ex)
+  {
+    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception and disable add-on
+    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
+  }
+
+  return ret;
 }
 
 int CAudioEncoder::Encode(int nNumBytesRead, uint8_t* pbtStream)
 {
+  int ret = 0;
   if (!Initialized() || !m_context)
-    return 0;
+    return ret;
 
-  return m_struct.Encode(m_addonInstance, m_context, nNumBytesRead, pbtStream);
+  try
+  {
+    if (m_struct.Encode)
+      ret = m_struct.Encode(m_addonInstance, m_context, nNumBytesRead, pbtStream);
+  }
+  catch (std::exception& ex)
+  {
+    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception and disable add-on
+    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
+  }
+
+  return ret;
 }
 
 bool CAudioEncoder::Close()
@@ -74,11 +111,24 @@ bool CAudioEncoder::Close()
   if (!Initialized() || !m_context)
     return false;
 
-  if (!m_struct.Finish(m_addonInstance, m_context))
-    return false;
+  try
+  {
+    if (m_struct.Finish)
+    {
+      if (!m_struct.Finish(m_addonInstance, m_context))
+        return false;
+    }
 
-  m_struct.Free(m_addonInstance, m_context);
-  m_context = NULL;
+    if (m_struct.Free)
+      m_struct.Free(m_addonInstance, m_context);
+  }
+  catch (std::exception& ex)
+  {
+    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception and disable add-on
+    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
+  }
+
+  m_context = nullptr;
 
   return true;
 }
