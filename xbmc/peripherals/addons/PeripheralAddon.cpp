@@ -101,8 +101,8 @@ void CPeripheralAddon::ResetProperties(void)
   m_strUserPath        = CSpecialProtocol::TranslatePath(Profile());
   m_strClientPath      = CSpecialProtocol::TranslatePath(Path());
 
-  m_pInfo.user_path    = m_strUserPath.c_str();
-  m_pInfo.addon_path   = m_strClientPath.c_str();
+  m_props.user_path    = m_strUserPath.c_str();
+  m_props.addon_path   = m_strClientPath.c_str();
 
   m_apiVersion = ADDON::AddonVersion("0.0.0");
   
@@ -139,7 +139,7 @@ ADDON_STATUS CPeripheralAddon::CreateAddon(void)
 
   if (status == ADDON_STATUS_OK)
   {
-    try {status = CAddonDll::CreateInstance(ADDON_INSTANCE_PERIPHERAL, ID().c_str(), &m_pInfo, &m_struct, this, &m_addonInstance);}
+    try {status = CAddonDll::CreateInstance(ADDON_INSTANCE_PERIPHERAL, ID().c_str(), &m_props, &m_struct, this, &m_addonInstance);}
     catch (const std::exception& e) { LogException(e, __FUNCTION__); }
   }
 
