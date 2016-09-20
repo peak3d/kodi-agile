@@ -33,6 +33,16 @@
 namespace ADDON
 {
 
+CScreenSaver::CScreenSaver(AddonProps props)
+  : ADDON::CAddonDll(std::move(props))
+{
+  m_props.name = nullptr;
+  m_props.presets = nullptr;
+  m_props.profile = nullptr;
+
+  memset(&m_pStruct, 0, sizeof(m_pStruct));
+}
+
 CScreenSaver::CScreenSaver(const char *addonID)
   : ADDON::CAddonDll(AddonProps(addonID, ADDON_UNKNOWN)),
     m_addonInstance(nullptr)
@@ -40,6 +50,8 @@ CScreenSaver::CScreenSaver(const char *addonID)
   m_props.name = nullptr;
   m_props.presets = nullptr;
   m_props.profile = nullptr;
+
+  memset(&m_pStruct, 0, sizeof(m_pStruct));
 }
 
 bool CScreenSaver::IsInUse() const
