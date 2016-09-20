@@ -35,7 +35,7 @@ namespace ADDON
     virtual ~CAudioEncoder() {}
 
     // Things that MUST be supplied by the child classes
-    bool Init(audioenc_callbacks &callbacks);
+    bool Init(sAddonToKodiFuncTable_AudioEncoder &callbacks);
     int Encode(int nNumBytesRead, uint8_t* pbtStream);
     bool Close();
     void Destroy();
@@ -44,7 +44,7 @@ namespace ADDON
 
   private:
     void *m_context; ///< audio encoder context
-    sKodiToAddonFuncTable_AudioEncoder m_struct;
+    sFuncTable_AudioEncoder m_struct;
     void* m_addonInstance;
   };
 

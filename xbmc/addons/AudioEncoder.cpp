@@ -32,16 +32,17 @@ std::unique_ptr<CAudioEncoder> CAudioEncoder::FromExtension(AddonProps props, co
 CAudioEncoder::CAudioEncoder(AddonProps props, std::string _extension)
     : CAddonDll(std::move(props)), extension(std::move(_extension)), m_context(nullptr), m_addonInstance(nullptr)
 {
-  memset(&m_struct, 0, sizeof(m_struct));
+  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon));
 }
 
-bool CAudioEncoder::Init(audioenc_callbacks &callbacks)
+bool CAudioEncoder::Init(sAddonToKodiFuncTable_AudioEncoder &callbacks)
 {
   bool ret = false;
 
   if (!Initialized())
     return ret;
-
+  
+  m_struct.toKodi = callbacks;
   if (CAddonDll::CreateInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), nullptr, &m_struct, this, &m_addonInstance) != ADDON_STATUS_OK)
     return ret;
 
@@ -49,38 +50,38 @@ bool CAudioEncoder::Init(audioenc_callbacks &callbacks)
   try
   {
     m_context = nullptr;
-    if (m_struct.Create)
-      m_context = m_struct.Create(m_addonInstance, &callbacks);
+    if (m_struct.toAddon.Create)
+      m_context = m_struct.toAddon.Create(m_addonInstance, &callbacks);
     if (!m_context)
       return ret;
   }
   catch (std::exception& ex)
   {
     ADDON::LogException(this, ex, __FUNCTION__); // Handle exception and disable add-on
-    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
+    memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call
   }
  
   try
   {
-    if (m_struct.Start)
-      ret = m_struct.Start(m_addonInstance, m_context,
-                          m_iInChannels,
-                          m_iInSampleRate,
-                          m_iInBitsPerSample,
-                          m_strTitle.c_str(),
-                          m_strArtist.c_str(),
-                          m_strAlbumArtist.c_str(),
-                          m_strAlbum.c_str(),
-                          m_strYear.c_str(),
-                          m_strTrack.c_str(),
-                          m_strGenre.c_str(),
-                          m_strComment.c_str(),
-                          m_iTrackLength);
+    if (m_struct.toAddon.Start)
+      ret = m_struct.toAddon.Start(m_addonInstance, m_context,
+                                   m_iInChannels,
+                                   m_iInSampleRate,
+                                   m_iInBitsPerSample,
+                                   m_strTitle.c_str(),
+                                   m_strArtist.c_str(),
+                                   m_strAlbumArtist.c_str(),
+                                   m_strAlbum.c_str(),
+                                   m_strYear.c_str(),
+                                   m_strTrack.c_str(),
+                                   m_strGenre.c_str(),
+                                   m_strComment.c_str(),
+                                   m_iTrackLength);
   }
   catch (std::exception& ex)
   {
     ADDON::LogException(this, ex, __FUNCTION__); // Handle exception and disable add-on
-    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
+    memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call
   }
 
   return ret;
@@ -94,13 +95,13 @@ int CAudioEncoder::Encode(int nNumBytesRead, uint8_t* pbtStream)
 
   try
   {
-    if (m_struct.Encode)
-      ret = m_struct.Encode(m_addonInstance, m_context, nNumBytesRead, pbtStream);
+    if (m_struct.toAddon.Encode)
+      ret = m_struct.toAddon.Encode(m_addonInstance, m_context, nNumBytesRead, pbtStream);
   }
   catch (std::exception& ex)
   {
     ADDON::LogException(this, ex, __FUNCTION__); // Handle exception and disable add-on
-    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
+    memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call
   }
 
   return ret;
@@ -113,19 +114,19 @@ bool CAudioEncoder::Close()
 
   try
   {
-    if (m_struct.Finish)
+    if (m_struct.toAddon.Finish)
     {
-      if (!m_struct.Finish(m_addonInstance, m_context))
+      if (!m_struct.toAddon.Finish(m_addonInstance, m_context))
         return false;
     }
 
-    if (m_struct.Free)
-      m_struct.Free(m_addonInstance, m_context);
+    if (m_struct.toAddon.Free)
+      m_struct.toAddon.Free(m_addonInstance, m_context);
   }
   catch (std::exception& ex)
   {
     ADDON::LogException(this, ex, __FUNCTION__); // Handle exception and disable add-on
-    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
+    memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call
   }
 
   m_context = nullptr;
@@ -137,7 +138,7 @@ void CAudioEncoder::Destroy()
 {
   CAddonDll::DestroyInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), m_addonInstance);
   CAddonDll::Destroy();
-  memset(&m_struct, 0, sizeof(m_struct));
+  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon));
   m_addonInstance = nullptr;
 }
 

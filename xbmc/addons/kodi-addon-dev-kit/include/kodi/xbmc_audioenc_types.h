@@ -45,14 +45,11 @@ extern "C"
     int dummy;
   };
 
-  typedef int (*audioenc_write_callback)(void* opaque, uint8_t* data, int len);
-  typedef int64_t (*audioenc_seek_callback)(void* opaque, int64_t pos, int whence);
-
   typedef struct sAddonToKodiFuncTable_AudioEncoder
   {
-    void*                   opaque;
-    audioenc_write_callback write;
-    audioenc_seek_callback  seek;
+    void* opaque;
+    int (*write) (void* opaque, uint8_t* data, int len);
+    int64_t (*seek)(void* opaque, int64_t pos, int whence);
   } sAddonToKodiFuncTable_AudioEncoder;
 
   typedef struct sKodiToAddonFuncTable_AudioEncoder
@@ -106,5 +103,11 @@ extern "C"
      */
     void (__cdecl* Free)(void* addonInstance, void* context);
   } sKodiToAddonFuncTable_AudioEncoder;
+  
+  typedef struct sFuncTable_AudioEncoder
+  {
+    sAddonToKodiFuncTable_AudioEncoder toKodi;
+    sKodiToAddonFuncTable_AudioEncoder toAddon;
+  } sFuncTable_AudioEncoder;
 }
 
