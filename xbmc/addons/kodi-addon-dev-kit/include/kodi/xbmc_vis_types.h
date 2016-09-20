@@ -93,7 +93,7 @@ extern "C"
     int        reserved4;
   };
 
-  struct Visualisation
+  typedef struct sKodiToAddonFuncTable_Visualization
   {
     void (__cdecl* Start)(void* addonInstance, int iChannels, int iSamplesPerSec, int iBitsPerSample, const char* szSongName);
     void (__cdecl* AudioData)(void* addonInstance, const float* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength);
@@ -105,6 +105,6 @@ extern "C"
     unsigned int (__cdecl *GetPreset)(void* addonInstance);
     unsigned int (__cdecl *GetSubModules)(void* addonInstance, char ***modules);
     bool (__cdecl* IsLocked)(void* addonInstance);
-  };
+  } sKodiToAddonFuncTable_Visualization;
 }
 

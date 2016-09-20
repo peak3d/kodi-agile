@@ -106,7 +106,7 @@ namespace ADDON
     std::string m_AlbumThumb;
 
     VIS_PROPS m_pInfo;
-    Visualisation m_pStruct;
+    sKodiToAddonFuncTable_Visualization m_pStruct;
     void* m_addonInstance;
   };
 }
