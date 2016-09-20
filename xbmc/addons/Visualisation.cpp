@@ -20,6 +20,7 @@
 #include "system.h"
 #include "Visualisation.h"
 #include "GUIInfoManager.h"
+#include "addons/interfaces/ExceptionHandling.h"
 #include "guiinfo/GUIInfoLabels.h"
 #include "Application.h"
 #include "guilib/GraphicContext.h"
@@ -106,9 +107,10 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   {
     m_struct.Start(m_addonInstance, m_iChannels, m_iSamplesPerSec, m_iBitsPerSample, strFile.c_str());
   }
-  catch (std::exception e)
+  catch (std::exception ex)
   {
-    HandleException(e, "m_struct.Start() (CVisualisation::Create)");
+    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
+    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
     return false;
   }
 
@@ -134,11 +136,13 @@ void CVisualisation::Start(int iChannels, int iSamplesPerSec, int iBitsPerSample
   {
     try
     {
-      m_struct.Start(m_addonInstance, iChannels, iSamplesPerSec, iBitsPerSample, strSongName.c_str());
+      if (m_struct.Start)
+        m_struct.Start(m_addonInstance, iChannels, iSamplesPerSec, iBitsPerSample, strSongName.c_str());
     }
-    catch (std::exception e)
+    catch (std::exception ex)
     {
-      HandleException(e, "m_struct.Start (CVisualisation::Start)");
+      ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
+      memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
     }
   }
 }
@@ -154,11 +158,13 @@ void CVisualisation::AudioData(const float* pAudioData, int iAudioDataLength, fl
   {
     try
     {
-      m_struct.AudioData(m_addonInstance, pAudioData, iAudioDataLength, pFreqData, iFreqDataLength);
+      if (m_struct.AudioData)
+        m_struct.AudioData(m_addonInstance, pAudioData, iAudioDataLength, pFreqData, iFreqDataLength);
     }
-    catch (std::exception e)
+    catch (std::exception ex)
     {
-      HandleException(e, "m_struct.AudioData (CVisualisation::AudioData)");
+      ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
+      memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
     }
   }
 }
@@ -170,11 +176,13 @@ void CVisualisation::Render()
   {
     try
     {
-      m_struct.Render(m_addonInstance);
+      if (m_struct.Render)
+        m_struct.Render(m_addonInstance);
     }
-    catch (std::exception e)
+    catch (std::exception ex)
     {
-      HandleException(e, "m_struct.Render (CVisualisation::Render)");
+      ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
+      memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
     }
   }
 }
@@ -194,11 +202,13 @@ void CVisualisation::GetInfo(VIS_INFO *info)
   {
     try
     {
-      m_struct.GetInfo(m_addonInstance, info);
+      if (m_struct.GetInfo)
+        m_struct.GetInfo(m_addonInstance, info);
     }
-    catch (std::exception e)
+    catch (std::exception ex)
     {
-      HandleException(e, "m_struct.GetInfo (CVisualisation::GetInfo)");
+      ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
+      memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
     }
   }
 }
@@ -243,10 +253,12 @@ bool CVisualisation::OnAction(VIS_ACTION action, void *param)
       return m_struct.OnAction(m_addonInstance, (int)action, param);
     }
   }
-  catch (std::exception e)
+  catch (std::exception ex)
   {
-    HandleException(e, "m_struct.OnAction (CVisualisation::OnAction)");
+    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
+    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
   }
+
   return false;
 }
 
@@ -301,9 +313,21 @@ void CVisualisation::CreateBuffers()
 {
   ClearBuffers();
 
-  // Get the number of buffers from the current vis
   VIS_INFO info;
-  m_struct.GetInfo(m_addonInstance, &info);
+
+  try
+  {
+    // Get the number of buffers from the current vis
+    if (m_struct.GetInfo)
+      m_struct.GetInfo(m_addonInstance, &info);
+  }
+  catch (std::exception ex)
+  {
+    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
+    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
+    return;
+  }
+
   m_iNumBuffers = info.iSyncDelay + 1;
   m_bWantsFreq = (info.bWantsFreq != 0);
   if (m_iNumBuffers > MAX_AUDIO_BUFFERS)
@@ -369,13 +393,16 @@ bool CVisualisation::GetPresets()
   unsigned int entries = 0;
   try
   {
-    entries = m_struct.GetPresets(m_addonInstance, &presets);
+    if (m_struct.GetPresets)
+      entries = m_struct.GetPresets(m_addonInstance, &presets);
   }
-  catch (std::exception e)
+  catch (std::exception ex)
   {
-    HandleException(e, "m_struct.OnAction (CVisualisation::GetPresets)");
+    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
+    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
     return false;
   }
+
   if (presets && entries > 0)
   {
     for (unsigned i=0; i < entries; i++)
@@ -402,13 +429,16 @@ bool CVisualisation::GetSubModules()
   unsigned int entries = 0;
   try
   {
-    entries = m_struct.GetSubModules(m_addonInstance, &modules);
+    if (m_struct.GetSubModules)
+      entries = m_struct.GetSubModules(m_addonInstance, &modules);
   }
-  catch (...)
+  catch (std::exception& ex)
   {
-    CLog::Log(LOGERROR, "Exception in Visualisation::GetSubModules()");
+    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
+    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
     return false;
   }
+
   if (modules && entries > 0)
   {
     for (unsigned i=0; i < entries; i++)
@@ -433,7 +463,16 @@ bool CVisualisation::IsLocked()
 {
   if (!m_presets.empty())
   {
-    return m_struct.IsLocked(m_addonInstance);
+    try
+    {
+      if (m_struct.IsLocked)
+        return m_struct.IsLocked(m_addonInstance);
+    }
+    catch (std::exception& ex)
+    {
+      ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
+      memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
+    }
   }
   return false;
 }
@@ -444,6 +483,7 @@ void CVisualisation::Destroy()
 
   CAddonDll::DestroyInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), m_addonInstance);
   memset(&m_struct, 0, sizeof(m_struct));
+  m_addonInstance = nullptr;
 
   if (m_props.name)
   {
@@ -467,7 +507,6 @@ void CVisualisation::Destroy()
   }
 
   CAddonDll::Destroy();
-  m_addonInstance = nullptr;
 }
 
 unsigned CVisualisation::GetPreset()
@@ -475,10 +514,13 @@ unsigned CVisualisation::GetPreset()
   unsigned index = 0;
   try
   {
-    index = m_struct.GetPreset(m_addonInstance);
+    if (m_struct.GetPreset)
+      index = m_struct.GetPreset(m_addonInstance);
   }
-  catch(...)
+  catch (std::exception& ex)
   {
+    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
+    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
     return 0;
   }
   return index;
