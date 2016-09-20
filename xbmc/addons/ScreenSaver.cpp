@@ -41,7 +41,7 @@ CScreenSaver::CScreenSaver(AddonProps props)
   m_props.presets = nullptr;
   m_props.profile = nullptr;
 
-  memset(&m_pStruct, 0, sizeof(m_pStruct));
+  memset(&m_struct, 0, sizeof(m_struct));
 }
 
 CScreenSaver::CScreenSaver(const char *addonID)
@@ -52,7 +52,7 @@ CScreenSaver::CScreenSaver(const char *addonID)
   m_props.presets = nullptr;
   m_props.profile = nullptr;
 
-  memset(&m_pStruct, 0, sizeof(m_pStruct));
+  memset(&m_struct, 0, sizeof(m_struct));
 }
 
 bool CScreenSaver::IsInUse() const
@@ -92,7 +92,7 @@ bool CScreenSaver::CreateScreenSaver()
   m_props.presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
   m_props.profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
 
-  return (CAddonDll::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), &m_props, &m_pStruct, this, &m_addonInstance) == ADDON_STATUS_OK);
+  return (CAddonDll::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), &m_props, &m_struct, this, &m_addonInstance) == ADDON_STATUS_OK);
 }
 
 void CScreenSaver::Start()
@@ -100,13 +100,13 @@ void CScreenSaver::Start()
   // notify screen saver that they should start
   try
   {
-    if (m_pStruct.Start)
-      m_pStruct.Start(m_addonInstance);
+    if (m_struct.Start)
+      m_struct.Start(m_addonInstance);
   }
   catch (std::exception& ex)
   {
     ADDON::LogException(this, ex, __FUNCTION__); // Handle exception and disable add-on
-    memset(&m_pStruct, 0, sizeof(m_pStruct)); // reset function table to prevent further exception call
+    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
   }
 }
 
@@ -115,13 +115,13 @@ void CScreenSaver::Render()
   // ask screensaver to render itself
   try
   {
-    if (m_pStruct.Render)
-      m_pStruct.Render(m_addonInstance);
+    if (m_struct.Render)
+      m_struct.Render(m_addonInstance);
   }
   catch (std::exception& ex)
   {
     ADDON::LogException(this, ex, __FUNCTION__); // Handle exception and disable add-on
-    memset(&m_pStruct, 0, sizeof(m_pStruct)); // reset function table to prevent further exception call
+    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
   }
 }
 
