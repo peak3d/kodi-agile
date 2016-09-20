@@ -37,7 +37,7 @@ extern "C"
   bool IsLocked(void* addonInstance);
 
   // function to export the above structure to XBMC
-  void __declspec(dllexport) get_addon(struct sKodiToAddonFuncTable_Visualization* pVisz)
+  void SetVisualizationFuncTable(struct sKodiToAddonFuncTable_Visualization* pVisz)
   {
     pVisz->Start = Start;
     pVisz->AudioData = AudioData;
