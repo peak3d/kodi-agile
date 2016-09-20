@@ -68,7 +68,7 @@ CInputStream::CInputStream(const AddonProps& props,
     StringUtils::Trim(ext);
   }
 
-  memset(&m_pStruct, 0, sizeof(m_pStruct));
+  memset(&m_struct, 0, sizeof(m_struct));
 }
 
 void CInputStream::Destroy(void)
@@ -79,7 +79,7 @@ void CInputStream::Destroy(void)
     CAddonDll::DestroyInstance(ADDON_INSTANCE_INPUTSTREAM, ID().c_str(), m_addonInstance);
     CAddonDll::Destroy();
     m_addonInstance = nullptr;
-    memset(&m_pStruct, 0, sizeof(m_pStruct));
+    memset(&m_struct, 0, sizeof(m_struct));
   }
   catch (std::exception &e)
   {
@@ -89,7 +89,7 @@ void CInputStream::Destroy(void)
 
 bool CInputStream::CheckAPIVersion()
 {
-  std::string dllVersion = m_pStruct.GetApiVersion(m_addonInstance);
+  std::string dllVersion = m_struct.GetApiVersion(m_addonInstance);
   if (dllVersion.compare(INPUTSTREAM_API_VERSION) != 0)
   {
     CLog::Log(LOGERROR, "CInputStream::CheckAPIVersion - API version does not match");
@@ -125,13 +125,13 @@ void CInputStream::UpdateConfig()
   std::string pathList;
   ADDON_STATUS status = Create();
   if (status == ADDON_STATUS_OK)
-    status = CAddonDll::CreateInstance(ADDON_INSTANCE_INPUTSTREAM, ID().c_str(), nullptr, &m_pStruct, this, &m_addonInstance);
+    status = CAddonDll::CreateInstance(ADDON_INSTANCE_INPUTSTREAM, ID().c_str(), nullptr, &m_struct, this, &m_addonInstance);
 
   if (status != ADDON_STATUS_PERMANENT_FAILURE)
   {
     try
     {
-      pathList = m_pStruct.GetPathList(m_addonInstance);
+      pathList = m_struct.GetPathList(m_addonInstance);
     }
     catch (std::exception &e)
     {
@@ -257,9 +257,9 @@ bool CInputStream::Open(CFileItem &fileitem)
   bool ret = false;
   try
   {
-    ret = m_pStruct.Open(m_addonInstance, props);
+    ret = m_struct.Open(m_addonInstance, props);
     if (ret)
-      m_caps = m_pStruct.GetCapabilities(m_addonInstance);
+      m_caps = m_struct.GetCapabilities(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -275,7 +275,7 @@ void CInputStream::Close()
 {
   try
   {
-    m_pStruct.Close(m_addonInstance);
+    m_struct.Close(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -297,7 +297,7 @@ int CInputStream::GetTotalTime()
   int ret = 0;
   try
   {
-    ret = m_pStruct.GetTotalTime(m_addonInstance);
+    ret = m_struct.GetTotalTime(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -311,7 +311,7 @@ int CInputStream::GetTime()
   int ret = 0;
   try
   {
-    ret = m_pStruct.GetTime(m_addonInstance);
+    ret = m_struct.GetTime(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -326,7 +326,7 @@ bool CInputStream::PosTime(int ms)
   bool ret = false;
   try
   {
-    ret = m_pStruct.PosTime(m_addonInstance, ms);
+    ret = m_struct.PosTime(m_addonInstance, ms);
   }
   catch (std::exception &e)
   {
@@ -343,7 +343,7 @@ void CInputStream::UpdateStreams()
   INPUTSTREAM_IDS streamIDs;
   try
   {
-    streamIDs = m_pStruct.GetStreamIds(m_addonInstance);
+    streamIDs = m_struct.GetStreamIds(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -363,7 +363,7 @@ void CInputStream::UpdateStreams()
     INPUTSTREAM_INFO stream;
     try
     {
-      stream = m_pStruct.GetStream(m_addonInstance, streamIDs.m_streamIds[i]);
+      stream = m_struct.GetStream(m_addonInstance, streamIDs.m_streamIds[i]);
     }
     catch (std::exception &e)
     {
@@ -476,7 +476,7 @@ void CInputStream::EnableStream(int iStreamId, bool enable)
 
   try
   {
-    m_pStruct.EnableStream(m_addonInstance, it->second->uniqueId, enable);
+    m_struct.EnableStream(m_addonInstance, it->second->uniqueId, enable);
   }
   catch (std::exception &e)
   {
@@ -489,7 +489,7 @@ DemuxPacket* CInputStream::ReadDemux()
   DemuxPacket* pPacket = nullptr;
   try
   {
-    pPacket = m_pStruct.DemuxRead(m_addonInstance);
+    pPacket = m_struct.DemuxRead(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -518,7 +518,7 @@ bool CInputStream::SeekTime(int time, bool backward, double* startpts)
   bool ret = false;
   try
   {
-    ret = m_pStruct.DemuxSeekTime(m_addonInstance, time, backward, startpts);
+    ret = m_struct.DemuxSeekTime(m_addonInstance, time, backward, startpts);
   }
   catch (std::exception &e)
   {
@@ -531,7 +531,7 @@ void CInputStream::AbortDemux()
 {
   try
   {
-    m_pStruct.DemuxAbort(m_addonInstance);
+    m_struct.DemuxAbort(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -543,7 +543,7 @@ void CInputStream::FlushDemux()
 {
   try
   {
-    m_pStruct.DemuxFlush(m_addonInstance);
+    m_struct.DemuxFlush(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -555,7 +555,7 @@ void CInputStream::SetSpeed(int iSpeed)
 {
   try
   {
-    m_pStruct.DemuxSetSpeed(m_addonInstance, iSpeed);
+    m_struct.DemuxSetSpeed(m_addonInstance, iSpeed);
   }
   catch (std::exception &e)
   {
@@ -568,7 +568,7 @@ int CInputStream::ReadStream(uint8_t* buf, unsigned int size)
   int ret = -1;
   try
   {
-    ret = m_pStruct.ReadStream(m_addonInstance, buf, size);
+    ret = m_struct.ReadStream(m_addonInstance, buf, size);
   }
   catch (std::exception &e)
   {
@@ -582,7 +582,7 @@ int64_t CInputStream::SeekStream(int64_t offset, int whence)
   int64_t ret = -1;
   try
   {
-    ret = m_pStruct.SeekStream(m_addonInstance, offset, whence);
+    ret = m_struct.SeekStream(m_addonInstance, offset, whence);
   }
   catch (std::exception &e)
   {
@@ -596,7 +596,7 @@ int64_t CInputStream::PositionStream()
   int64_t ret = -1;
   try
   {
-    ret = m_pStruct.PositionStream(m_addonInstance);
+    ret = m_struct.PositionStream(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -610,7 +610,7 @@ int64_t CInputStream::LengthStream()
   int64_t ret = -1;
   try
   {
-    ret = m_pStruct.LengthStream(m_addonInstance);
+    ret = m_struct.LengthStream(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -623,7 +623,7 @@ void CInputStream::PauseStream(double time)
 {
   try
   {
-    m_pStruct.PauseStream(m_addonInstance, time);
+    m_struct.PauseStream(m_addonInstance, time);
   }
   catch (std::exception &e)
   {
@@ -636,7 +636,7 @@ bool CInputStream::IsRealTimeStream()
   bool ret = false;
   try
   {
-    ret = m_pStruct.IsRealTimeStream(m_addonInstance);
+    ret = m_struct.IsRealTimeStream(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -649,7 +649,7 @@ void CInputStream::SetVideoResolution(int width, int height)
 {
   try
   {
-    m_pStruct.SetVideoResolution(m_addonInstance, width, height);
+    m_struct.SetVideoResolution(m_addonInstance, width, height);
   }
   catch (std::exception &e)
   {
