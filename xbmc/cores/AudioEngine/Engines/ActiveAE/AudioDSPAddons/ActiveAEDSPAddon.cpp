@@ -93,9 +93,9 @@ void CActiveAEDSPAddon::ResetProperties(int iClientId /* = AE_DSP_INVALID_ADDON_
 {
   /* initialise members */
   m_strUserPath           = CSpecialProtocol::TranslatePath(Profile());
-  m_pInfo.strUserPath     = m_strUserPath.c_str();
+  m_props.strUserPath     = m_strUserPath.c_str();
   m_strAddonPath          = CSpecialProtocol::TranslatePath(Path());
-  m_pInfo.strAddonPath    = m_strAddonPath.c_str();
+  m_props.strAddonPath    = m_strAddonPath.c_str();
   m_menuhooks.clear();
   m_bReadyToUse           = false;
   m_isInUse               = false;
@@ -129,7 +129,7 @@ ADDON_STATUS CActiveAEDSPAddon::Create(int iClientId)
     if ((status = CAddonDll::Create()) != ADDON_STATUS_OK)
       return status;
     
-    if ((status = CAddonDll::CreateInstance(ADDON_INSTANCE_ADSP, ID().c_str(), &m_pInfo, &m_struct, this, &m_addonInstance)) != ADDON_STATUS_OK)
+    if ((status = CAddonDll::CreateInstance(ADDON_INSTANCE_ADSP, ID().c_str(), &m_props, &m_struct, this, &m_addonInstance)) != ADDON_STATUS_OK)
       return status;
 
     bReadyToUse = GetAddonProperties();
