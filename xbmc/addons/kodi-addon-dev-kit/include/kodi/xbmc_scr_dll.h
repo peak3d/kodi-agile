@@ -30,8 +30,7 @@ extern "C"
   void Start(void* addonInstance);
   void Render(void* addonInstance);
 
-  // function to export the above structure to XBMC
-  void __declspec(dllexport) get_addon(struct ScreenSaver* pScr)
+  void SetScreenSaverFuncTable(struct ScreenSaver* pScr)
   {
     pScr->Start = Start;
     pScr->Render = Render;
