@@ -175,7 +175,7 @@ ADDON_STATUS CAddonDll::Create()
   CLog::Log(LOGDEBUG, "ADDON: Dll Initializing - %s", Name().c_str());
   m_initialized = false;
 
-  if (!LoadDll() || !CheckAPIVersion())
+  if (!LoadDll())
     return ADDON_STATUS_PERMANENT_FAILURE;
 
   /* Allocate the helper function class to allow crosstalk over
