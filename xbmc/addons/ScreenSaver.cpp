@@ -96,13 +96,6 @@ void CScreenSaver::Render()
     m_pStruct.Render(m_addonInstance);
 }
 
-void CScreenSaver::GetInfo(SCR_INFO *info)
-{
-  // get info from screensaver
-  if (m_pStruct.GetInfo)
-    m_pStruct.GetInfo(m_addonInstance, info);
-}
-
 void CScreenSaver::Destroy()
 {
   // Check first screensaver is based upon python, if yes are the other parts

@@ -22,11 +22,6 @@
 
 extern "C"
 {
-  struct SCR_INFO
-  {
-    int dummy;
-  };
-
   struct SCR_PROPS
   {
     void *device;
@@ -44,7 +39,6 @@ extern "C"
   {
     void (__cdecl* Start) (void* addonInstance);
     void (__cdecl* Render) (void* addonInstance);
-    void (__cdecl* GetInfo)(void* addonInstance, SCR_INFO *info);
   };
 }
 

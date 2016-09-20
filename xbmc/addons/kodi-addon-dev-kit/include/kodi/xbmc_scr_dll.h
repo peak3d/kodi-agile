@@ -29,14 +29,12 @@ extern "C"
   // Functions that your visualisation must implement
   void Start(void* addonInstance);
   void Render(void* addonInstance);
-  void GetInfo(void* addonInstance, SCR_INFO* pInfo);
 
   // function to export the above structure to XBMC
   void __declspec(dllexport) get_addon(struct ScreenSaver* pScr)
   {
     pScr->Start = Start;
     pScr->Render = Render;
-    pScr->GetInfo = GetInfo;
   };
 };
 
