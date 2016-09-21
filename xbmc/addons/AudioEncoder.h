@@ -42,6 +42,8 @@ namespace ADDON
     const std::string extension;
 
   private:
+    void ExceptionHandle(std::exception& ex, const char* function);
+
     sFuncTable_AudioEncoder m_struct;
     void* m_addonInstance;
   };

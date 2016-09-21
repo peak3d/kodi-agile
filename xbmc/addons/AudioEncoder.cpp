@@ -70,11 +70,7 @@ bool CAudioEncoder::Init(sAddonToKodiFuncTable_AudioEncoder &callbacks)
                                     m_strComment.c_str(),
                                     m_iTrackLength);
   }
-  catch (std::exception& ex)
-  {
-    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception and disable add-on
-    memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 
   return false;
 }
@@ -89,11 +85,7 @@ int CAudioEncoder::Encode(int nNumBytesRead, uint8_t* pbtStream)
     if (m_struct.toAddon.Encode)
       return m_struct.toAddon.Encode(m_addonInstance, nNumBytesRead, pbtStream);
   }
-  catch (std::exception& ex)
-  {
-    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception and disable add-on
-    memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 
   return 0;
 }
@@ -111,11 +103,7 @@ bool CAudioEncoder::Close()
         return false;
     }
   }
-  catch (std::exception& ex)
-  {
-    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception and disable add-on
-    memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 
   CAddonDll::DestroyInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), m_addonInstance);
   m_addonInstance = nullptr;
@@ -127,6 +115,12 @@ void CAudioEncoder::Destroy()
 {
   CAddonDll::Destroy();
   memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon));
+}
+
+void CAudioEncoder::ExceptionHandle(std::exception& ex, const char* function)
+{
+  ADDON::LogException(this, ex, function); // Handle exception and disable add-on
+  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call  
 }
 
 } /* namespace ADDON */
