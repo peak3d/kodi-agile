@@ -29,39 +29,46 @@ std::unique_ptr<CAudioEncoder> CAudioEncoder::FromExtension(AddonProps props, co
   return std::unique_ptr<CAudioEncoder>(new CAudioEncoder(std::move(props), std::move(extension)));
 }
 
+CAudioEncoder::CAudioEncoder(AddonProps props)
+  : CAddonDll(std::move(props)),
+    m_addonInstance{nullptr}
+{
+  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon));
+}
+
 CAudioEncoder::CAudioEncoder(AddonProps props, std::string _extension)
-    : CAddonDll(std::move(props)), extension(std::move(_extension)), m_addonInstance(nullptr)
+  : CAddonDll(std::move(props)),
+    extension(std::move(_extension)),
+    m_addonInstance(nullptr)
 {
   memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon));
 }
 
 bool CAudioEncoder::Init(sAddonToKodiFuncTable_AudioEncoder &callbacks)
 {
-  bool ret = false;
-
   if (!Initialized())
-    return ret;
+    return false;
   
   m_struct.toKodi = callbacks;
   if (CAddonDll::CreateInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), nullptr, &m_struct, this, &m_addonInstance) != ADDON_STATUS_OK)
-    return ret;
+    return false;
 
   try
   {
     if (m_struct.toAddon.Start)
-      ret = m_struct.toAddon.Start(m_addonInstance,
-                                   m_iInChannels,
-                                   m_iInSampleRate,
-                                   m_iInBitsPerSample,
-                                   m_strTitle.c_str(),
-                                   m_strArtist.c_str(),
-                                   m_strAlbumArtist.c_str(),
-                                   m_strAlbum.c_str(),
-                                   m_strYear.c_str(),
-                                   m_strTrack.c_str(),
-                                   m_strGenre.c_str(),
-                                   m_strComment.c_str(),
-                                   m_iTrackLength);
+      return m_struct.toAddon.Start(m_addonInstance,
+                                    m_iInChannels,
+                                    m_iInSampleRate,
+                                    m_iInBitsPerSample,
+                                    m_strTitle.c_str(),
+                                    m_strArtist.c_str(),
+                                    m_strAlbumArtist.c_str(),
+                                    m_strAlbum.c_str(),
+                                    m_strYear.c_str(),
+                                    m_strTrack.c_str(),
+                                    m_strGenre.c_str(),
+                                    m_strComment.c_str(),
+                                    m_iTrackLength);
   }
   catch (std::exception& ex)
   {
@@ -69,19 +76,18 @@ bool CAudioEncoder::Init(sAddonToKodiFuncTable_AudioEncoder &callbacks)
     memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call
   }
 
-  return ret;
+  return false;
 }
 
 int CAudioEncoder::Encode(int nNumBytesRead, uint8_t* pbtStream)
 {
-  int ret = 0;
   if (!Initialized() || !m_addonInstance)
-    return ret;
+    return 0;
 
   try
   {
     if (m_struct.toAddon.Encode)
-      ret = m_struct.toAddon.Encode(m_addonInstance, nNumBytesRead, pbtStream);
+      return m_struct.toAddon.Encode(m_addonInstance, nNumBytesRead, pbtStream);
   }
   catch (std::exception& ex)
   {
@@ -89,7 +95,7 @@ int CAudioEncoder::Encode(int nNumBytesRead, uint8_t* pbtStream)
     memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call
   }
 
-  return ret;
+  return 0;
 }
 
 bool CAudioEncoder::Close()
@@ -123,5 +129,5 @@ void CAudioEncoder::Destroy()
   memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon));
 }
 
-} /*namespace ADDON*/
+} /* namespace ADDON */
 

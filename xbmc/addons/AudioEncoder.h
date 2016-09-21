@@ -1,3 +1,4 @@
+#pragma once
 /*
  *      Copyright (C) 2013 Arne Morten Kvarving
  *
@@ -16,7 +17,6 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-#pragma once
 
 #include "AddonDll.h"
 #include "addons/kodi-addon-dev-kit/include/kodi/xbmc_audioenc_types.h"
@@ -30,11 +30,10 @@ namespace ADDON
   public:
     static std::unique_ptr<CAudioEncoder> FromExtension(AddonProps, const cp_extension_t* ext);
 
-    explicit CAudioEncoder(AddonProps props) : CAddonDll(std::move(props)), m_addonInstance{nullptr} {};
+    explicit CAudioEncoder(AddonProps props);
     CAudioEncoder(AddonProps props, std::string extension);
     virtual ~CAudioEncoder() {}
 
-    // Things that MUST be supplied by the child classes
     bool Init(sAddonToKodiFuncTable_AudioEncoder &callbacks);
     int Encode(int nNumBytesRead, uint8_t* pbtStream);
     bool Close();
@@ -47,4 +46,4 @@ namespace ADDON
     void* m_addonInstance;
   };
 
-} /*namespace ADDON*/
+} /* namespace ADDON */
