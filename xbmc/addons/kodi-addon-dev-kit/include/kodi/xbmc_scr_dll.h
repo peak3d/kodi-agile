@@ -30,10 +30,10 @@ extern "C"
   void Start(void* addonInstance);
   void Render(void* addonInstance);
 
-  void SetScreenSaverFuncTable(struct sKodiToAddonFuncTable_ScreenSaver* pScr)
+  inline void SetScreenSaverFuncTable(struct sFuncTable_ScreenSaver* pScr)
   {
-    pScr->Start = Start;
-    pScr->Render = Render;
+    pScr->toAddon.Start = Start;
+    pScr->toAddon.Render = Render;
   };
 };
 
