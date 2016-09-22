@@ -4840,7 +4840,6 @@
 		EDE8C71F1C7F618500A86ECC /* xbmc_epg_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xbmc_epg_types.h; path = "kodi-addon-dev-kit/include/kodi/xbmc_epg_types.h"; sourceTree = "<group>"; };
 		EDE8C7201C7F618500A86ECC /* xbmc_pvr_dll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xbmc_pvr_dll.h; path = "kodi-addon-dev-kit/include/kodi/xbmc_pvr_dll.h"; sourceTree = "<group>"; };
 		EDE8C7211C7F618500A86ECC /* xbmc_pvr_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xbmc_pvr_types.h; path = "kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h"; sourceTree = "<group>"; };
-		EDE8C7221C7F618500A86ECC /* xbmc_scr_dll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xbmc_scr_dll.h; path = "kodi-addon-dev-kit/include/kodi/xbmc_scr_dll.h"; sourceTree = "<group>"; };
 		EDE8C7231C7F618500A86ECC /* xbmc_scr_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xbmc_scr_types.h; path = "kodi-addon-dev-kit/include/kodi/xbmc_scr_types.h"; sourceTree = "<group>"; };
 		EDE8C7251C7F618500A86ECC /* xbmc_vis_dll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xbmc_vis_dll.h; path = "kodi-addon-dev-kit/include/kodi/xbmc_vis_dll.h"; sourceTree = "<group>"; };
 		EDE8C7261C7F618500A86ECC /* xbmc_vis_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xbmc_vis_types.h; path = "kodi-addon-dev-kit/include/kodi/xbmc_vis_types.h"; sourceTree = "<group>"; };
@@ -9145,7 +9144,6 @@
 				EDE8C71F1C7F618500A86ECC /* xbmc_epg_types.h */,
 				EDE8C7201C7F618500A86ECC /* xbmc_pvr_dll.h */,
 				EDE8C7211C7F618500A86ECC /* xbmc_pvr_types.h */,
-				EDE8C7221C7F618500A86ECC /* xbmc_scr_dll.h */,
 				EDE8C7231C7F618500A86ECC /* xbmc_scr_types.h */,
 				EDE8C7251C7F618500A86ECC /* xbmc_vis_dll.h */,
 				EDE8C7261C7F618500A86ECC /* xbmc_vis_types.h */,

@@ -1,7 +1,6 @@
 #pragma once
-
 /*
- *      Copyright (C) 2005-2015 Team Kodi
+ *      Copyright (C) 2005-2016 Team Kodi
  *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -20,37 +19,85 @@
  *
  */
 
+#include <string>
+
 extern "C"
 {
-  struct SCR_PROPS
+
+struct SCR_PROPS
+{
+  void *device;
+  int x;
+  int y;
+  int width;
+  int height;
+  float pixelRatio;
+  const char *name;
+  const char *presets;
+  const char *profile;
+};
+
+typedef struct sAddonToKodiFuncTable_ScreenSaver
+{
+  void* kodiInstance;
+} sAddonToKodiFuncTable_ScreenSaver;
+
+typedef struct sKodiToAddonFuncTable_ScreenSaver
+{
+  void (__cdecl* Start) (void* addonInstance);
+  void (__cdecl* Render) (void* addonInstance);
+} sKodiToAddonFuncTable_ScreenSaver;
+
+typedef struct sFuncTable_ScreenSaver
+{
+  SCR_PROPS props;
+  sAddonToKodiFuncTable_ScreenSaver toKodi;
+  sKodiToAddonFuncTable_ScreenSaver toAddon;
+} sFuncTable_ScreenSaver;
+
+namespace kodi {
+namespace addon {
+namespace screensaver {
+
+  class CAddon
   {
-    void *device;
-    int x;
-    int y;
-    int width;
-    int height;
-    float pixelRatio;
-    const char *name;
-    const char *presets;
-    const char *profile;
+  public:
+    CAddonScreenSaver(void* instance)
+      : m_instance(static_cast<sFuncTable_ScreenSaver*>(instance))
+    {
+      m_instance->toAddon.Start = ADDON_Start;
+      m_instance->toAddon.Render = ADDON_Render;
+    }
+    virtual ~CAddon() { }   
+
+    inline void* Device() { return m_instance->props.device; }
+    inline int X() { return m_instance->props.x; }
+    inline int Y() { return m_instance->props.y; }
+    inline int Width() { return m_instance->props.width; }
+    inline int Height() { return m_instance->props.height; }
+    inline float PixelRatio() { return m_instance->props.pixelRatio; }
+    inline std::string Name() { return m_instance->props.name; }
+    inline std::string Presets() { return m_instance->props.presets; }
+    inline std::string Profile() { return m_instance->props.profile; }
+    
+    virtual void Start()=0;
+    virtual void Render()=0;
+
+  private:
+    inline static void ADDON_Start(void* addonInstance)
+    {
+      static_cast<CAddon*>(addonInstance)->Start();
+    }
+
+    inline static void ADDON_Render(void* addonInstance)
+    {
+      static_cast<CAddon*>(addonInstance)->Render();
+    }
+
+    sFuncTable_ScreenSaver* m_instance;
   };
 
-  typedef struct sAddonToKodiFuncTable_ScreenSaver
-  {
-    void* kodiInstance;
-  } sAddonToKodiFuncTable_ScreenSaver;
-  
-  typedef struct sKodiToAddonFuncTable_ScreenSaver
-  {
-    void (__cdecl* Start) (void* addonInstance);
-    void (__cdecl* Render) (void* addonInstance);
-  } sKodiToAddonFuncTable_ScreenSaver;
-
-  typedef struct sFuncTable_ScreenSaver
-  {
-    SCR_PROPS props;
-    sAddonToKodiFuncTable_ScreenSaver toKodi;
-    sKodiToAddonFuncTable_ScreenSaver toAddon;
-  } sFuncTable_ScreenSaver;
-}
-
+} /* namespace screensaver */
+} /* namespace addon */
+} /* namespace kodi */
+} /* extern "C" */
