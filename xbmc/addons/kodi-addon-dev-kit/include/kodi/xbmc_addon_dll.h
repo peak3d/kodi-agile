@@ -46,7 +46,7 @@ extern "C" {
   ADDON_STATUS __declspec(dllexport) ADDON_SetSetting(const char *settingName, const void *settingValue);
   void         __declspec(dllexport) ADDON_FreeSettings();
   ADDON_STATUS __declspec(dllexport) ADDON_CreateInstance(int instanceType, const char* instanceID, void* instance, void** addonInstance);
-  void __declspec(dllexport) ADDON_DestroyInstance(int instanceType, const char* instanceID, void* instance);
+  void __declspec(dllexport) ADDON_DestroyInstance(int instanceType, void* instance);
 
 
 #ifdef __cplusplus

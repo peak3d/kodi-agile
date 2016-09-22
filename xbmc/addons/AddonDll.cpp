@@ -500,11 +500,11 @@ ADDON_STATUS CAddonDll::CreateInstance(int instanceType, const char* instanceID,
   return ADDON_STATUS_UNKNOWN;
 }
 
-void CAddonDll::DestroyInstance(int instanceType, const char* instanceID, void* instance)
+void CAddonDll::DestroyInstance(int instanceType, void* instance)
 {
   try
   {
-    return m_pDll->DestroyInstance(instanceType, instanceID, instance);
+    return m_pDll->DestroyInstance(instanceType, instance);
   }
   catch (std::exception &e)
   {

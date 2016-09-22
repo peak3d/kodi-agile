@@ -480,7 +480,7 @@ void CVisualisation::Destroy()
 {
   // Free what was allocated in method CVisualisation::Create
 
-  CAddonDll::DestroyInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), m_addonInstance);
+  CAddonDll::DestroyInstance(ADDON_INSTANCE_VISUALIZATION, m_addonInstance);
   memset(&m_struct, 0, sizeof(m_struct));
   m_addonInstance = nullptr;
 

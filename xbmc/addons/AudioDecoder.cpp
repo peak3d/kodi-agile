@@ -146,7 +146,7 @@ int CAudioDecoder::GetTrackCount(const std::string& strPath)
 
 void CAudioDecoder::Destroy()
 {
-  CAddonDll::DestroyInstance(ADDON_INSTANCE_AUDIODECODER, ID().c_str(), m_addonInstance);
+  CAddonDll::DestroyInstance(ADDON_INSTANCE_AUDIODECODER, m_addonInstance);
   CAddonDll::Destroy();
   memset(&m_struct, 0, sizeof(m_struct));
   m_addonInstance = nullptr;

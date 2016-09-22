@@ -133,7 +133,7 @@ void CScreenSaver::Destroy()
   }
 
   // Destroy the from binary add-on opened instance of screensaver.
-  CAddonDll::DestroyInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), m_addonInstance);
+  CAddonDll::DestroyInstance(ADDON_INSTANCE_SCREENSAVER, m_addonInstance);
   m_addonInstance = nullptr;
 
   // Release what was allocated in method CScreenSaver::CreateScreenSaver in 

@@ -106,7 +106,7 @@ bool CAudioEncoder::Close()
   }
   catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 
-  CAddonDll::DestroyInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), m_addonInstance);
+  CAddonDll::DestroyInstance(ADDON_INSTANCE_AUDIOENCODER, m_addonInstance);
   m_addonInstance = nullptr;
 
   return true;

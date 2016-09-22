@@ -59,7 +59,7 @@ namespace ADDON
 
     bool SupportMultipleInstances(int instanceType, const char* instanceID);
     ADDON_STATUS CreateInstance(int instanceType, const char* instanceID, void* instance, void** addonInstance);
-    void DestroyInstance(int instanceType, const char* instanceID, void* instance);
+    void DestroyInstance(int instanceType, void* instance);
 
   protected:
     void HandleException(std::exception &e, const char* context);

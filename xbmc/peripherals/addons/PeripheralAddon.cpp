@@ -157,7 +157,7 @@ ADDON_STATUS CPeripheralAddon::CreateAddon(void)
 
 void CPeripheralAddon::Destroy()
 {
-  CAddonDll::DestroyInstance(ADDON_INSTANCE_PERIPHERAL, ID().c_str(), m_addonInstance);
+  CAddonDll::DestroyInstance(ADDON_INSTANCE_PERIPHERAL, m_addonInstance);
   CAddonDll::Destroy();
   m_addonInstance = nullptr;
 }

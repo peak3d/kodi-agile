@@ -204,7 +204,7 @@ void CPVRClient::Destroy(void)
   /* destroy the add-on */
   try
   { 
-    CAddonDll::DestroyInstance(ADDON_INSTANCE_PVR, ID().c_str(), m_addonInstance);
+    CAddonDll::DestroyInstance(ADDON_INSTANCE_PVR, m_addonInstance);
     CAddonDll::Destroy();
     m_addonInstance = nullptr;
   }

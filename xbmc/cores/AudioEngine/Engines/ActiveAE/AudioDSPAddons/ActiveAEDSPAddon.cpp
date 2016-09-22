@@ -173,7 +173,7 @@ void CActiveAEDSPAddon::Destroy(void)
   /* destroy the add-on */
   try
   {
-    CAddonDll::DestroyInstance(ADDON_INSTANCE_ADSP, ID().c_str(), m_addonInstance);
+    CAddonDll::DestroyInstance(ADDON_INSTANCE_ADSP, m_addonInstance);
     CAddonDll::Destroy();
     m_addonInstance = nullptr;
   }

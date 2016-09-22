@@ -35,7 +35,7 @@ public:
   virtual void FreeSettings()=0;
   virtual ADDON_STATUS SetSetting(const char *settingName, const void *settingValue) =0;
   virtual ADDON_STATUS CreateInstance(int instanceType, const char* instanceID, void* instance, void** addonInstance) =0;
-  virtual void DestroyInstance(int instanceType, const char* instanceID, void* instance) =0;
+  virtual void DestroyInstance(int instanceType, void* instance) =0;
 };
 
 class DllAddon : public DllDynamic, public DllAddonInterface
@@ -51,7 +51,7 @@ public:
   DEFINE_METHOD0(void, FreeSettings)
   DEFINE_METHOD2(ADDON_STATUS, SetSetting, (const char *p1, const void *p2))
   DEFINE_METHOD4(ADDON_STATUS, CreateInstance, (int p1, const char* p2, void* p3, void** p4))
-  DEFINE_METHOD3(void, DestroyInstance, (int p1, const char* p2, void* p3))
+  DEFINE_METHOD2(void, DestroyInstance, (int p1, void* p2))
   BEGIN_METHOD_RESOLVE()
     RESOLVE_METHOD_RENAME(ADDON_Create, Create)
     RESOLVE_METHOD_RENAME(ADDON_Stop, Stop)

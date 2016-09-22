@@ -76,7 +76,7 @@ void CInputStream::Destroy(void)
   /* destroy the add-on */
   try
   {
-    CAddonDll::DestroyInstance(ADDON_INSTANCE_INPUTSTREAM, ID().c_str(), m_addonInstance);
+    CAddonDll::DestroyInstance(ADDON_INSTANCE_INPUTSTREAM, m_addonInstance);
     CAddonDll::Destroy();
     m_addonInstance = nullptr;
     memset(&m_struct, 0, sizeof(m_struct));
