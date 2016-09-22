@@ -62,7 +62,7 @@ namespace screensaver {
   class CAddon
   {
   public:
-    CAddonScreenSaver(void* instance)
+    CAddon(void* instance)
       : m_instance(static_cast<sFuncTable_ScreenSaver*>(instance))
     {
       m_instance->toAddon.Start = ADDON_Start;
