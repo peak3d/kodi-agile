@@ -22,10 +22,11 @@
 #include "xbmc_addon_dll.h"
 #include <string>
 
-extern "C"
-{
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-struct SCR_PROPS
+typedef struct SCR_PROPS
 {
   void *device;
   int x;
@@ -36,7 +37,7 @@ struct SCR_PROPS
   const char *name;
   const char *presets;
   const char *profile;
-};
+} SCR_PROPS;
 
 typedef struct sAddonToKodiFuncTable_ScreenSaver
 {
@@ -56,6 +57,7 @@ typedef struct sAddonInstance_ScreenSaver
   sKodiToAddonFuncTable_ScreenSaver toAddon;
 } sAddonInstance_ScreenSaver;
 
+#ifdef __cplusplus
 namespace kodi {
 namespace addon {
 namespace screensaver {
@@ -69,7 +71,6 @@ namespace screensaver {
       m_instance->toAddon.Start = ADDON_Start;
       m_instance->toAddon.Render = ADDON_Render;
     }
-    virtual ~CAddon() { }   
 
     inline void* Device() { return m_instance->props.device; }
     inline int X() { return m_instance->props.x; }
@@ -80,7 +81,7 @@ namespace screensaver {
     inline std::string Name() { return m_instance->props.name; }
     inline std::string Presets() { return m_instance->props.presets; }
     inline std::string Profile() { return m_instance->props.profile; }
-    
+
     virtual void Start()=0;
     virtual void Render()=0;
 
@@ -102,3 +103,4 @@ namespace screensaver {
 } /* namespace addon */
 } /* namespace kodi */
 } /* extern "C" */
+#endif
