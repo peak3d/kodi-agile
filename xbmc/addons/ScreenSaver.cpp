@@ -132,6 +132,10 @@ void CScreenSaver::Destroy()
     return;
   }
 
+  // Destroy the from binary add-on opened instance of screensaver.
+  CAddonDll::DestroyInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), m_addonInstance);
+  m_addonInstance = nullptr;
+
   // Release what was allocated in method CScreenSaver::CreateScreenSaver in 
   // case of a binary add-on.
   if (m_props.name)
@@ -149,10 +153,6 @@ void CScreenSaver::Destroy()
     free((void *) m_props.profile);
     m_props.profile = nullptr;
   }
-
-  // Destroy the from binary add-on opened instance of screensaver.
-  CAddonDll::DestroyInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), m_addonInstance);
-  m_addonInstance = nullptr;
 }
 
 void CScreenSaver::ExceptionHandle(std::exception& ex, const char* function)
