@@ -35,12 +35,9 @@ namespace ADDON
 {
 
 CScreenSaver::CScreenSaver(AddonProps props)
-  : ADDON::CAddonDll(std::move(props))
+  : ADDON::CAddonDll(std::move(props)),
+    m_addonInstance(nullptr)
 {
-  m_struct.props.name = nullptr;
-  m_struct.props.presets = nullptr;
-  m_struct.props.profile = nullptr;
-
   memset(&m_struct, 0, sizeof(m_struct));
 }
 
@@ -48,10 +45,6 @@ CScreenSaver::CScreenSaver(const char *addonID)
   : ADDON::CAddonDll(AddonProps(addonID, ADDON_UNKNOWN)),
     m_addonInstance(nullptr)
 {
-  m_struct.props.name = nullptr;
-  m_struct.props.presets = nullptr;
-  m_struct.props.profile = nullptr;
-
   memset(&m_struct, 0, sizeof(m_struct));
 }
 
@@ -62,8 +55,6 @@ bool CScreenSaver::IsInUse() const
 
 bool CScreenSaver::CreateScreenSaver()
 {
-  ADDON_STATUS status;
-
   if (CScriptInvocationManager::GetInstance().HasLanguageInvoker(LibPath()))
   {
     // Don't allow a previously-scheduled alarm to kill our new screensaver
@@ -76,8 +67,9 @@ bool CScreenSaver::CreateScreenSaver()
 
   if (CAddonDll::Create() != ADDON_STATUS_OK)
     return false;
-  
-  // pass it the screen width,height and the name of the screensaver
+
+  m_struct.toKodi.kodiInstance = this;  
+  // pass it the screen width, height and the name of the screensaver
 #ifdef HAS_DX
   m_struct.props.device = g_Windowing.Get3D11Context();
 #else
@@ -91,8 +83,7 @@ bool CScreenSaver::CreateScreenSaver()
   m_struct.props.name = strdup(Name().c_str());
   m_struct.props.presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
   m_struct.props.profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
-
-  m_struct.toKodi.kodiInstance = this;
+  
   return (CAddonDll::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), &m_struct, &m_addonInstance) == ADDON_STATUS_OK);
 }
 
@@ -139,20 +130,13 @@ void CScreenSaver::Destroy()
   // Release what was allocated in method CScreenSaver::CreateScreenSaver in 
   // case of a binary add-on.
   if (m_struct.props.name)
-  {
     free((void *) m_struct.props.name);
-    m_struct.props.name = nullptr;
-  }
   if (m_struct.props.presets)
-  {
     free((void *) m_struct.props.presets);
-    m_struct.props.presets = nullptr;
-  }
   if (m_struct.props.profile)
-  {
     free((void *) m_struct.props.profile);
-    m_struct.props.profile = nullptr;
-  }
+
+  memset(&m_struct, 0, sizeof(m_struct));
 }
 
 void CScreenSaver::ExceptionHandle(std::exception& ex, const char* function)
