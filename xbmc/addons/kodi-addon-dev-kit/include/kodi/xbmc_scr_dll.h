@@ -25,10 +25,12 @@
 
 #include <string>
 
-extern "C"
-{
+extern "C" {
+namespace kodi {
+namespace addon {
+namespace screensaver {
 
-  class CAddonScreenSaver
+  class CAddon
   {
   public:
     CAddonScreenSaver(void* instance)
@@ -37,7 +39,7 @@ extern "C"
       m_instance->toAddon.Start = ADDON_Start;
       m_instance->toAddon.Render = ADDON_Render;
     }
-    virtual ~CAddonScreenSaver() { }   
+    virtual ~CAddon() { }   
 
     inline void* Device() { return m_instance->props.device; }
     inline int X() { return m_instance->props.x; }
@@ -55,16 +57,19 @@ extern "C"
   private:
     inline static void ADDON_Start(void* addonInstance)
     {
-      static_cast<CAddonScreenSaver*>(addonInstance)->Start();
+      static_cast<CAddon*>(addonInstance)->Start();
     }
 
     inline static void ADDON_Render(void* addonInstance)
     {
-      static_cast<CAddonScreenSaver*>(addonInstance)->Render();
+      static_cast<CAddon*>(addonInstance)->Render();
     }
 
     sFuncTable_ScreenSaver* m_instance;
   };
 
-};
+} /* namespace screensaver */
+} /* namespace addon */
+} /* namespace kodi */
+} /* extern "C" */
 
