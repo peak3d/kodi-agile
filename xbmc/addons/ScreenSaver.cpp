@@ -104,11 +104,7 @@ void CScreenSaver::Start()
     if (m_struct.toAddon.Start)
       m_struct.toAddon.Start(m_addonInstance);
   }
-  catch (std::exception& ex)
-  {
-    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception and disable add-on
-    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 }
 
 void CScreenSaver::Render()
@@ -119,11 +115,7 @@ void CScreenSaver::Render()
     if (m_struct.toAddon.Render)
       m_struct.toAddon.Render(m_addonInstance);
   }
-  catch (std::exception& ex)
-  {
-    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception and disable add-on
-    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 }
 
 void CScreenSaver::Destroy()
@@ -161,6 +153,12 @@ void CScreenSaver::Destroy()
   // Destroy the from binary add-on opened instance of screensaver.
   CAddonDll::DestroyInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), m_addonInstance);
   m_addonInstance = nullptr;
+}
+
+void CScreenSaver::ExceptionHandle(std::exception& ex, const char* function)
+{
+  ADDON::LogException(this, ex, function); // Handle exception
+  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call  
 }
 
 } /* namespace ADDON */
