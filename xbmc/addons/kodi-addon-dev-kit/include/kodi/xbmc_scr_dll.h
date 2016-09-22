@@ -26,14 +26,34 @@
 extern "C"
 {
 
-  // Functions that your visualisation must implement
-  void Start(void* addonInstance);
-  void Render(void* addonInstance);
-
-  inline void SetScreenSaverFuncTable(struct sFuncTable_ScreenSaver* pScr)
+  class CAddonScreenSaver
   {
-    pScr->toAddon.Start = Start;
-    pScr->toAddon.Render = Render;
+  public:
+    CAddonScreenSaver(void* instanceFunctions, void* kodiInstance)
+      : m_instanceFunctions(static_cast<sFuncTable_ScreenSaver*>(instanceFunctions))
+    {
+      m_instanceFunctions->toAddon.Start = ADDON_Start;
+      m_instanceFunctions->toAddon.Render = ADDON_Render;
+    }
+    
+    ~CAddonScreenSaver() { }
+    
+    virtual void Start()=0;
+    virtual void Render()=0;
+
+  private:
+    inline static void ADDON_Start(void* addonInstance)
+    {
+      static_cast<CAddonScreenSaver*>(addonInstance)->Start();
+    }
+
+    inline static void ADDON_Render(void* addonInstance)
+    {
+      static_cast<CAddonScreenSaver*>(addonInstance)->Render();
+    }
+
+    sFuncTable_ScreenSaver* m_instanceFunctions;
   };
+
 };
 
