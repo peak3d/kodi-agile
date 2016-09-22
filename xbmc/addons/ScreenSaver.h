@@ -41,7 +41,7 @@ public:
 
 private:
   SCR_PROPS m_props;
-  sKodiToAddonFuncTable_ScreenSaver m_struct;
+  sFuncTable_ScreenSaver m_struct;
   void* m_addonInstance;
 };
 

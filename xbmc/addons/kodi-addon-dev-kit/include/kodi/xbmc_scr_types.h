@@ -35,10 +35,21 @@ extern "C"
     const char *profile;
   };
 
+  typedef struct sAddonToKodiFuncTable_ScreenSaver
+  {
+    void* kodiInstance;
+  } sAddonToKodiFuncTable_ScreenSaver;
+  
   typedef struct sKodiToAddonFuncTable_ScreenSaver
   {
     void (__cdecl* Start) (void* addonInstance);
     void (__cdecl* Render) (void* addonInstance);
   } sKodiToAddonFuncTable_ScreenSaver;
+
+  typedef struct sFuncTable_ScreenSaver
+  {
+    sAddonToKodiFuncTable_ScreenSaver toKodi;
+    sKodiToAddonFuncTable_ScreenSaver toAddon;
+  } sFuncTable_ScreenSaver;
 }
 

@@ -92,6 +92,7 @@ bool CScreenSaver::CreateScreenSaver()
   m_props.presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
   m_props.profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
 
+  m_struct.toKodi.kodiInstance = this;
   return (CAddonDll::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), &m_props, &m_struct, this, &m_addonInstance) == ADDON_STATUS_OK);
 }
 
@@ -100,8 +101,8 @@ void CScreenSaver::Start()
   // notify screen saver that they should start
   try
   {
-    if (m_struct.Start)
-      m_struct.Start(m_addonInstance);
+    if (m_struct.toAddon.Start)
+      m_struct.toAddon.Start(m_addonInstance);
   }
   catch (std::exception& ex)
   {
@@ -115,8 +116,8 @@ void CScreenSaver::Render()
   // ask screensaver to render itself
   try
   {
-    if (m_struct.Render)
-      m_struct.Render(m_addonInstance);
+    if (m_struct.toAddon.Render)
+      m_struct.toAddon.Render(m_addonInstance);
   }
   catch (std::exception& ex)
   {
