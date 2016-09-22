@@ -42,7 +42,7 @@ public:
 private:
   void ExceptionHandle(std::exception& ex, const char* function);
 
-  sFuncTable_ScreenSaver m_struct;
+  sAddonInstance_ScreenSaver m_struct;
   void* m_addonInstance;
 };
 

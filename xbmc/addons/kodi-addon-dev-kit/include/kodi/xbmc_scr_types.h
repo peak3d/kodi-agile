@@ -49,12 +49,12 @@ typedef struct sKodiToAddonFuncTable_ScreenSaver
   void (__cdecl* Render) (void* addonInstance);
 } sKodiToAddonFuncTable_ScreenSaver;
 
-typedef struct sFuncTable_ScreenSaver
+typedef struct sAddonInstance_ScreenSaver
 {
   SCR_PROPS props;
   sAddonToKodiFuncTable_ScreenSaver toKodi;
   sKodiToAddonFuncTable_ScreenSaver toAddon;
-} sFuncTable_ScreenSaver;
+} sAddonInstance_ScreenSaver;
 
 namespace kodi {
 namespace addon {
@@ -64,7 +64,7 @@ namespace screensaver {
   {
   public:
     CAddon(void* instance)
-      : m_instance(static_cast<sFuncTable_ScreenSaver*>(instance))
+      : m_instance(static_cast<sAddonInstance_ScreenSaver*>(instance))
     {
       m_instance->toAddon.Start = ADDON_Start;
       m_instance->toAddon.Render = ADDON_Render;
@@ -95,7 +95,7 @@ namespace screensaver {
       static_cast<CAddon*>(addonInstance)->Render();
     }
 
-    sFuncTable_ScreenSaver* m_instance;
+    sAddonInstance_ScreenSaver* m_instance;
   };
 
 } /* namespace screensaver */
