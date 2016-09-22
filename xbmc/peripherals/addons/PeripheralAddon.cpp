@@ -139,7 +139,7 @@ ADDON_STATUS CPeripheralAddon::CreateAddon(void)
 
   if (status == ADDON_STATUS_OK)
   {
-    try {status = CAddonDll::CreateInstance(ADDON_INSTANCE_PERIPHERAL, ID().c_str(), &m_props, &m_struct, this, &m_addonInstance);}
+    try {status = CAddonDll::CreateInstance(ADDON_INSTANCE_PERIPHERAL, ID().c_str(), &m_struct, &m_addonInstance);}
     catch (const std::exception& e) { LogException(e, __FUNCTION__); }
   }
 

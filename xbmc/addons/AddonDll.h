@@ -58,7 +58,7 @@ namespace ADDON
     bool DllLoaded(void) const;
 
     bool SupportMultipleInstances(int instanceType, const char* instanceID);
-    ADDON_STATUS CreateInstance(int instanceType, const char* instanceID, const void* instanceProps, void* instanceFunctions, void* kodiInstance, void** addonInstance);
+    ADDON_STATUS CreateInstance(int instanceType, const char* instanceID, void* instance, void** addonInstance);
     void DestroyInstance(int instanceType, const char* instanceID, void* instance);
 
   protected:

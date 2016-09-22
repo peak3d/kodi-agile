@@ -48,6 +48,7 @@ extern "C"
 
   typedef struct sFuncTable_ScreenSaver
   {
+    SCR_PROPS props;
     sAddonToKodiFuncTable_ScreenSaver toKodi;
     sKodiToAddonFuncTable_ScreenSaver toAddon;
   } sFuncTable_ScreenSaver;

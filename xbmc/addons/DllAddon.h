@@ -34,7 +34,7 @@ public:
   virtual unsigned int GetSettings(ADDON_StructSetting*** sSet)=0;
   virtual void FreeSettings()=0;
   virtual ADDON_STATUS SetSetting(const char *settingName, const void *settingValue) =0;
-  virtual ADDON_STATUS CreateInstance(int instanceType, const char* instanceID, const void* instanceProps, void* instanceFunctions, void* kodiInstance, void** addonInstance) =0;
+  virtual ADDON_STATUS CreateInstance(int instanceType, const char* instanceID, void* instance, void** addonInstance) =0;
   virtual void DestroyInstance(int instanceType, const char* instanceID, void* instance) =0;
 };
 
@@ -50,7 +50,7 @@ public:
   DEFINE_METHOD1(unsigned int, GetSettings, (ADDON_StructSetting ***p1))
   DEFINE_METHOD0(void, FreeSettings)
   DEFINE_METHOD2(ADDON_STATUS, SetSetting, (const char *p1, const void *p2))
-  DEFINE_METHOD6(ADDON_STATUS, CreateInstance, (int p1, const char* p2, const void* p3, void* p4, void* p5, void** p6))
+  DEFINE_METHOD4(ADDON_STATUS, CreateInstance, (int p1, const char* p2, void* p3, void** p4))
   DEFINE_METHOD3(void, DestroyInstance, (int p1, const char* p2, void* p3))
   BEGIN_METHOD_RESOLVE()
     RESOLVE_METHOD_RENAME(ADDON_Create, Create)

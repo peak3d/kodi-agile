@@ -45,7 +45,7 @@ extern "C" {
   unsigned int __declspec(dllexport) ADDON_GetSettings(ADDON_StructSetting ***sSet);
   ADDON_STATUS __declspec(dllexport) ADDON_SetSetting(const char *settingName, const void *settingValue);
   void         __declspec(dllexport) ADDON_FreeSettings();
-  ADDON_STATUS __declspec(dllexport) ADDON_CreateInstance(int instanceType, const char* instanceID, const void* instanceProps, void* instanceFunctions, void* kodiInstance, void** addonInstance);
+  ADDON_STATUS __declspec(dllexport) ADDON_CreateInstance(int instanceType, const char* instanceID, void* instance, void** addonInstance);
   void __declspec(dllexport) ADDON_DestroyInstance(int instanceType, const char* instanceID, void* instance);
 
 

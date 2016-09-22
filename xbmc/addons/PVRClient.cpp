@@ -173,7 +173,7 @@ ADDON_STATUS CPVRClient::Create(int iClientId)
     if ((status = CAddonDll::Create()) != ADDON_STATUS_OK)
       return status;
     
-    if ((status = CAddonDll::CreateInstance(ADDON_INSTANCE_PVR, ID().c_str(), &m_props, &m_struct, this, &m_addonInstance)) != ADDON_STATUS_OK)
+    if ((status = CAddonDll::CreateInstance(ADDON_INSTANCE_PVR, ID().c_str(), &m_struct, &m_addonInstance)) != ADDON_STATUS_OK)
       return status;
 
     bReadyToUse = GetAddonProperties();

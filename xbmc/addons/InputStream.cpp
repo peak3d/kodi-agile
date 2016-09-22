@@ -125,7 +125,7 @@ void CInputStream::UpdateConfig()
   std::string pathList;
   ADDON_STATUS status = Create();
   if (status == ADDON_STATUS_OK)
-    status = CAddonDll::CreateInstance(ADDON_INSTANCE_INPUTSTREAM, ID().c_str(), nullptr, &m_struct, this, &m_addonInstance);
+    status = CAddonDll::CreateInstance(ADDON_INSTANCE_INPUTSTREAM, ID().c_str(), &m_struct, &m_addonInstance);
 
   if (status != ADDON_STATUS_PERMANENT_FAILURE)
   {

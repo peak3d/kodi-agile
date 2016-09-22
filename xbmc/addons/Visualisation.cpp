@@ -95,7 +95,7 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   m_props.profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
   m_props.submodule = nullptr;
   
-  ADDON_STATUS status = CAddonDll::CreateInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), &m_props, &m_struct, this, &m_addonInstance);
+  ADDON_STATUS status = CAddonDll::CreateInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), &m_struct, &m_addonInstance);
   if (status != ADDON_STATUS_OK)
     return false;
   

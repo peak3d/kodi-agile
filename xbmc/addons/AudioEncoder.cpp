@@ -51,7 +51,7 @@ bool CAudioEncoder::Init(sAddonToKodiFuncTable_AudioEncoder &callbacks)
     return false;
   
   m_struct.toKodi = callbacks;
-  if (CAddonDll::CreateInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), nullptr, &m_struct, this, &m_addonInstance) != ADDON_STATUS_OK)
+  if (CAddonDll::CreateInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), &m_struct, &m_addonInstance) != ADDON_STATUS_OK)
     return false;
 
   try

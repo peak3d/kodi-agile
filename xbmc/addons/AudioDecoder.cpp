@@ -60,7 +60,7 @@ bool CAudioDecoder::Init(const CFileItem& file, unsigned int filecache)
   if (!Initialized())
     return false;
 
-  if (CAddonDll::CreateInstance(ADDON_INSTANCE_AUDIODECODER, ID().c_str(), nullptr, &m_struct, this, &m_addonInstance) != ADDON_STATUS_OK)
+  if (CAddonDll::CreateInstance(ADDON_INSTANCE_AUDIODECODER, ID().c_str(), &m_struct, &m_addonInstance) != ADDON_STATUS_OK)
     return false;
 
   // for replaygain

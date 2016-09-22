@@ -37,9 +37,9 @@ namespace ADDON
 CScreenSaver::CScreenSaver(AddonProps props)
   : ADDON::CAddonDll(std::move(props))
 {
-  m_props.name = nullptr;
-  m_props.presets = nullptr;
-  m_props.profile = nullptr;
+  m_struct.props.name = nullptr;
+  m_struct.props.presets = nullptr;
+  m_struct.props.profile = nullptr;
 
   memset(&m_struct, 0, sizeof(m_struct));
 }
@@ -48,9 +48,9 @@ CScreenSaver::CScreenSaver(const char *addonID)
   : ADDON::CAddonDll(AddonProps(addonID, ADDON_UNKNOWN)),
     m_addonInstance(nullptr)
 {
-  m_props.name = nullptr;
-  m_props.presets = nullptr;
-  m_props.profile = nullptr;
+  m_struct.props.name = nullptr;
+  m_struct.props.presets = nullptr;
+  m_struct.props.profile = nullptr;
 
   memset(&m_struct, 0, sizeof(m_struct));
 }
@@ -79,21 +79,21 @@ bool CScreenSaver::CreateScreenSaver()
   
   // pass it the screen width,height and the name of the screensaver
 #ifdef HAS_DX
-  m_props.device = g_Windowing.Get3D11Context();
+  m_struct.props.device = g_Windowing.Get3D11Context();
 #else
-  m_props.device = nullptr;
+  m_struct.props.device = nullptr;
 #endif
-  m_props.x = 0;
-  m_props.y = 0;
-  m_props.width = g_graphicsContext.GetWidth();
-  m_props.height = g_graphicsContext.GetHeight();
-  m_props.pixelRatio = g_graphicsContext.GetResInfo().fPixelRatio;
-  m_props.name = strdup(Name().c_str());
-  m_props.presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
-  m_props.profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
+  m_struct.props.x = 0;
+  m_struct.props.y = 0;
+  m_struct.props.width = g_graphicsContext.GetWidth();
+  m_struct.props.height = g_graphicsContext.GetHeight();
+  m_struct.props.pixelRatio = g_graphicsContext.GetResInfo().fPixelRatio;
+  m_struct.props.name = strdup(Name().c_str());
+  m_struct.props.presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
+  m_struct.props.profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
 
   m_struct.toKodi.kodiInstance = this;
-  return (CAddonDll::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), &m_props, &m_struct, this, &m_addonInstance) == ADDON_STATUS_OK);
+  return (CAddonDll::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), &m_struct, &m_addonInstance) == ADDON_STATUS_OK);
 }
 
 void CScreenSaver::Start()
@@ -138,20 +138,20 @@ void CScreenSaver::Destroy()
 
   // Release what was allocated in method CScreenSaver::CreateScreenSaver in 
   // case of a binary add-on.
-  if (m_props.name)
+  if (m_struct.props.name)
   {
-    free((void *) m_props.name);
-    m_props.name = nullptr;
+    free((void *) m_struct.props.name);
+    m_struct.props.name = nullptr;
   }
-  if (m_props.presets)
+  if (m_struct.props.presets)
   {
-    free((void *) m_props.presets);
-    m_props.presets = nullptr;
+    free((void *) m_struct.props.presets);
+    m_struct.props.presets = nullptr;
   }
-  if (m_props.profile)
+  if (m_struct.props.profile)
   {
-    free((void *) m_props.profile);
-    m_props.profile = nullptr;
+    free((void *) m_struct.props.profile);
+    m_struct.props.profile = nullptr;
   }
 }
 

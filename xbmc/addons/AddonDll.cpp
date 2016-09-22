@@ -487,11 +487,11 @@ ADDON_STATUS CAddonDll::TransferSettings()
   return ADDON_STATUS_OK;
 }
 
-ADDON_STATUS CAddonDll::CreateInstance(int instanceType, const char* instanceID, const void* instanceProps, void* instanceFunctions, void* kodiInstance, void** addonInstance)
+ADDON_STATUS CAddonDll::CreateInstance(int instanceType, const char* instanceID, void* instance, void** addonInstance)
 {
   try
   {
-    return m_pDll->CreateInstance(instanceType, instanceID, instanceProps, instanceFunctions, kodiInstance, addonInstance);
+    return m_pDll->CreateInstance(instanceType, instanceID, instance, addonInstance);
   }
   catch (std::exception &e)
   {
