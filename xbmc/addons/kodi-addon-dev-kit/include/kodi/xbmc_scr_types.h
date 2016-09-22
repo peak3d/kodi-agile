@@ -19,6 +19,7 @@
  *
  */
 
+#include "xbmc_addon_dll.h"
 #include <string>
 
 extern "C"
