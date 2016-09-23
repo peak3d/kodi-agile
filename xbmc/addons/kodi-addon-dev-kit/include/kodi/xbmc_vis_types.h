@@ -1,7 +1,6 @@
 #pragma once
-
 /*
- *      Copyright (C) 2005-2015 Team Kodi
+ *      Copyright (C) 2005-2016 Team Kodi
  *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -105,8 +104,8 @@ namespace visualization {
   public:
     VisTrack()
     {
-      title = artist = album = albumArtist = NULL;
-      genre = comment = lyrics = reserved1 = reserved2 = NULL;
+      title = artist = album = albumArtist = nullptr;
+      genre = comment = lyrics = reserved1 = reserved2 = nullptr;
       trackNumber = discNumber = duration = year = 0;
       rating = 0;
       reserved3 = reserved4 = 0;
@@ -122,13 +121,13 @@ namespace visualization {
     const char *reserved1;
     const char *reserved2;
 
-    int        trackNumber;
-    int        discNumber;
-    int        duration;
-    int        year;
-    char       rating;
-    int        reserved3;
-    int        reserved4;
+    int trackNumber;
+    int discNumber;
+    int duration;
+    int year;
+    char rating;
+    int reserved3;
+    int reserved4;
   };
 
   class CAddon
@@ -205,11 +204,12 @@ namespace visualization {
 
     inline static unsigned int ADDON_GetPresets(void* addonInstance)
     {
+      CAddon* addon = static_cast<CAddon*>(addonInstance);
       std::vector<std::string> presets;
-      if (static_cast<CAddon*>(addonInstance)->GetPresets(presets))
+      if (addon->GetPresets(presets))
       {
         for (auto it : presets)
-          static_cast<CAddon*>(addonInstance)->m_instance->toKodi.TransferPreset(static_cast<CAddon*>(addonInstance)->m_instance->toKodi.kodiInstance, it.c_str());          
+          addon->m_instance->toKodi.TransferPreset(addon->m_instance->toKodi.kodiInstance, it.c_str());          
       }
 
       return presets.size();
@@ -222,11 +222,12 @@ namespace visualization {
 
     inline static unsigned int ADDON_GetSubModules(void* addonInstance)
     {
+      CAddon* addon = static_cast<CAddon*>(addonInstance);
       std::vector<std::string> subModules;
-      if (static_cast<CAddon*>(addonInstance)->GetSubModules(subModules))
+      if (addon->GetSubModules(subModules))
       {
         for (auto it : subModules)
-          static_cast<CAddon*>(addonInstance)->m_instance->toKodi.TransferSubmodule(static_cast<CAddon*>(addonInstance)->m_instance->toKodi.kodiInstance, it.c_str());          
+          addon->m_instance->toKodi.TransferSubmodule(addon->m_instance->toKodi.kodiInstance, it.c_str());          
       }
 
       return subModules.size();
@@ -245,5 +246,3 @@ namespace visualization {
 } /* namespace kodi */
 } /* extern "C" */
 #endif
-
-

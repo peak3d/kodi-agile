@@ -69,7 +69,12 @@ CVisualisation::CVisualisation(AddonProps props)
 {
   memset(&m_struct, 0, sizeof(m_struct));
 }
-    
+
+bool CVisualisation::IsInUse() const
+{
+  return CSettings::GetInstance().GetString(CSettings::SETTING_MUSICPLAYER_VISUALISATION) == ID();
+}
+
 bool CVisualisation::Create(int x, int y, int w, int h, void *device)
 {
   if (CAddonDll::Create() != ADDON_STATUS_OK)
@@ -100,7 +105,7 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   
   // Start the visualisation
   std::string strFile = URIUtils::GetFileName(g_application.CurrentFile());
-  CLog::Log(LOGDEBUG, "Visualisation::Start()\n");
+  CLog::Log(LOGDEBUG, "Visualisation::Start()");
   try
   {
     m_struct.toAddon.Start(m_addonInstance, m_iChannels, m_iSamplesPerSec, m_iBitsPerSample, strFile.c_str());
@@ -467,11 +472,6 @@ std::string CVisualisation::GetPresetName()
     return m_presets[GetPreset()];
   else
     return "";
-}
-
-bool CVisualisation::IsInUse() const
-{
-  return CSettings::GetInstance().GetString(CSettings::SETTING_MUSICPLAYER_VISUALISATION) == ID();
 }
 
 void CVisualisation::ExceptionHandle(std::exception& ex, const char* function)
