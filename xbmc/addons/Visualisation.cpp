@@ -105,12 +105,7 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   {
     m_struct.toAddon.Start(m_addonInstance, m_iChannels, m_iSamplesPerSec, m_iBitsPerSample, strFile.c_str());
   }
-  catch (std::exception ex)
-  {
-    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
-    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
-    return false;
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); return false; }
 
   m_hasPresets = GetPresets();
 
@@ -137,11 +132,7 @@ void CVisualisation::Start(int iChannels, int iSamplesPerSec, int iBitsPerSample
       if (m_struct.toAddon.Start)
         m_struct.toAddon.Start(m_addonInstance, iChannels, iSamplesPerSec, iBitsPerSample, strSongName.c_str());
     }
-    catch (std::exception ex)
-    {
-      ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
-      memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
-    }
+    catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
   }
 }
 
@@ -177,11 +168,7 @@ void CVisualisation::Render()
       if (m_struct.toAddon.Render)
         m_struct.toAddon.Render(m_addonInstance);
     }
-    catch (std::exception ex)
-    {
-      ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
-      memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
-    }
+    catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
   }
 }
 
@@ -203,11 +190,7 @@ void CVisualisation::GetInfo(VIS_INFO *info)
       if (m_struct.toAddon.GetInfo)
         m_struct.toAddon.GetInfo(m_addonInstance, info);
     }
-    catch (std::exception ex)
-    {
-      ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
-      memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
-    }
+    catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
   }
 }
 
@@ -251,11 +234,7 @@ bool CVisualisation::OnAction(VIS_ACTION action, void *param)
       return m_struct.toAddon.OnAction(m_addonInstance, action, param);
     }
   }
-  catch (std::exception ex)
-  {
-    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
-    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 
   return false;
 }
@@ -319,12 +298,7 @@ void CVisualisation::CreateBuffers()
     if (m_struct.toAddon.GetInfo)
       m_struct.toAddon.GetInfo(m_addonInstance, &info);
   }
-  catch (std::exception ex)
-  {
-    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
-    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
-    return;
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); return; }
 
   m_iNumBuffers = info.iSyncDelay + 1;
   m_bWantsFreq = (info.bWantsFreq != 0);
@@ -393,12 +367,7 @@ bool CVisualisation::GetPresets()
       m_struct.toAddon.GetPresets(m_addonInstance);
     // Note: m_presets becomes filled up with callback function TransferPreset
   }
-  catch (std::exception ex)
-  {
-    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
-    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
-    return false;
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); return false; }
 
   return (!m_presets.empty());
 }
@@ -427,12 +396,7 @@ bool CVisualisation::GetSubModules()
       m_struct.toAddon.GetSubModules(m_addonInstance);
     // Note: m_submodules becomes filled up with callback function TransferSubmodule
   }
-  catch (std::exception& ex)
-  {
-    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
-    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
-    return false;
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); return false; }
 
   return (!m_submodules.empty());
 }
@@ -462,11 +426,7 @@ bool CVisualisation::IsLocked()
       if (m_struct.toAddon.IsLocked)
         return m_struct.toAddon.IsLocked(m_addonInstance);
     }
-    catch (std::exception& ex)
-    {
-      ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
-      memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
-    }
+    catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
   }
   return false;
 }
@@ -491,19 +451,14 @@ void CVisualisation::Destroy()
 
 unsigned CVisualisation::GetPreset()
 {
-  unsigned index = 0;
   try
   {
     if (m_struct.toAddon.GetPreset)
-      index = m_struct.toAddon.GetPreset(m_addonInstance);
+      return m_struct.toAddon.GetPreset(m_addonInstance);
   }
-  catch (std::exception& ex)
-  {
-    ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
-    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
-    return 0;
-  }
-  return index;
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+
+  return 0;
 }
 
 std::string CVisualisation::GetPresetName()
@@ -517,4 +472,10 @@ std::string CVisualisation::GetPresetName()
 bool CVisualisation::IsInUse() const
 {
   return CSettings::GetInstance().GetString(CSettings::SETTING_MUSICPLAYER_VISUALISATION) == ID();
+}
+
+void CVisualisation::ExceptionHandle(std::exception& ex, const char* function)
+{
+  ADDON::LogException(this, ex, function); // Handle exception
+  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call  
 }

@@ -90,6 +90,8 @@ namespace ADDON
     bool GetPresets();
     bool GetSubModules();
 
+    void ExceptionHandle(std::exception& ex, const char* function);
+
     // cached preset list
     std::vector<std::string> m_presets;
     // cached submodule list
