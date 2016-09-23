@@ -23,7 +23,6 @@ BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_vfs_utils.hpp
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_dll.h
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_scr_types.h
-BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_vis_dll.h
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_vis_types.h
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/libXBMC_addon.h
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/libKODI_audioengine.h

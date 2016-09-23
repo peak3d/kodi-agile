@@ -292,8 +292,7 @@ install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbm
         COMPONENT kodi-screensaver-dev)
 
 # Install kodi-visualization-dev
-install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_vis_dll.h
-              ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_vis_types.h
+install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_vis_types.h
         DESTINATION ${includedir}/${APP_NAME_LC}
         COMPONENT kodi-visualization-dev)
 
