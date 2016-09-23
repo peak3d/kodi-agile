@@ -79,6 +79,10 @@ namespace ADDON
     static std::string GetFriendlyName(const std::string& vis, const std::string& module);
     void Destroy();
 
+    // Static function to transfer data from add-on to kodi
+    static void TransferPreset(void* kodiInstance, const char* preset);
+    static void TransferSubmodule(void* kodiInstance, const char* submodule);
+  
   private:
     void CreateBuffers();
     void ClearBuffers();
@@ -105,8 +109,7 @@ namespace ADDON
     // track information
     std::string m_AlbumThumb;
 
-    VIS_PROPS m_props;
-    sKodiToAddonFuncTable_Visualization m_struct;
+    sAddonInstance_Visualization m_struct;
     void* m_addonInstance;
   };
 }

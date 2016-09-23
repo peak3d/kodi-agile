@@ -67,10 +67,6 @@ CVisualisation::CVisualisation(AddonProps props)
   : CAddonDll(std::move(props)),
     m_addonInstance(nullptr)
 {
-  m_props.name = nullptr;
-  m_props.presets = nullptr;
-  m_props.profile = nullptr;
-  m_props.submodule = nullptr;
   memset(&m_struct, 0, sizeof(m_struct));
 }
     
@@ -80,21 +76,24 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
     return false;
 
 #ifdef HAS_DX
-  m_props.device = g_Windowing.Get3D11Context();
+  m_struct.props.device = g_Windowing.Get3D11Context();
 #else
-  m_props.device = nullptr;
+  m_struct.props.device = nullptr;
 #endif
-  m_props.x = x;
-  m_props.y = y;
-  m_props.width = w;
-  m_props.height = h;
-  m_props.pixelRatio = g_graphicsContext.GetResInfo().fPixelRatio;
+  m_struct.props.x = x;
+  m_struct.props.y = y;
+  m_struct.props.width = w;
+  m_struct.props.height = h;
+  m_struct.props.pixelRatio = g_graphicsContext.GetResInfo().fPixelRatio;
+  m_struct.props.name = strdup(Name().c_str());
+  m_struct.props.presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
+  m_struct.props.profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
+  m_struct.props.submodule = nullptr;
 
-  m_props.name = strdup(Name().c_str());
-  m_props.presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
-  m_props.profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
-  m_props.submodule = nullptr;
-  
+  m_struct.toKodi.kodiInstance = this;
+  m_struct.toKodi.TransferPreset = TransferPreset;
+  m_struct.toKodi.TransferSubmodule = TransferSubmodule;
+
   ADDON_STATUS status = CAddonDll::CreateInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), &m_struct, &m_addonInstance);
   if (status != ADDON_STATUS_OK)
     return false;
@@ -104,7 +103,7 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   CLog::Log(LOGDEBUG, "Visualisation::Start()\n");
   try
   {
-    m_struct.Start(m_addonInstance, m_iChannels, m_iSamplesPerSec, m_iBitsPerSample, strFile.c_str());
+    m_struct.toAddon.Start(m_addonInstance, m_iChannels, m_iSamplesPerSec, m_iBitsPerSample, strFile.c_str());
   }
   catch (std::exception ex)
   {
@@ -116,9 +115,9 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   m_hasPresets = GetPresets();
 
   if (GetSubModules())
-    m_props.submodule = strdup(CSpecialProtocol::TranslatePath(m_submodules.front()).c_str());
+    m_struct.props.submodule = strdup(CSpecialProtocol::TranslatePath(m_submodules.front()).c_str());
   else
-    m_props.submodule = nullptr;
+    m_struct.props.submodule = nullptr;
 
   CreateBuffers();
 
@@ -135,8 +134,8 @@ void CVisualisation::Start(int iChannels, int iSamplesPerSec, int iBitsPerSample
   {
     try
     {
-      if (m_struct.Start)
-        m_struct.Start(m_addonInstance, iChannels, iSamplesPerSec, iBitsPerSample, strSongName.c_str());
+      if (m_struct.toAddon.Start)
+        m_struct.toAddon.Start(m_addonInstance, iChannels, iSamplesPerSec, iBitsPerSample, strSongName.c_str());
     }
     catch (std::exception ex)
     {
@@ -157,8 +156,8 @@ void CVisualisation::AudioData(const float* pAudioData, int iAudioDataLength, fl
   {
     try
     {
-      if (m_struct.AudioData)
-        m_struct.AudioData(m_addonInstance, pAudioData, iAudioDataLength, pFreqData, iFreqDataLength);
+      if (m_struct.toAddon.AudioData)
+        m_struct.toAddon.AudioData(m_addonInstance, pAudioData, iAudioDataLength, pFreqData, iFreqDataLength);
     }
     catch (std::exception ex)
     {
@@ -175,8 +174,8 @@ void CVisualisation::Render()
   {
     try
     {
-      if (m_struct.Render)
-        m_struct.Render(m_addonInstance);
+      if (m_struct.toAddon.Render)
+        m_struct.toAddon.Render(m_addonInstance);
     }
     catch (std::exception ex)
     {
@@ -201,8 +200,8 @@ void CVisualisation::GetInfo(VIS_INFO *info)
   {
     try
     {
-      if (m_struct.GetInfo)
-        m_struct.GetInfo(m_addonInstance, info);
+      if (m_struct.toAddon.GetInfo)
+        m_struct.toAddon.GetInfo(m_addonInstance, info);
     }
     catch (std::exception ex)
     {
@@ -222,7 +221,7 @@ bool CVisualisation::OnAction(VIS_ACTION action, void *param)
   // returns true if vis handled the input
   try
   {
-    if (action != VIS_ACTION_NONE && m_struct.OnAction)
+    if (action != VIS_ACTION_NONE && m_struct.toAddon.OnAction)
     {
       // if this is a VIS_ACTION_UPDATE_TRACK action, copy relevant
       // tags from CMusicInfoTag to VisTag
@@ -233,7 +232,7 @@ bool CVisualisation::OnAction(VIS_ACTION action, void *param)
         std::string albumArtist(tag->GetAlbumArtistString());
         std::string genre(StringUtils::Join(tag->GetGenre(), g_advancedSettings.m_musicItemSeparator));
         
-        VisTrack track;
+        kodi::addon::visualization::VisTrack track;
         track.title       = tag->GetTitle().c_str();
         track.artist      = artist.c_str();
         track.album       = tag->GetAlbum().c_str();
@@ -247,9 +246,9 @@ bool CVisualisation::OnAction(VIS_ACTION action, void *param)
         track.year        = tag->GetYear();
         track.rating      = tag->GetUserrating();
 
-        return m_struct.OnAction(m_addonInstance, action, &track);
+        return m_struct.toAddon.OnAction(m_addonInstance, action, &track);
       }
-      return m_struct.OnAction(m_addonInstance, (int)action, param);
+      return m_struct.toAddon.OnAction(m_addonInstance, action, param);
     }
   }
   catch (std::exception ex)
@@ -317,8 +316,8 @@ void CVisualisation::CreateBuffers()
   try
   {
     // Get the number of buffers from the current vis
-    if (m_struct.GetInfo)
-      m_struct.GetInfo(m_addonInstance, &info);
+    if (m_struct.toAddon.GetInfo)
+      m_struct.toAddon.GetInfo(m_addonInstance, &info);
   }
   catch (std::exception ex)
   {
@@ -388,12 +387,11 @@ bool CVisualisation::GetPresetList(std::vector<std::string> &vecpresets)
 bool CVisualisation::GetPresets()
 {
   m_presets.clear();
-  char **presets = nullptr;
-  unsigned int entries = 0;
   try
   {
-    if (m_struct.GetPresets)
-      entries = m_struct.GetPresets(m_addonInstance, &presets);
+    if (m_struct.toAddon.GetPresets)
+      m_struct.toAddon.GetPresets(m_addonInstance);
+    // Note: m_presets becomes filled up with callback function TransferPreset
   }
   catch (std::exception ex)
   {
@@ -402,17 +400,16 @@ bool CVisualisation::GetPresets()
     return false;
   }
 
-  if (presets && entries > 0)
-  {
-    for (unsigned i=0; i < entries; i++)
-    {
-      if (presets[i])
-      {
-        m_presets.push_back(presets[i]);
-      }
-    }
-  }
   return (!m_presets.empty());
+}
+
+void CVisualisation::TransferPreset(void* kodiInstance, const char* preset)
+{
+  CVisualisation *addon = static_cast<CVisualisation*>(kodiInstance);
+  if (!addon)
+    throw std::logic_error("Visualization - TransferPreset - invalid handler data");
+
+  addon->m_presets.push_back(preset);
 }
 
 bool CVisualisation::GetSubModuleList(std::vector<std::string> &vecmodules)
@@ -424,12 +421,11 @@ bool CVisualisation::GetSubModuleList(std::vector<std::string> &vecmodules)
 bool CVisualisation::GetSubModules()
 {
   m_submodules.clear();
-  char **modules = nullptr;
-  unsigned int entries = 0;
   try
   {
-    if (m_struct.GetSubModules)
-      entries = m_struct.GetSubModules(m_addonInstance, &modules);
+    if (m_struct.toAddon.GetSubModules)
+      m_struct.toAddon.GetSubModules(m_addonInstance);
+    // Note: m_submodules becomes filled up with callback function TransferSubmodule
   }
   catch (std::exception& ex)
   {
@@ -438,17 +434,16 @@ bool CVisualisation::GetSubModules()
     return false;
   }
 
-  if (modules && entries > 0)
-  {
-    for (unsigned i=0; i < entries; i++)
-    {
-      if (modules[i])
-      {
-        m_submodules.push_back(modules[i]);
-      }
-    }
-  }
   return (!m_submodules.empty());
+}
+
+void CVisualisation::TransferSubmodule(void* kodiInstance, const char* submodule)
+{
+  CVisualisation *addon = static_cast<CVisualisation*>(kodiInstance);
+  if (!addon)
+    throw std::logic_error("Visualization - TransferSubmodule - invalid handler data");
+
+  addon->m_submodules.push_back(submodule);
 }
 
 std::string CVisualisation::GetFriendlyName(const std::string& strVisz,
@@ -464,8 +459,8 @@ bool CVisualisation::IsLocked()
   {
     try
     {
-      if (m_struct.IsLocked)
-        return m_struct.IsLocked(m_addonInstance);
+      if (m_struct.toAddon.IsLocked)
+        return m_struct.toAddon.IsLocked(m_addonInstance);
     }
     catch (std::exception& ex)
     {
@@ -479,31 +474,17 @@ bool CVisualisation::IsLocked()
 void CVisualisation::Destroy()
 {
   // Free what was allocated in method CVisualisation::Create
-
   CAddonDll::DestroyInstance(ADDON_INSTANCE_VISUALIZATION, m_addonInstance);
-  memset(&m_struct, 0, sizeof(m_struct));
   m_addonInstance = nullptr;
 
-  if (m_props.name)
-  {
-    free((void *) m_props.name);
-    m_props.name = nullptr;
-  }
-  if (m_props.presets)
-  {
-    free((void *) m_props.presets);
-    m_props.presets = nullptr;
-  }
-  if (m_props.profile)
-  {
-    free((void *) m_props.profile);
-    m_props.profile = nullptr;
-  }
-  if (m_props.submodule)
-  {
-    free((void *) m_props.submodule);
-    m_props.submodule = nullptr;
-  }
+  if (m_struct.props.name)
+    free((void *) m_struct.props.name);
+  if (m_struct.props.presets)
+    free((void *) m_struct.props.presets);
+  if (m_struct.props.profile)
+    free((void *) m_struct.props.profile);
+
+  memset(&m_struct, 0, sizeof(m_struct));
 
   CAddonDll::Destroy();
 }
@@ -513,8 +494,8 @@ unsigned CVisualisation::GetPreset()
   unsigned index = 0;
   try
   {
-    if (m_struct.GetPreset)
-      index = m_struct.GetPreset(m_addonInstance);
+    if (m_struct.toAddon.GetPreset)
+      index = m_struct.toAddon.GetPreset(m_addonInstance);
   }
   catch (std::exception& ex)
   {
