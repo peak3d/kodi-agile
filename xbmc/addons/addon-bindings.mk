@@ -6,7 +6,6 @@ BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_addon_dll.h
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_addon_types.h
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_adsp_dll.h
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_adsp_types.h
-BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_audiodec_dll.h
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_audiodec_types.h
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_audioenc_dll.h
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_audioenc_types.h
