@@ -17,6 +17,8 @@
  *
  */
 #include "AudioDecoder.h"
+#include "addons/interfaces/ExceptionHandling.h"
+#include "addons/interfaces/Translators.h"
 #include "music/tags/MusicInfoTag.h"
 #include "music/tags/TagLoaderTagLib.h"
 #include "cores/AudioEngine/Utils/AEUtil.h"
@@ -37,10 +39,20 @@ std::unique_ptr<CAudioDecoder> CAudioDecoder::FromExtension(AddonProps props, co
       std::move(mimetype), tags, tracks, std::move(codecName), std::move(strExt)));
 }
 
+CAudioDecoder::CAudioDecoder(AddonProps props)
+  : CAddonDll(std::move(props)),
+    m_tags(false),
+    m_tracks(false),
+    m_addonInstance(nullptr)
+
+{
+  memset(&m_struct, 0, sizeof(m_struct));
+}
+
 CAudioDecoder::CAudioDecoder(AddonProps props, std::string extension, std::string mimetype,
     bool tags, bool tracks, std::string codecName, std::string strExt)
     : CAddonDll(std::move(props)), m_extension(extension), m_mimetype(mimetype),
-      m_context(nullptr), m_tags(tags), m_tracks(tracks), m_channel(nullptr),
+      m_tags(tags), m_tracks(tracks),
       m_addonInstance(nullptr)
 
 {
@@ -60,6 +72,7 @@ bool CAudioDecoder::Init(const CFileItem& file, unsigned int filecache)
   if (!Initialized())
     return false;
 
+  m_struct.toKodi.kodiInstance = this;
   if (CAddonDll::CreateInstance(ADDON_INSTANCE_AUDIODECODER, ID().c_str(), &m_struct, &m_addonInstance) != ADDON_STATUS_OK)
     return false;
 
@@ -69,19 +82,37 @@ bool CAudioDecoder::Init(const CFileItem& file, unsigned int filecache)
 
   int channels;
   int sampleRate;
+  eAudioDataFormat format;
+  const eAudioChannel* channel = nullptr;
 
-  m_context = m_struct.Init(m_addonInstance, file.GetPath().c_str(), filecache,
-                              &channels, &sampleRate,
-                              &m_bitsPerSample, &m_TotalTime,
-                              &m_bitRate, &m_format.m_dataFormat, &m_channel);
+  try
+  {
+    if (m_struct.toAddon.Init)
+    {
+      if (!m_struct.toAddon.Init(m_addonInstance, file.GetPath().c_str(), filecache,
+                                  &channels, &sampleRate,
+                                  &m_bitsPerSample, &m_TotalTime,
+                                  &m_bitRate, &format, &channel))
+      {
+        return false;
+      }
+    }
+  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 
+  m_format.m_dataFormat = kodi::addon::GetKodiAudioFormat(format);
   m_format.m_sampleRate = sampleRate;
-  if (m_channel)
-    m_format.m_channelLayout = CAEChannelInfo(m_channel);
+  if (channel)
+  {
+    memset(m_channel, AE_CH_NULL, sizeof(m_channel));
+    for (unsigned int i = 0; i < AE_CH_MAX && i < AUDIO_CH_MAX && channel[i] != AUDIO_CH_NULL; ++i)
+      m_channel[i] = kodi::addon::GetKodiAudioChannel(channel[i]);
+    m_format.m_channelLayout = CAEChannelInfo((const AEChannel*)&m_channel);
+  }
   else
     m_format.m_channelLayout = CAEUtil::GuessChLayout(channels);
 
-  return (m_context != NULL);
+  return true;
 }
 
 int CAudioDecoder::ReadPCM(uint8_t* buffer, int size, int* actualsize)
@@ -89,7 +120,14 @@ int CAudioDecoder::ReadPCM(uint8_t* buffer, int size, int* actualsize)
   if (!Initialized())
     return 0;
 
-  return m_struct.ReadPCM(m_addonInstance, m_context, buffer, size, actualsize);
+  try
+  {
+    if (m_struct.toAddon.ReadPCM)
+      return m_struct.toAddon.ReadPCM(m_addonInstance, buffer, size, actualsize);
+  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  
+  return 0;
 }
 
 bool CAudioDecoder::Seek(int64_t time)
@@ -97,8 +135,14 @@ bool CAudioDecoder::Seek(int64_t time)
   if (!Initialized())
     return false;
 
-  m_struct.Seek(m_addonInstance, m_context, time);
-  return true;
+  try
+  {
+    if (m_struct.toAddon.Seek)
+      return m_struct.toAddon.Seek(m_addonInstance, time);
+  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+
+  return false;
 }
 
 void CAudioDecoder::DeInit()
@@ -106,36 +150,53 @@ void CAudioDecoder::DeInit()
   if (!Initialized())
     return;
 
-  m_struct.DeInit(m_addonInstance, m_context);
+  CAddonDll::DestroyInstance(ADDON_INSTANCE_AUDIODECODER, m_addonInstance);
+  memset(&m_struct, 0, sizeof(m_struct));
+  m_addonInstance = nullptr;
 }
 
 bool CAudioDecoder::Load(const std::string& fileName,
                          MUSIC_INFO::CMusicInfoTag& tag,
                          MUSIC_INFO::EmbeddedArt* art)
 {
-  if (!Initialized())
-    return false;
+  bool ret = false;
 
-  char title[256];
-  char artist[256];
+  if (!Initialized())
+    return ret;
+
+  char title[ADDON_STANDARD_STRING_LENGTH_SMALL];
+  char artist[ADDON_STANDARD_STRING_LENGTH_SMALL];
   int length;
-  if (m_struct.ReadTag(m_addonInstance, fileName.c_str(), title, artist, &length))
+  try
+  {
+    if (m_struct.toAddon.ReadTag)
+      ret = m_struct.toAddon.ReadTag(m_addonInstance, fileName.c_str(), title, artist, &length);
+  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+
+  if (ret)
   {
     tag.SetTitle(title);
     tag.SetArtist(artist);
     tag.SetDuration(length);
-    return true;
   }
 
-  return false;
+  return ret;
 }
 
 int CAudioDecoder::GetTrackCount(const std::string& strPath)
 {
-  if (!Initialized())
-    return 0;
+  int result = 0;
 
-  int result = m_struct.TrackCount(m_addonInstance, strPath.c_str());
+  if (!Initialized())
+    return result;
+
+  try
+  {
+    if (m_struct.toAddon.TrackCount)
+      result = m_struct.toAddon.TrackCount(m_addonInstance, strPath.c_str());
+  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 
   if (result > 1 && !Load(strPath, XFILE::CMusicFileDirectory::m_tag, NULL))
     return 0;
@@ -146,10 +207,13 @@ int CAudioDecoder::GetTrackCount(const std::string& strPath)
 
 void CAudioDecoder::Destroy()
 {
-  CAddonDll::DestroyInstance(ADDON_INSTANCE_AUDIODECODER, m_addonInstance);
   CAddonDll::Destroy();
-  memset(&m_struct, 0, sizeof(m_struct));
-  m_addonInstance = nullptr;
+}
+
+void CAudioDecoder::ExceptionHandle(std::exception& ex, const char* function)
+{
+  ADDON::LogException(this, ex, function); // Handle exception
+  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call  
 }
 
 } /*namespace ADDON*/

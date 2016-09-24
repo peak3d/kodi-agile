@@ -1,3 +1,4 @@
+#pragma once
 /*
  *      Copyright (C) 2005-2013 Team XBMC
  *      http://xbmc.org
@@ -18,84 +19,130 @@
  *
  */
 
-#pragma once
-
+#include "xbmc_addon_dll.h"
 #include <stdint.h>
-#ifdef BUILD_KODI_ADDON
-#include "AEChannelData.h"
-#else
-#include "cores/AudioEngine/Utils/AEChannelData.h"
+#include <string>
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-extern "C"
+typedef struct AUDIODEC_PROPS
 {
-  struct AUDIODEC_INFO
+  int dummy;
+} AUDIODEC_PROPS;
+
+typedef struct sAddonToKodiFuncTable_AudioDecoder
+{
+  void* kodiInstance;
+} sAddonToKodiFuncTable_AudioDecoder;
+
+typedef struct sKodiToAddonFuncTable_AudioDecoder
+{
+  bool (__cdecl* Init) (void* addonInstance, const char* file,
+                        unsigned int filecache,
+                        int* channels, int* samplerate,
+                        int* bitspersample, int64_t* totaltime,
+                        int* bitrate, eAudioDataFormat* format,
+                        const eAudioChannel** info);
+  int  (__cdecl* ReadPCM) (void* addonInstance, uint8_t* buffer, int size, 
+                           int* actualsize);
+  int64_t  (__cdecl* Seek) (void* addonInstance, int64_t time);
+  bool (__cdecl* ReadTag) (void* addonInstance, const char* file, char* title,
+                          char* artist, int* length);
+  int  (__cdecl* TrackCount) (void* addonInstance, const char* file);
+} sKodiToAddonFuncTable_AudioDecoder;
+
+typedef struct sAddonInstance_AudioDecoder
+{
+  AUDIODEC_PROPS props;
+  sAddonToKodiFuncTable_AudioDecoder toKodi;
+  sKodiToAddonFuncTable_AudioDecoder toAddon;
+} sAddonInstance_AudioDecoder;
+
+#ifdef __cplusplus
+namespace kodi {
+namespace addon {
+namespace audiodecoder {
+
+  class CAddon
   {
-    int dummy;
+  public:
+    CAddon(void* instance)
+      : m_instance(static_cast<sAddonInstance_AudioDecoder*>(instance))
+    {
+      m_instance->toAddon.Init = ADDON_Init;
+      m_instance->toAddon.ReadPCM = ADDON_ReadPCM;
+      m_instance->toAddon.Seek = ADDON_Seek;
+      m_instance->toAddon.ReadTag = ADDON_ReadTag;
+      m_instance->toAddon.TrackCount = ADDON_TrackCount;
+    }
+
+    virtual bool Init(std::string file, unsigned int filecache,
+                      int& channels, int& samplerate,
+                      int& bitspersample, int64_t& totaltime,
+                      int& bitrate, eAudioDataFormat& format,
+                      std::vector<eAudioChannel>& channellist) { return false; }
+    virtual int ReadPCM(uint8_t* buffer, int size, int& actualsize) { return 0; }
+    virtual int64_t Seek(int64_t time) { return time; }
+    virtual bool ReadTag(std::string file, std::string& title, std::string& artist, int& length) { return false; }
+    virtual int TrackCount(std::string file) { return 1; }
+
+  private:
+    inline static bool ADDON_Init(void* addonInstance, const char* file, unsigned int filecache,
+                                  int* channels, int* samplerate,
+                                  int* bitspersample, int64_t* totaltime,
+                                  int* bitrate, eAudioDataFormat* format,
+                                  const eAudioChannel** info)
+    {
+      static_cast<CAddon*>(addonInstance)->m_channelList.clear();
+      bool ret = static_cast<CAddon*>(addonInstance)->Init(file, filecache, *channels,
+                                                           *samplerate, *bitspersample, 
+                                                           *totaltime, *bitrate, *format, 
+                                                           static_cast<CAddon*>(addonInstance)->m_channelList);
+      if (!static_cast<CAddon*>(addonInstance)->m_channelList.empty())
+        *info = static_cast<CAddon*>(addonInstance)->m_channelList.data();
+      else
+        *info = nullptr;
+      return ret;
+    }
+
+    inline static int ADDON_ReadPCM(void* addonInstance, uint8_t* buffer, int size, int* actualsize)
+    {
+      return static_cast<CAddon*>(addonInstance)->ReadPCM(buffer, size, *actualsize);
+    }
+
+    inline static int64_t ADDON_Seek(void* addonInstance, int64_t time)
+    {
+      return static_cast<CAddon*>(addonInstance)->Seek(time);
+    }
+
+    inline static bool ADDON_ReadTag(void* addonInstance, const char* file, char* title, char* artist, int* length)
+    {
+      std::string intTitle;
+      std::string intArtist;
+      memset(title, 0, ADDON_STANDARD_STRING_LENGTH_SMALL);
+      memset(artist, 0, ADDON_STANDARD_STRING_LENGTH_SMALL);
+      bool ret = static_cast<CAddon*>(addonInstance)->ReadTag(file, intTitle, intArtist, *length);
+      if (ret)
+      {
+        strncpy(title, intTitle.c_str(), ADDON_STANDARD_STRING_LENGTH_SMALL-1);
+        strncpy(artist, intArtist.c_str(), ADDON_STANDARD_STRING_LENGTH_SMALL-1);
+      }
+      return ret;
+    }
+
+    inline static int ADDON_TrackCount(void* addonInstance, const char* file)
+    {
+      return static_cast<CAddon*>(addonInstance)->TrackCount(file);
+    }
+
+    std::vector<eAudioChannel> m_channelList;
+    sAddonInstance_AudioDecoder* m_instance;
   };
 
-  struct AUDIODEC_PROPS
-  {
-    int dummy;
-  };
-
-  struct AudioDecoder
-  {
-    //! \brief Initialize a decoder
-    //! \param file The file to read
-    //! \param filecache The file cache size
-    //! \param channels Number of channels in output stream
-    //! \param samplerate Samplerate of output stream
-    //! \param bitspersample Bits per sample in output stream
-    //! \param totaltime Total time for stream
-    //! \param bitrate Average bitrate of input stream
-    //! \param format Data format for output stream
-    //! \param info Channel mapping for output stream
-    //! \return Context of output stream
-    //! \sa ICodec::Init
-    void* (__cdecl* Init) (void* addonInstance, const char* file, unsigned int filecache,
-                           int* channels, int* samplerate,
-                           int* bitspersample, int64_t* totaltime,
-                           int* bitrate, AEDataFormat* format,
-                           const AEChannel** info);
-
-    //! \brief Produce some noise
-    //! \param context Context of output stream
-    //! \param buffer Output buffer
-    //! \param size Size of output buffer
-    //! \param actualsize Actual number of bytes written to output buffer
-    //! \return 0 on success, -1 on end of stream, 1 on failure
-    //! \sa ICodec::ReadPCM
-    int  (__cdecl* ReadPCM) (void* addonInstance, void* context, uint8_t* buffer, int size, int* actualsize);
-
-
-    //! \brief Seek in output stream
-    //! \param context Context of output stream
-    //! \param time Time position to seek to in milliseconds
-    //! \return Time position seek ended up on
-    //! \sa ICodec::Seek
-    int64_t  (__cdecl* Seek) (void* addonInstance, void* context, int64_t time);
-
-    //! \brief Read tag of a file
-    //! \param file File to read tag for
-    //! \param title Title of file
-    //! \param artist Artist of file
-    //! \param length Length of file
-    //! \return True on success, false on failure
-    //! \sa IMusicInfoTagLoader::ReadTag
-    bool (__cdecl* ReadTag) (void* addonInstance, const char* file, char* title,
-                            char* artist, int* length);
-
-    //! \brief Get number of tracks in a file
-    //! \param file File to read tag for
-    //! \return Number of tracks in file
-    //! \sa CMusicFileDirectory
-    int  (__cdecl* TrackCount) (void* addonInstance, const char* file);
-
-    //! \brief Close down an output stream
-    //! \param context Context of stream
-    //! \return True on success, false on failure
-    //! \sa ICodec::DeInit
-    bool (__cdecl* DeInit)(void* addonInstance, void* context);
-  };
-}
+} /* namespace audiodecoder */
+} /* namespace addon */
+} /* namespace kodi */
+} /* extern "C" */
+#endif

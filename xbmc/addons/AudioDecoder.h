@@ -42,16 +42,7 @@ namespace ADDON
 
     static std::unique_ptr<CAudioDecoder> FromExtension(AddonProps props, const cp_extension_t* ext);
 
-    explicit CAudioDecoder(AddonProps props)
-      : CAddonDll(std::move(props))
-      , m_context{nullptr}
-      , m_tags{false}
-      , m_tracks{false}
-      , m_channel{nullptr}
-      , m_addonInstance{nullptr}
-
-    {}
-
+    explicit CAudioDecoder(AddonProps props);
     CAudioDecoder(AddonProps props, std::string extension, std::string mimetype, bool tags,
         bool tracks, std::string codecName, std::string strExt);
 
@@ -76,13 +67,14 @@ namespace ADDON
   protected:
     std::string m_extension;
     std::string m_mimetype;
-    void* m_context;
     bool m_tags;
     bool m_tracks;
-    const AEChannel* m_channel;
+    AEChannel m_channel[AE_CH_MAX];
 
   private:
-    AudioDecoder m_struct;
+    void ExceptionHandle(std::exception& ex, const char* function);
+
+    sAddonInstance_AudioDecoder m_struct;
     void* m_addonInstance;
   };
 
