@@ -16,12 +16,13 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
+
 #include "AudioDecoder.h"
 #include "addons/interfaces/ExceptionHandling.h"
 #include "addons/interfaces/Translators.h"
+#include "cores/AudioEngine/Utils/AEUtil.h"
 #include "music/tags/MusicInfoTag.h"
 #include "music/tags/TagLoaderTagLib.h"
-#include "cores/AudioEngine/Utils/AEUtil.h"
 
 namespace ADDON
 {
@@ -49,11 +50,19 @@ CAudioDecoder::CAudioDecoder(AddonProps props)
   memset(&m_struct, 0, sizeof(m_struct));
 }
 
-CAudioDecoder::CAudioDecoder(AddonProps props, std::string extension, std::string mimetype,
-    bool tags, bool tracks, std::string codecName, std::string strExt)
-    : CAddonDll(std::move(props)), m_extension(extension), m_mimetype(mimetype),
-      m_tags(tags), m_tracks(tracks),
-      m_addonInstance(nullptr)
+CAudioDecoder::CAudioDecoder(AddonProps props,
+                             std::string extension,
+                             std::string mimetype,
+                             bool tags,
+                             bool tracks,
+                             std::string codecName,
+                             std::string strExt)
+  : CAddonDll(std::move(props)),
+    m_extension(extension),
+    m_mimetype(mimetype),
+    m_tags(tags),
+    m_tracks(tracks),
+    m_addonInstance(nullptr)
 
 {
   m_CodecName = std::move(codecName);
@@ -78,7 +87,7 @@ bool CAudioDecoder::Init(const CFileItem& file, unsigned int filecache)
 
   // for replaygain
   CTagLoaderTagLib tag;
-  tag.Load(file.GetPath(), XFILE::CMusicFileDirectory::m_tag, NULL);
+  tag.Load(file.GetPath(), XFILE::CMusicFileDirectory::m_tag, nullptr);
 
   int channels;
   int sampleRate;
@@ -198,7 +207,7 @@ int CAudioDecoder::GetTrackCount(const std::string& strPath)
   }
   catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 
-  if (result > 1 && !Load(strPath, XFILE::CMusicFileDirectory::m_tag, NULL))
+  if (result > 1 && !Load(strPath, XFILE::CMusicFileDirectory::m_tag, nullptr))
     return 0;
 
   XFILE::CMusicFileDirectory::m_tag.SetLoaded(true);
@@ -216,5 +225,4 @@ void CAudioDecoder::ExceptionHandle(std::exception& ex, const char* function)
   memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call  
 }
 
-} /*namespace ADDON*/
-
+} /* namespace ADDON */
