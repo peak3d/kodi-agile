@@ -36,9 +36,7 @@ namespace ADDON
 
     static std::unique_ptr<CInputStream> FromExtension(AddonProps props, const cp_extension_t* ext);
 
-    explicit CInputStream(AddonProps props)
-      : CAddonDll(std::move(props))
-    {};
+    explicit CInputStream(AddonProps props);
     CInputStream(const AddonProps& props,
                  const std::string& name,
                  const std::string& listitemprops,
@@ -49,7 +47,6 @@ namespace ADDON
     void Destroy(void);
 
     virtual void SaveSettings() override;
-    virtual bool CheckAPIVersion(void) override;
 
     bool UseParent();
     bool Supports(const CFileItem &fileitem);
@@ -112,7 +109,9 @@ namespace ADDON
     static std::map<std::string, Config> m_configMap;
 
   private:
-    InputStreamAddonFunctions m_struct;
+    void ExceptionHandle(std::exception& ex, const char* function);
+
+    sFuncTable_InputStream m_struct;
     void* m_addonInstance;
   };
 

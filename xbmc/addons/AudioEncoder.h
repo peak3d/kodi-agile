@@ -35,9 +35,10 @@ namespace ADDON
     CAudioEncoder(AddonProps props, std::string extension);
     virtual ~CAudioEncoder() {}
 
-    bool Init(sAddonToKodiFuncTable_AudioEncoder &callbacks);
-    int Encode(int nNumBytesRead, uint8_t* pbtStream);
-    bool Close();
+    // Child functions related to IEncoder
+    virtual bool Init(sAddonToKodiFuncTable_AudioEncoder &callbacks) override;
+    virtual int Encode(int nNumBytesRead, uint8_t* pbtStream) override;
+    virtual bool Close() override;
 
     const std::string extension;
 

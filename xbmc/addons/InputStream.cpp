@@ -17,6 +17,7 @@
  *
  */
 #include "InputStream.h"
+#include "addons/interfaces/ExceptionHandling.h"
 #include "utils/StringUtils.h"
 #include "utils/log.h"
 #include "cores/VideoPlayer/DVDDemuxers/DVDDemux.h"
@@ -42,12 +43,20 @@ std::unique_ptr<CInputStream> CInputStream::FromExtension(AddonProps props, cons
   return istr;
 }
 
+CInputStream::CInputStream(AddonProps props)
+  : CAddonDll(std::move(props)),
+    m_addonInstance(nullptr)
+{
+  memset(&m_struct, 0, sizeof(m_struct));
+}
+
 CInputStream::CInputStream(const AddonProps& props,
                            const std::string& name,
                            const std::string& listitemprops,
                            const std::string& extensions,
                            const std::string& protocols)
-: CAddonDll(std::move(props))
+  : CAddonDll(std::move(props)),
+    m_addonInstance(nullptr)
 {
   m_fileItemProps = StringUtils::Tokenize(listitemprops, "|");
   for (auto &key : m_fileItemProps)
@@ -74,29 +83,11 @@ CInputStream::CInputStream(const AddonProps& props,
 void CInputStream::Destroy(void)
 {
   /* destroy the add-on */
-  try
-  {
-    CAddonDll::DestroyInstance(ADDON_INSTANCE_INPUTSTREAM, m_addonInstance);
-    CAddonDll::Destroy();
-    m_addonInstance = nullptr;
-    memset(&m_struct, 0, sizeof(m_struct));
-  }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::Supports - could not destroy add-on. Reason: %s", e.what());
-  }
-}
-
-bool CInputStream::CheckAPIVersion()
-{
-  std::string dllVersion = m_struct.GetApiVersion(m_addonInstance);
-  if (dllVersion.compare(INPUTSTREAM_API_VERSION) != 0)
-  {
-    CLog::Log(LOGERROR, "CInputStream::CheckAPIVersion - API version does not match");
-    return false;
-  }
-
-  return true;
+  CAddonDll::DestroyInstance(ADDON_INSTANCE_INPUTSTREAM, m_addonInstance);
+  memset(&m_struct, 0, sizeof(m_struct));
+  m_addonInstance = nullptr;
+  
+  CAddonDll::Destroy();
 }
 
 void CInputStream::SaveSettings()
@@ -131,12 +122,10 @@ void CInputStream::UpdateConfig()
   {
     try
     {
-      pathList = m_struct.GetPathList(m_addonInstance);
+      if (m_struct.toAddon.GetPathList)
+        pathList = m_struct.toAddon.GetPathList(m_addonInstance);
     }
-    catch (std::exception &e)
-    {
-      CLog::Log(LOGERROR, "CInputStream::Supports - could not get a list of paths. Reason: %s", e.what());
-    }
+    catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
     Destroy();
   }
 
@@ -257,15 +246,14 @@ bool CInputStream::Open(CFileItem &fileitem)
   bool ret = false;
   try
   {
-    ret = m_struct.Open(m_addonInstance, props);
-    if (ret)
-      m_caps = m_struct.GetCapabilities(m_addonInstance);
+    if (m_struct.toAddon.Open && m_struct.toAddon.GetCapabilities)
+    {
+      ret = m_struct.toAddon.Open(m_addonInstance, props);
+      if (ret)
+        m_caps = m_struct.toAddon.GetCapabilities(m_addonInstance);
+    }
   }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::Open - could not open stream. Reason: %s", e.what());
-    return false;
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); return false; }
 
   UpdateStreams();
   return ret;
@@ -275,12 +263,10 @@ void CInputStream::Close()
 {
   try
   {
-    m_struct.Close(m_addonInstance);
+    if (m_struct.toAddon.Close)
+      m_struct.toAddon.Close(m_addonInstance);
   }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::Close - could not close stream. Reason: %s", e.what());
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 
   if (!m_bIsChild)
   {
@@ -297,12 +283,10 @@ int CInputStream::GetTotalTime()
   int ret = 0;
   try
   {
-    ret = m_struct.GetTotalTime(m_addonInstance);
+    if (m_struct.toAddon.GetTotalTime)
+      ret = m_struct.toAddon.GetTotalTime(m_addonInstance);
   }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::GetTotalTime - error. Reason: %s", e.what());
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
   return ret;
 }
 
@@ -311,12 +295,10 @@ int CInputStream::GetTime()
   int ret = 0;
   try
   {
-    ret = m_struct.GetTime(m_addonInstance);
+    if (m_struct.toAddon.GetTime)
+      ret = m_struct.toAddon.GetTime(m_addonInstance);
   }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::GetTime - error. Reason: %s", e.what());
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
   return ret;
 }
 
@@ -326,12 +308,10 @@ bool CInputStream::PosTime(int ms)
   bool ret = false;
   try
   {
-    ret = m_struct.PosTime(m_addonInstance, ms);
+    if (m_struct.toAddon.PosTime)
+      ret = m_struct.toAddon.PosTime(m_addonInstance, ms);
   }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::PosTime - error. Reason: %s", e.what());
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
   return ret;
 }
 
@@ -343,7 +323,8 @@ void CInputStream::UpdateStreams()
   INPUTSTREAM_IDS streamIDs;
   try
   {
-    streamIDs = m_struct.GetStreamIds(m_addonInstance);
+    if (m_struct.toAddon.GetStreamIds)
+      streamIDs = m_struct.toAddon.GetStreamIds(m_addonInstance);
   }
   catch (std::exception &e)
   {
@@ -363,12 +344,13 @@ void CInputStream::UpdateStreams()
     INPUTSTREAM_INFO stream;
     try
     {
-      stream = m_struct.GetStream(m_addonInstance, streamIDs.m_streamIds[i]);
+      if (m_struct.toAddon.GetStream)
+        stream = m_struct.toAddon.GetStream(m_addonInstance, streamIDs.m_streamIds[i]);
     }
-    catch (std::exception &e)
+    catch (std::exception& ex)
     {
       DisposeStreams();
-      CLog::Log(LOGERROR, "CInputStream::GetTotalTime - error GetStream. Reason: %s", e.what());
+      ExceptionHandle(ex, __FUNCTION__);
       return;
     }
 
@@ -476,12 +458,10 @@ void CInputStream::EnableStream(int iStreamId, bool enable)
 
   try
   {
-    m_struct.EnableStream(m_addonInstance, it->second->uniqueId, enable);
+    if (m_struct.toAddon.EnableStream)
+      m_struct.toAddon.EnableStream(m_addonInstance, it->second->uniqueId, enable);
   }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::EnableStream - error. Reason: %s", e.what());
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 }
 
 DemuxPacket* CInputStream::ReadDemux()
@@ -489,13 +469,10 @@ DemuxPacket* CInputStream::ReadDemux()
   DemuxPacket* pPacket = nullptr;
   try
   {
-    pPacket = m_struct.DemuxRead(m_addonInstance);
+    if (m_struct.toAddon.DemuxRead)
+      pPacket = m_struct.toAddon.DemuxRead(m_addonInstance);
   }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::ReadDemux - error. Reason: %s", e.what());
-    return nullptr;
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); return nullptr; }
 
   if (!pPacket)
   {
@@ -518,12 +495,10 @@ bool CInputStream::SeekTime(int time, bool backward, double* startpts)
   bool ret = false;
   try
   {
-    ret = m_struct.DemuxSeekTime(m_addonInstance, time, backward, startpts);
+    if (m_struct.toAddon.DemuxSeekTime)
+      ret = m_struct.toAddon.DemuxSeekTime(m_addonInstance, time, backward, startpts);
   }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::SeekTime - error. Reason: %s", e.what());
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
   return ret;
 }
 
@@ -531,36 +506,30 @@ void CInputStream::AbortDemux()
 {
   try
   {
-    m_struct.DemuxAbort(m_addonInstance);
+    if (m_struct.toAddon.DemuxAbort)
+      m_struct.toAddon.DemuxAbort(m_addonInstance);
   }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::AbortDemux - error. Reason: %s", e.what());
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 }
 
 void CInputStream::FlushDemux()
 {
   try
   {
-    m_struct.DemuxFlush(m_addonInstance);
+    if (m_struct.toAddon.DemuxFlush)
+      m_struct.toAddon.DemuxFlush(m_addonInstance);
   }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::FlushDemux - error. Reason: %s", e.what());
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 }
 
 void CInputStream::SetSpeed(int iSpeed)
 {
   try
   {
-    m_struct.DemuxSetSpeed(m_addonInstance, iSpeed);
+    if (m_struct.toAddon.DemuxSetSpeed)
+      m_struct.toAddon.DemuxSetSpeed(m_addonInstance, iSpeed);
   }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::SetSpeed - error. Reason: %s", e.what());
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 }
 
 int CInputStream::ReadStream(uint8_t* buf, unsigned int size)
@@ -568,12 +537,10 @@ int CInputStream::ReadStream(uint8_t* buf, unsigned int size)
   int ret = -1;
   try
   {
-    ret = m_struct.ReadStream(m_addonInstance, buf, size);
+    if (m_struct.toAddon.ReadStream)
+      ret = m_struct.toAddon.ReadStream(m_addonInstance, buf, size);
   }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::ReadStream - error. Reason: %s", e.what());
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
   return ret;
 }
 
@@ -582,12 +549,10 @@ int64_t CInputStream::SeekStream(int64_t offset, int whence)
   int64_t ret = -1;
   try
   {
-    ret = m_struct.SeekStream(m_addonInstance, offset, whence);
+    if (m_struct.toAddon.SeekStream)
+      ret = m_struct.toAddon.SeekStream(m_addonInstance, offset, whence);
   }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::SeekStream - error. Reason: %s", e.what());
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
   return ret;
 }
 
@@ -596,12 +561,10 @@ int64_t CInputStream::PositionStream()
   int64_t ret = -1;
   try
   {
-    ret = m_struct.PositionStream(m_addonInstance);
+    if (m_struct.toAddon.PositionStream)
+      ret = m_struct.toAddon.PositionStream(m_addonInstance);
   }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::PositionStream - error. Reason: %s", e.what());
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
   return ret;
 }
 
@@ -610,12 +573,10 @@ int64_t CInputStream::LengthStream()
   int64_t ret = -1;
   try
   {
-    ret = m_struct.LengthStream(m_addonInstance);
+    if (m_struct.toAddon.LengthStream)
+      ret = m_struct.toAddon.LengthStream(m_addonInstance);
   }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::LengthStream - error. Reason: %s", e.what());
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
   return ret;
 }
 
@@ -623,12 +584,10 @@ void CInputStream::PauseStream(double time)
 {
   try
   {
-    m_struct.PauseStream(m_addonInstance, time);
+    if (m_struct.toAddon.PauseStream)
+      m_struct.toAddon.PauseStream(m_addonInstance, time);
   }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::PauseStream - error. Reason: %s", e.what());
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 }
 
 bool CInputStream::IsRealTimeStream()
@@ -636,12 +595,10 @@ bool CInputStream::IsRealTimeStream()
   bool ret = false;
   try
   {
-    ret = m_struct.IsRealTimeStream(m_addonInstance);
+    if (m_struct.toAddon.IsRealTimeStream)
+      ret = m_struct.toAddon.IsRealTimeStream(m_addonInstance);
   }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::IsRealTimeStream - error. Reason: %s", e.what());
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
   return ret;
 }
 
@@ -649,12 +606,16 @@ void CInputStream::SetVideoResolution(int width, int height)
 {
   try
   {
-    m_struct.SetVideoResolution(m_addonInstance, width, height);
+    if (m_struct.toAddon.SetVideoResolution)
+      m_struct.toAddon.SetVideoResolution(m_addonInstance, width, height);
   }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CInputStream::SetVideoResolution - error. Reason: %s", e.what());
-  }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+}
+
+void CInputStream::ExceptionHandle(std::exception& ex, const char* function)
+{
+  ADDON::LogException(this, ex, function); // Handle exception and disable add-on
+  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call  
 }
 
 } /*namespace ADDON*/
