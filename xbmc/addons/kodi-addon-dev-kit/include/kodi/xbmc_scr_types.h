@@ -19,7 +19,17 @@
  *
  */
 
-#include "xbmc_addon_dll.h"
+#ifdef TARGET_WINDOWS
+#include <windows.h>
+#else
+#ifndef __cdecl
+#define __cdecl
+#endif
+#ifndef __declspec
+#define __declspec(X)
+#endif
+#endif
+
 #include <string>
 
 #ifdef __cplusplus
