@@ -68,6 +68,12 @@ namespace audiodecoder {
   class CAddon
   {
   public:
+    //==========================================================================
+    /// @brief Class constructor
+    ///
+    /// @param[in] instance             The from Kodi given instance given be
+    ///                                 add-on CreateInstance call with instance
+    ///                                 id ADDON_INSTANCE_AUDIOENCODER.
     CAddon(void* instance)
       : m_instance(static_cast<sAddonInstance_AudioDecoder*>(instance))
     {
@@ -77,16 +83,75 @@ namespace audiodecoder {
       m_instance->toAddon.ReadTag = ADDON_ReadTag;
       m_instance->toAddon.TrackCount = ADDON_TrackCount;
     }
+    //--------------------------------------------------------------------------
 
+    //==========================================================================
+    /// @brief Initialize a decoder
+    ///
+    /// @param[in] file                 The file to read
+    /// @param[in] filecache            The file cache size
+    /// @param[out] channels            Number of channels in output stream
+    /// @param[out] samplerate          Samplerate of output stream
+    /// @param[out] bitspersample       Bits per sample in output stream
+    /// @param[out] totaltime           Total time for stream
+    /// @param[out] bitrate             Average bitrate of input stream
+    /// @param[out] format              Data format for output stream
+    /// @param[out] channellist         Channel mapping for output stream
+    /// @return                         true if successfully done, otherwise
+    ///                                 false
+    ///
     virtual bool Init(std::string file, unsigned int filecache,
                       int& channels, int& samplerate,
                       int& bitspersample, int64_t& totaltime,
                       int& bitrate, eAudioDataFormat& format,
                       std::vector<eAudioChannel>& channellist) { return false; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    /// @brief Produce some noise
+    ///
+    /// @param[in] buffer               Output buffer
+    /// @param[in] size                 Size of output buffer
+    /// @param[out] actualsize          Actual number of bytes written to output buffer
+    /// @return                         Return with following possible values:
+    ///                                 | Value | Description                  |
+    ///                                 |:-----:|:-----------------------------|
+    ///                                 |   0   | on success
+    ///                                 |  -1   | on end of stream
+    ///                                 |   1   | on failure
+    ///
     virtual int ReadPCM(uint8_t* buffer, int size, int& actualsize) { return 0; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    /// @brief Seek in output stream
+    ///
+    /// @param[in] time                 Time position to seek to in milliseconds
+    /// @return                         Time position seek ended up on
+    ///
     virtual int64_t Seek(int64_t time) { return time; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    /// @brief Read tag of a file
+    ///
+    /// @param[in] file                 File to read tag for
+    /// @param[out] title               Title of file
+    /// @param[out] artist              Artist of file
+    /// @param[out] length              Length of file
+    /// @return                         True on success, false on failure
+    ///
     virtual bool ReadTag(std::string file, std::string& title, std::string& artist, int& length) { return false; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    /// @brief Get number of tracks in a file
+    ///
+    /// @param[in] file                 File to read tag for
+    /// @return                         Number of tracks in file
+    ///
     virtual int TrackCount(std::string file) { return 1; }
+    //--------------------------------------------------------------------------
 
   private:
     inline static bool ADDON_Init(void* addonInstance, const char* file, unsigned int filecache,
