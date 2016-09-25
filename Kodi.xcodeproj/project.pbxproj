@@ -2872,8 +2872,6 @@
 		76EC19C31D15514200D4AF19 /* ActiveAEDSPMode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ActiveAEDSPMode.h; path = AudioDSPAddons/ActiveAEDSPMode.h; sourceTree = "<group>"; };
 		76EC19C41D15514200D4AF19 /* ActiveAEDSPProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ActiveAEDSPProcess.cpp; path = AudioDSPAddons/ActiveAEDSPProcess.cpp; sourceTree = "<group>"; };
 		76EC19C51D15514200D4AF19 /* ActiveAEDSPProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ActiveAEDSPProcess.h; path = AudioDSPAddons/ActiveAEDSPProcess.h; sourceTree = "<group>"; };
-		76F4C37C1C8E92E000A1E64B /* AddonCallbacksInputStream.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AddonCallbacksInputStream.cpp; path = addons/interfaces/InputStream/AddonCallbacksInputStream.cpp; sourceTree = "<group>"; };
-		76F4C37D1C8E92E000A1E64B /* AddonCallbacksInputStream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AddonCallbacksInputStream.h; path = addons/interfaces/InputStream/AddonCallbacksInputStream.h; sourceTree = "<group>"; };
 		7C0B98A1154B79C30065A238 /* AEDeviceInfo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AEDeviceInfo.cpp; sourceTree = "<group>"; };
 		7C0B98A2154B79C30065A238 /* AEDeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AEDeviceInfo.h; sourceTree = "<group>"; };
 		7C14096F183224B8009F9411 /* ISetting.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ISetting.cpp; path = lib/ISetting.cpp; sourceTree = "<group>"; };
@@ -3457,7 +3455,6 @@
 		7CED59421CD350B70093F573 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/CoreVideo.framework; sourceTree = DEVELOPER_DIR; };
 		7CED59441CD350DD0093F573 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/System/Library/Frameworks/OpenGLES.framework; sourceTree = DEVELOPER_DIR; };
 		7CEE107C1C970BB800E0D426 /* kodi_inputstream_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kodi_inputstream_types.h; path = "kodi-addon-dev-kit/include/kodi/kodi_inputstream_types.h"; sourceTree = "<group>"; };
-		7CEE107D1C970BB800E0D426 /* libKODI_inputstream.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libKODI_inputstream.h; path = "kodi-addon-dev-kit/include/kodi/libKODI_inputstream.h"; sourceTree = "<group>"; };
 		7CEE587C1B5A3FFB007C2B5A /* AudioDSPSettings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioDSPSettings.cpp; sourceTree = "<group>"; };
 		7CF05049190A1D7200222135 /* FFmpeg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FFmpeg.cpp; sourceTree = "<group>"; };
 		7CF0504A190A1D7200222135 /* FFmpeg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FFmpeg.h; sourceTree = "<group>"; };
@@ -9124,7 +9121,6 @@
 				EDE8C7131C7F618500A86ECC /* libKODI_adsp.h */,
 				EDE8C7141C7F618500A86ECC /* libKODI_audioengine.h */,
 				EDE8C7151C7F618500A86ECC /* libKODI_guilib.h */,
-				7CEE107D1C970BB800E0D426 /* libKODI_inputstream.h */,
 				2A7E24C71CEBBC3B003096EB /* libKODI_peripheral.h */,
 				EDE8C7161C7F618500A86ECC /* libXBMC_addon.h */,
 				EDE8C7171C7F618500A86ECC /* libXBMC_codec.h */,

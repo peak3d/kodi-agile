@@ -79,11 +79,6 @@ namespace ADDON
     void*               GetHelperADSP()               { return m_helperADSP; }
     /*\_________________________________________________________________________
     \*/
-    static void*        INPUTSTREAMLib_RegisterMe      (void *addonData);
-    static void         INPUTSTREAMLib_UnRegisterMe    (void *addonData, void* cbTable);
-    void*               GetHelperInputStream()        { return m_helperInputStream; }
-    /*\_________________________________________________________________________
-    \*/
     static void*        PeripheralLib_RegisterMe       (void *addonData);
     static void         PeripheralLib_UnRegisterMe     (void *addonData, void* cbTable);
     void*               GetHelperPeripheral()         { return m_helperPeripheral; }
@@ -102,7 +97,6 @@ namespace ADDON
     void*     m_helperPVR;
     void*     m_helperADSP;
     void*     m_helperCODEC;
-    void*     m_helperInputStream;
     void*     m_helperPeripheral;
   };
 
