@@ -38,7 +38,6 @@ namespace ADDON
     bool Init(sAddonToKodiFuncTable_AudioEncoder &callbacks);
     int Encode(int nNumBytesRead, uint8_t* pbtStream);
     bool Close();
-    void Destroy();
 
     const std::string extension;
 

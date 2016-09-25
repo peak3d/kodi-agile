@@ -112,12 +112,6 @@ bool CAudioEncoder::Close()
   return true;
 }
 
-void CAudioEncoder::Destroy()
-{
-  CAddonDll::Destroy();
-  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon));
-}
-
 void CAudioEncoder::ExceptionHandle(std::exception& ex, const char* function)
 {
   ADDON::LogException(this, ex, function); // Handle exception and disable add-on
