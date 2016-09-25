@@ -248,9 +248,9 @@ bool CInputStream::Open(CFileItem &fileitem)
   {
     if (m_struct.toAddon.Open && m_struct.toAddon.GetCapabilities)
     {
-      ret = m_struct.toAddon.Open(m_addonInstance, props);
+      ret = m_struct.toAddon.Open(m_addonInstance, &props);
       if (ret)
-        m_caps = m_struct.toAddon.GetCapabilities(m_addonInstance);
+         m_struct.toAddon.GetCapabilities(m_addonInstance, &m_caps);
     }
   }
   catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); return false; }
@@ -321,10 +321,12 @@ void CInputStream::UpdateStreams()
   DisposeStreams();
 
   INPUTSTREAM_IDS streamIDs;
+  streamIDs.m_streamCount = 0;
+
   try
   {
     if (m_struct.toAddon.GetStreamIds)
-      streamIDs = m_struct.toAddon.GetStreamIds(m_addonInstance);
+      m_struct.toAddon.GetStreamIds(m_addonInstance, &streamIDs);
   }
   catch (std::exception &e)
   {
@@ -342,10 +344,11 @@ void CInputStream::UpdateStreams()
   for (unsigned int i=0; i<streamIDs.m_streamCount; i++)
   {
     INPUTSTREAM_INFO stream;
+    memset(&stream, 0, sizeof(stream));
     try
     {
       if (m_struct.toAddon.GetStream)
-        stream = m_struct.toAddon.GetStream(m_addonInstance, streamIDs.m_streamIds[i]);
+        m_struct.toAddon.GetStream(m_addonInstance, streamIDs.m_streamIds[i], &stream);
     }
     catch (std::exception& ex)
     {
