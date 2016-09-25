@@ -272,8 +272,7 @@ if(ENABLE_EVENTCLIENTS)
 endif()
 
 # Install kodi-inputstream-dev
-install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_inputstream_dll.h
-              ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_inputstream_types.h
+install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_inputstream_types.h
         DESTINATION ${includedir}/${APP_NAME_LC}
         COMPONENT kodi-inputstream-dev)
 
