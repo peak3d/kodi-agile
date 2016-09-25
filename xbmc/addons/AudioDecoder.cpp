@@ -113,10 +113,11 @@ bool CAudioDecoder::Init(const CFileItem& file, unsigned int filecache)
   m_format.m_sampleRate = sampleRate;
   if (channel)
   {
-    memset(m_channel, AE_CH_NULL, sizeof(m_channel));
+    AEChannel kodiChannel[AE_CH_MAX];
+    memset(kodiChannel, AE_CH_NULL, sizeof(kodiChannel));
     for (unsigned int i = 0; i < AE_CH_MAX && i < AUDIO_CH_MAX && channel[i] != AUDIO_CH_NULL; ++i)
-      m_channel[i] = kodi::addon::GetKodiAudioChannel(channel[i]);
-    m_format.m_channelLayout = CAEChannelInfo((const AEChannel*)&m_channel);
+      kodiChannel[i] = kodi::addon::GetKodiAudioChannel(channel[i]);
+    m_format.m_channelLayout = CAEChannelInfo((const AEChannel*)&kodiChannel);
   }
   else
     m_format.m_channelLayout = CAEUtil::GuessChLayout(channels);

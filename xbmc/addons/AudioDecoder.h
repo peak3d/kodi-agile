@@ -73,7 +73,6 @@ namespace ADDON
     std::string m_mimetype;
     bool m_tags;
     bool m_tracks;
-    AEChannel m_channel[AE_CH_MAX];
 
   private:
     void DeInit();
