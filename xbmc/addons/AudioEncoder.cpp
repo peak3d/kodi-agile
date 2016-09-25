@@ -32,9 +32,9 @@ std::unique_ptr<CAudioEncoder> CAudioEncoder::FromExtension(AddonProps props, co
 
 CAudioEncoder::CAudioEncoder(AddonProps props)
   : CAddonDll(std::move(props)),
-    m_addonInstance{nullptr}
+    m_addonInstance(nullptr)
 {
-  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon));
+  memset(&m_struct, 0, sizeof(m_struct));
 }
 
 CAudioEncoder::CAudioEncoder(AddonProps props, std::string _extension)
@@ -42,7 +42,7 @@ CAudioEncoder::CAudioEncoder(AddonProps props, std::string _extension)
     extension(std::move(_extension)),
     m_addonInstance(nullptr)
 {
-  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon));
+  memset(&m_struct, 0, sizeof(m_struct));
 }
 
 bool CAudioEncoder::Init(sAddonToKodiFuncTable_AudioEncoder &callbacks)
@@ -119,4 +119,3 @@ void CAudioEncoder::ExceptionHandle(std::exception& ex, const char* function)
 }
 
 } /* namespace ADDON */
-
