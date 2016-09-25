@@ -58,14 +58,20 @@ namespace ADDON
   public:
     explicit CVisualisation(AddonProps props);
 
-    virtual void OnInitialize(int iChannels, int iSamplesPerSec, int iBitsPerSample);
-    virtual void OnAudioData(const float* pAudioData, int iAudioDataLength);
-    virtual bool IsInUse() const;
-    bool Create(int x, int y, int w, int h, void *device);
-    void Start(int iChannels, int iSamplesPerSec, int iBitsPerSample, const std::string &strSongName);
+    // Child functions related to IAudioCallback
+    virtual void OnInitialize(int iChannels, int iSamplesPerSec, int iBitsPerSample) override;
+    virtual void OnAudioData(const float* pAudioData, int iAudioDataLength) override;
+
+    // Child functions related to CAddonDll
+    virtual bool IsInUse() const override;
+
+    // Child functions related to IRenderingCallback
+    virtual bool Create(int x, int y, int w, int h, void *device) override;
+    virtual void Render() override;
+    virtual void Stop() override; // also child of CAddonDll
+    
+    void Start(int iChannels, int iSamplesPerSec, int iBitsPerSample, const std::string &strSongName) ;
     void AudioData(const float *pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength);
-    void Render();
-    void Stop();
     void GetInfo(VIS_INFO *info);
     bool OnAction(VIS_ACTION action, void *param = NULL);
     bool UpdateTrack();
