@@ -58,10 +58,10 @@ namespace ADDON
     // Child functions related to CMusicFileDirectory
     virtual int GetTrackCount(const std::string& strPath) override;
     
-    void Destroy();
-    bool Load(const std::string& strFileName,
+    // Child functions related to MUSIC_INFO::IMusicInfoTagLoader
+    virtual bool Load(const std::string& strFileName,
               MUSIC_INFO::CMusicInfoTag& tag,
-              MUSIC_INFO::EmbeddedArt *art = nullptr);
+              MUSIC_INFO::EmbeddedArt *art = nullptr) override;
 
     const std::string& GetExtensions() const { return m_extension; }
     const std::string& GetMimetypes() const { return m_mimetype; }

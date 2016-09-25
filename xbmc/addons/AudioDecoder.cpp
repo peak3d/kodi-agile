@@ -214,11 +214,6 @@ int CAudioDecoder::GetTrackCount(const std::string& strPath)
   return result;
 }
 
-void CAudioDecoder::Destroy()
-{
-  CAddonDll::Destroy();
-}
-
 void CAudioDecoder::ExceptionHandle(std::exception& ex, const char* function)
 {
   ADDON::LogException(this, ex, function); // Handle exception
