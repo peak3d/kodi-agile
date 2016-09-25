@@ -18,6 +18,7 @@
  */
 #include "InputStream.h"
 #include "addons/interfaces/ExceptionHandling.h"
+#include "cores/VideoPlayer/DVDDemuxers/DVDDemuxUtils.h"
 #include "utils/StringUtils.h"
 #include "utils/log.h"
 #include "cores/VideoPlayer/DVDDemuxers/DVDDemux.h"
@@ -116,7 +117,12 @@ void CInputStream::UpdateConfig()
   std::string pathList;
   ADDON_STATUS status = Create();
   if (status == ADDON_STATUS_OK)
+  {
+    m_struct.toKodi.kodiInstance = this;
+    m_struct.toKodi.AllocateDemuxPacket = InputStreamAllocateDemuxPacket;
+    m_struct.toKodi.FreeDemuxPacket = InputStreamFreeDemuxPacket;
     status = CAddonDll::CreateInstance(ADDON_INSTANCE_INPUTSTREAM, ID().c_str(), &m_struct, &m_addonInstance);
+  }
 
   if (status != ADDON_STATUS_PERMANENT_FAILURE)
   {
@@ -619,6 +625,18 @@ void CInputStream::ExceptionHandle(std::exception& ex, const char* function)
 {
   ADDON::LogException(this, ex, function); // Handle exception and disable add-on
   memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call  
+}
+
+// Static callback functions for add-on to Kodi below
+
+DemuxPacket* CInputStream::InputStreamAllocateDemuxPacket(void *addonData, int iDataSize)
+{
+  return CDVDDemuxUtils::AllocateDemuxPacket(iDataSize);
+}
+
+void CInputStream::InputStreamFreeDemuxPacket(void *addonData, DemuxPacket* pPacket)
+{
+  CDVDDemuxUtils::FreeDemuxPacket(pPacket);
 }
 
 } /*namespace ADDON*/

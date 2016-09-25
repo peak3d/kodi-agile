@@ -545,6 +545,7 @@ namespace inputstream {
     //--------------------------------------------------------------------------
     
     //==========================================================================
+    /// \anchor kodi_addon_inputstream_AllocateDemuxPacket
     /// @brief Allocate a demux packet. Free with FreeDemuxPacket
     ///
     /// @param iDataSize                The size of the data that will go into
@@ -558,6 +559,7 @@ namespace inputstream {
     //--------------------------------------------------------------------------
 
     //==========================================================================
+    /// \anchor kodi_addon_inputstream_FreeDemuxPacket
     /// @brief Free a packet that was allocated with AllocateDemuxPacket
     ///
     /// @param pPacket                  The packet to free

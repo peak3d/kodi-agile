@@ -86,6 +86,10 @@ namespace ADDON
     void PauseStream(double time);
     bool IsRealTimeStream();
 
+    // Static callback functions for add-on to Kodi below
+    static DemuxPacket* InputStreamAllocateDemuxPacket(void* addonData, int iDataSize = 0); /*!< @ref kodi_addon_inputstream_AllocateDemuxPacket */
+    static void InputStreamFreeDemuxPacket(void* addonData, DemuxPacket* pPacket); /*!< @ref kodi_addon_inputstream_FreeDemuxPacket */
+  
   protected:
     void UpdateStreams();
     void DisposeStreams();
