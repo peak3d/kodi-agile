@@ -34,40 +34,6 @@ extern "C"
   /*! @name PVR add-on methods */
   //@{
   /*!
-   * Get the XBMC_PVR_API_VERSION that was used to compile this add-on.
-   * Used to check if this add-on is compatible with XBMC.
-   * @return The XBMC_PVR_API_VERSION that was used to compile this add-on.
-   * @remarks Valid implementation required.
-   */
-  const char* GetPVRAPIVersion(void* addonInstance);
-
-  /*!
-   * Get the XBMC_PVR_MIN_API_VERSION that was used to compile this add-on.
-   * Used to check if this add-on is compatible with XBMC.
-   * @return The XBMC_PVR_MIN_API_VERSION that was used to compile this add-on.
-   * @remarks Valid implementation required.
-   */
-  const char* GetMininumPVRAPIVersion(void* addonInstance);
-
-  /*!
-   * Get the XBMC_GUI_API_VERSION that was used to compile this add-on.
-   * Used to check if this add-on is compatible with XBMC.
-   * @return The XBMC_GUI_API_VERSION that was used to compile this add-on or empty string if this add-on does not depend on Kodi GUI API.
-   * @remarks Valid implementation required.
-   * @note see libKODI_guilib.h about related parts
-   */
-  const char* GetGUIAPIVersion(void* addonInstance);
-
-  /*!
-   * Get the XBMC_GUI_MIN_API_VERSION that was used to compile this add-on.
-   * Used to check if this add-on is compatible with XBMC.
-   * @return The XBMC_GUI_MIN_API_VERSION that was used to compile this add-on or empty string if this add-on does not depend on Kodi GUI API.
-   * @remarks Valid implementation required.
-   * @note see libKODI_guilib.h about related parts
-   */
-  const char* GetMininumGUIAPIVersion(void* addonInstance);
-
-  /*!
    * Get the list of features that this add-on provides.
    * Called by XBMC to query the add-on's capabilities.
    * Used to check which options should be presented in the UI, which methods to call, etc.
@@ -661,10 +627,6 @@ extern "C"
    */
   void __declspec(dllexport) get_addon(struct PVRClient* pClient)
   {
-    pClient->GetPVRAPIVersion               = GetPVRAPIVersion;
-    pClient->GetMininumPVRAPIVersion        = GetMininumPVRAPIVersion;
-    pClient->GetGUIAPIVersion               = GetGUIAPIVersion;
-    pClient->GetMininumGUIAPIVersion        = GetMininumGUIAPIVersion;
     pClient->GetAddonCapabilities           = GetAddonCapabilities;
     pClient->GetStreamProperties            = GetStreamProperties;
     pClient->GetConnectionString            = GetConnectionString;
