@@ -530,7 +530,7 @@ extern "C" {
   /*!
    * @brief Structure to transfer the methods from xbmc_pvr_dll.h to XBMC
    */
-  typedef struct PVRClient
+  typedef struct sKodiToAddonFuncTable_PVRClient
   {
     PVR_ERROR    (__cdecl* GetCapabilities)(void* addonInstance, PVR_ADDON_CAPABILITIES*);
     PVR_ERROR    (__cdecl* GetStreamProperties)(void* addonInstance, PVR_STREAM_PROPERTIES*);
@@ -603,7 +603,7 @@ extern "C" {
     void         (__cdecl* OnSystemWake)(void* addonInstance);
     void         (__cdecl* OnPowerSavingActivated)(void* addonInstance);
     void         (__cdecl* OnPowerSavingDeactivated)(void* addonInstance);
-  } PVRClient;
+  } sKodiToAddonFuncTable_PVRClient;
 
 #ifdef __cplusplus
 }
