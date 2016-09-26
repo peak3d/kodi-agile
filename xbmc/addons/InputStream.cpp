@@ -16,14 +16,15 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
+
 #include "InputStream.h"
 #include "addons/interfaces/ExceptionHandling.h"
-#include "cores/VideoPlayer/DVDDemuxers/DVDDemuxUtils.h"
-#include "utils/StringUtils.h"
-#include "utils/log.h"
 #include "cores/VideoPlayer/DVDDemuxers/DVDDemux.h"
+#include "cores/VideoPlayer/DVDDemuxers/DVDDemuxUtils.h"
 #include "threads/SingleLock.h"
+#include "utils/log.h"
 #include "utils/RegExp.h"
+#include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 
 namespace ADDON
@@ -81,12 +82,34 @@ CInputStream::CInputStream(const AddonProps& props,
   memset(&m_struct, 0, sizeof(m_struct));
 }
 
+CInputStream::~CInputStream()
+{
+  Destroy();
+}
+
+ADDON_STATUS CInputStream::Create()
+{
+  ADDON_STATUS status = CAddonDll::Create();
+  if (status != ADDON_STATUS_OK)
+    return status;
+  
+  memset(&m_struct, 0, sizeof(m_struct));
+  m_struct.toKodi.kodiInstance = this;
+  m_struct.toKodi.AllocateDemuxPacket = InputStreamAllocateDemuxPacket;
+  m_struct.toKodi.FreeDemuxPacket = InputStreamFreeDemuxPacket;
+  status = CAddonDll::CreateInstance(ADDON_INSTANCE_INPUTSTREAM, ID().c_str(), &m_struct, &m_addonInstance);
+  return status;
+}
+
 void CInputStream::Destroy(void)
 {
   /* destroy the add-on */
-  CAddonDll::DestroyInstance(ADDON_INSTANCE_INPUTSTREAM, m_addonInstance);
-  memset(&m_struct, 0, sizeof(m_struct));
-  m_addonInstance = nullptr;
+  if (m_addonInstance)
+  {
+    CAddonDll::DestroyInstance(ADDON_INSTANCE_INPUTSTREAM, m_addonInstance);
+    memset(&m_struct, 0, sizeof(m_struct));
+    m_addonInstance = nullptr;
+  }
   
   CAddonDll::Destroy();
 }
@@ -116,24 +139,16 @@ void CInputStream::UpdateConfig()
 {
   std::string pathList;
   ADDON_STATUS status = Create();
-  if (status == ADDON_STATUS_OK)
-  {
-    m_struct.toKodi.kodiInstance = this;
-    m_struct.toKodi.AllocateDemuxPacket = InputStreamAllocateDemuxPacket;
-    m_struct.toKodi.FreeDemuxPacket = InputStreamFreeDemuxPacket;
-    status = CAddonDll::CreateInstance(ADDON_INSTANCE_INPUTSTREAM, ID().c_str(), &m_struct, &m_addonInstance);
-  }
+  if (status != ADDON_STATUS_OK)
+    return;
 
-  if (status != ADDON_STATUS_PERMANENT_FAILURE)
+  try
   {
-    try
-    {
-      if (m_struct.toAddon.GetPathList)
-        pathList = m_struct.toAddon.GetPathList(m_addonInstance);
-    }
-    catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
-    Destroy();
+    if (m_struct.toAddon.GetPathList)
+      pathList = m_struct.toAddon.GetPathList(m_addonInstance);
   }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  Destroy();
 
   Config config;
   config.m_pathList = StringUtils::Tokenize(pathList, "|");
@@ -639,5 +654,4 @@ void CInputStream::InputStreamFreeDemuxPacket(void *addonData, DemuxPacket* pPac
   CDVDDemuxUtils::FreeDemuxPacket(pPacket);
 }
 
-} /*namespace ADDON*/
-
+} /* namespace ADDON */

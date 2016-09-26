@@ -1,3 +1,4 @@
+#pragma once
 /*
  *      Copyright (C) 2016 Team Kodi
  *
@@ -16,12 +17,12 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-#pragma once
 
 #include "AddonDll.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/kodi_inputstream_types.h"
 #include "FileItem.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/kodi_inputstream_types.h"
 #include "threads/CriticalSection.h"
+
 #include <vector>
 #include <map>
 
@@ -42,8 +43,9 @@ namespace ADDON
                  const std::string& listitemprops,
                  const std::string& extensions,
                  const std::string& protocols);
-    virtual ~CInputStream() {}
+    virtual ~CInputStream();
     
+    ADDON_STATUS Create();
     void Destroy(void);
 
     virtual void SaveSettings() override;
@@ -119,4 +121,4 @@ namespace ADDON
     void* m_addonInstance;
   };
 
-} /*namespace ADDON*/
+} /* namespace ADDON */
