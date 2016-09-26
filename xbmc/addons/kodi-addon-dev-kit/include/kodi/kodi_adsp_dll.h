@@ -106,7 +106,7 @@ extern "C"
    * @return AE_DSP_ERROR_NO_ERROR if the properties were fetched successfully.
    * @remarks Valid implementation required.
    */
-  AE_DSP_ERROR GetCapabilities(void* addonInstance, AE_DSP_ADDON_CAPABILITIES *pCapabilities);
+  void GetCapabilities(void* addonInstance, AE_DSP_ADDON_CAPABILITIES *pCapabilities);
 
   /*!
    * @return The name reported by the back end that will be displayed in the

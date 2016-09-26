@@ -221,12 +221,7 @@ bool CActiveAEDSPAddon::GetAddonProperties(void)
   try
   {
     memset(&addonCapabilities, 0, sizeof(addonCapabilities));
-    AE_DSP_ERROR retVal = m_struct.GetCapabilities(m_addonInstance, &addonCapabilities);
-    if (retVal != AE_DSP_ERROR_NO_ERROR)
-    {
-      CLog::Log(LOGERROR, "ActiveAE DSP - couldn't get the capabilities for add-on '%s'. Please contact the developer of this add-on: %s", GetFriendlyName().c_str(), Author().c_str());
-      return false;
-    }
+    m_struct.GetCapabilities(m_addonInstance, &addonCapabilities);
   }
   XBMCCOMMONS_HANDLE_UNCHECKED
   catch (...)

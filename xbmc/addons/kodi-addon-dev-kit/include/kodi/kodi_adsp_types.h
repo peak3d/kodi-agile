@@ -493,7 +493,7 @@ extern "C" {
 
   typedef struct sKodiToAddonFuncTable_AudioDSP
   {
-    AE_DSP_ERROR (__cdecl* GetCapabilities)(void* addonInstance, AE_DSP_ADDON_CAPABILITIES*);
+    void (__cdecl* GetCapabilities)(void* addonInstance, AE_DSP_ADDON_CAPABILITIES*);
     const char* (__cdecl* GetDSPName)(void* addonInstance);
     const char* (__cdecl* GetDSPVersion)(void* addonInstance);
     AE_DSP_ERROR (__cdecl* MenuHook)(void* addonInstance, const AE_DSP_MENUHOOK&, const AE_DSP_MENUHOOK_DATA&);
