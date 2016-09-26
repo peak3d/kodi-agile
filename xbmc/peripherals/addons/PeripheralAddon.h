@@ -134,8 +134,8 @@ namespace PERIPHERALS
     CCriticalSection    m_critSection;
     
   private:
-    PERIPHERAL_PROPERTIES m_props;
-    sKodiToAddonFuncTable_Peripheral m_struct;
+    PERIPHERAL_PROPS m_props;
+    sFuncTable_Peripheral m_struct;
     void* m_addonInstance;
   };
 }

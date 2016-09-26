@@ -98,11 +98,11 @@ extern "C"
   /*!
    * @brief Properties passed to the Create() method of an add-on.
    */
-  typedef struct PERIPHERAL_PROPERTIES
+  typedef struct PERIPHERAL_PROPS
   {
     const char* user_path;              /*!< @brief path to the user profile */
     const char* addon_path;             /*!< @brief path to this add-on */
-  } ATTRIBUTE_PACKED PERIPHERAL_PROPERTIES;
+  } ATTRIBUTE_PACKED PERIPHERAL_PROPS;
 
   /*!
    * @brief Peripheral add-on capabilities.
@@ -283,31 +283,41 @@ extern "C"
   ///}
 
   //! @todo Mouse, light gun, multitouch
+typedef struct sAddonToKodiFuncTable_Peripheral
+{
+  void (*TriggerScan)(void* kodiInstance);
+  void (*RefreshButtonMaps)(void* kodiInstance, const char* deviceName, const char* controllerId);
+  unsigned int (*FeatureCount)(void* kodiInstance, const char* controllerId, JOYSTICK_FEATURE_TYPE type);
+} sAddonToKodiFuncTable_Peripheral;
 
-  /*!
-   * @brief Structure to transfer the methods from kodi_peripheral_dll.h to the frontend
-   */
-  typedef struct sKodiToAddonFuncTable_Peripheral
-  {
-    PERIPHERAL_ERROR (__cdecl* GetCapabilities)(void* addonInstance, PERIPHERAL_CAPABILITIES*);
-    PERIPHERAL_ERROR (__cdecl* PerformDeviceScan)(void* addonInstance, unsigned int*, PERIPHERAL_INFO**);
-    void (__cdecl* FreeScanResults)(void* addonInstance, unsigned int, PERIPHERAL_INFO*);
-    PERIPHERAL_ERROR (__cdecl* GetEvents)(void* addonInstance, unsigned int*, PERIPHERAL_EVENT**);
-    void (__cdecl* FreeEvents)(void* addonInstance, unsigned int, PERIPHERAL_EVENT*);
-    bool (__cdecl* SendEvent)(void* addonInstance, const PERIPHERAL_EVENT*);
+typedef struct sKodiToAddonFuncTable_Peripheral
+{
+  PERIPHERAL_ERROR (__cdecl* GetCapabilities)(void* addonInstance, PERIPHERAL_CAPABILITIES*);
+  PERIPHERAL_ERROR (__cdecl* PerformDeviceScan)(void* addonInstance, unsigned int*, PERIPHERAL_INFO**);
+  void (__cdecl* FreeScanResults)(void* addonInstance, unsigned int, PERIPHERAL_INFO*);
+  PERIPHERAL_ERROR (__cdecl* GetEvents)(void* addonInstance, unsigned int*, PERIPHERAL_EVENT**);
+  void (__cdecl* FreeEvents)(void* addonInstance, unsigned int, PERIPHERAL_EVENT*);
+  bool (__cdecl* SendEvent)(void* addonInstance, const PERIPHERAL_EVENT*);
 
-    /// @name Joystick operations
-    ///{
-    PERIPHERAL_ERROR (__cdecl* GetJoystickInfo)(void* addonInstance, unsigned int, JOYSTICK_INFO*);
-    void (__cdecl* FreeJoystickInfo)(void* addonInstance, JOYSTICK_INFO*);
-    PERIPHERAL_ERROR (__cdecl* GetFeatures)(void* addonInstance, const JOYSTICK_INFO*, const char*, unsigned int*, JOYSTICK_FEATURE**);
-    void (__cdecl* FreeFeatures)(void* addonInstance, unsigned int, JOYSTICK_FEATURE*);
-    PERIPHERAL_ERROR (__cdecl* MapFeatures)(void* addonInstance, const JOYSTICK_INFO*, const char*, unsigned int, JOYSTICK_FEATURE*);
-    void (__cdecl* SaveButtonMap)(void* addonInstance, const JOYSTICK_INFO*);
-    void (__cdecl* ResetButtonMap)(void* addonInstance, const JOYSTICK_INFO*, const char*);
-    void (__cdecl* PowerOffJoystick)(void* addonInstance, unsigned int);
-    ///}
-  } sKodiToAddonFuncTable_Peripheral;
+  /// @name Joystick operations
+  ///{
+  PERIPHERAL_ERROR (__cdecl* GetJoystickInfo)(void* addonInstance, unsigned int, JOYSTICK_INFO*);
+  void (__cdecl* FreeJoystickInfo)(void* addonInstance, JOYSTICK_INFO*);
+  PERIPHERAL_ERROR (__cdecl* GetFeatures)(void* addonInstance, const JOYSTICK_INFO*, const char*, unsigned int*, JOYSTICK_FEATURE**);
+  void (__cdecl* FreeFeatures)(void* addonInstance, unsigned int, JOYSTICK_FEATURE*);
+  PERIPHERAL_ERROR (__cdecl* MapFeatures)(void* addonInstance, const JOYSTICK_INFO*, const char*, unsigned int, JOYSTICK_FEATURE*);
+  void (__cdecl* SaveButtonMap)(void* addonInstance, const JOYSTICK_INFO*);
+  void (__cdecl* ResetButtonMap)(void* addonInstance, const JOYSTICK_INFO*, const char*);
+  void (__cdecl* PowerOffJoystick)(void* addonInstance, unsigned int);
+  ///}
+} sKodiToAddonFuncTable_Peripheral;
+
+typedef struct sFuncTable_Peripheral
+{
+  PERIPHERAL_PROPS props;
+  sAddonToKodiFuncTable_Peripheral toKodi;
+  sKodiToAddonFuncTable_Peripheral toAddon;
+} sFuncTable_Peripheral;
 
 #ifdef __cplusplus
 }
