@@ -31,7 +31,7 @@ CInputStreamAddon::CInputStreamAddon(const CFileItem& fileitem, std::shared_ptr<
 CInputStreamAddon::~CInputStreamAddon()
 {
   Close();
-  m_addon->Stop();
+  m_addon->Destroy();
   m_addon.reset();
 }
 
