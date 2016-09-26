@@ -520,13 +520,21 @@ namespace inputstream {
     ///
     /// @return true if current stream is real-time
     ///
-    virtual bool IsRealTimeStream() { return true; }
+    virtual bool IsRealTimeStream() { return false; }
     //--------------------------------------------------------------------------
 
     ///@}
 
     // Callbacks to Kodi and to this class
     ///@{
+
+    //==========================================================================
+    /// @brief Get used URL
+    ///
+    /// @return                         URL
+    ///
+    const std::string& URL() { return m_strURL; }
+    //--------------------------------------------------------------------------
 
     //==========================================================================
     /// @brief Get library path name
