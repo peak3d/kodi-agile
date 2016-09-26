@@ -41,7 +41,7 @@ extern "C"
    * peripherals. All capabilities that the add-on supports should be set to true.
    *
    */
-  PERIPHERAL_ERROR GetAddonCapabilities(void* addonInstance, PERIPHERAL_CAPABILITIES *pCapabilities);
+  PERIPHERAL_ERROR GetCapabilities(void* addonInstance, PERIPHERAL_CAPABILITIES *pCapabilities);
 
   /*!
    * @brief Perform a scan for joysticks
@@ -173,11 +173,9 @@ extern "C"
    * pClient. Note that get_addon() is defined here, so it will be available in
    * all compiled peripheral add-ons.
    */
-  void __declspec(dllexport) get_addon(struct PeripheralAddon* pClient)
+  void __declspec(dllexport) get_addon(struct sKodiToAddonFuncTable_Peripheral* pClient)
   {
-    pClient->GetPeripheralAPIVersion        = GetPeripheralAPIVersion;
-    pClient->GetMinimumPeripheralAPIVersion = GetMinimumPeripheralAPIVersion;
-    pClient->GetAddonCapabilities           = GetAddonCapabilities;
+    pClient->GetCapabilities                = GetCapabilities;
     pClient->PerformDeviceScan              = PerformDeviceScan;
     pClient->FreeScanResults                = FreeScanResults;
     pClient->GetEvents                      = GetEvents;

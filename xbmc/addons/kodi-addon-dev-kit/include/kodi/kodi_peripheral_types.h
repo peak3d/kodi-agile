@@ -287,27 +287,27 @@ extern "C"
   /*!
    * @brief Structure to transfer the methods from kodi_peripheral_dll.h to the frontend
    */
-  typedef struct PeripheralAddon
+  typedef struct sKodiToAddonFuncTable_Peripheral
   {
-    PERIPHERAL_ERROR (__cdecl* GetAddonCapabilities)(void* addonInstance, PERIPHERAL_CAPABILITIES*);
+    PERIPHERAL_ERROR (__cdecl* GetCapabilities)(void* addonInstance, PERIPHERAL_CAPABILITIES*);
     PERIPHERAL_ERROR (__cdecl* PerformDeviceScan)(void* addonInstance, unsigned int*, PERIPHERAL_INFO**);
-    void             (__cdecl* FreeScanResults)(void* addonInstance, unsigned int, PERIPHERAL_INFO*);
+    void (__cdecl* FreeScanResults)(void* addonInstance, unsigned int, PERIPHERAL_INFO*);
     PERIPHERAL_ERROR (__cdecl* GetEvents)(void* addonInstance, unsigned int*, PERIPHERAL_EVENT**);
-    void             (__cdecl* FreeEvents)(void* addonInstance, unsigned int, PERIPHERAL_EVENT*);
-    bool             (__cdecl* SendEvent)(void* addonInstance, const PERIPHERAL_EVENT*);
+    void (__cdecl* FreeEvents)(void* addonInstance, unsigned int, PERIPHERAL_EVENT*);
+    bool (__cdecl* SendEvent)(void* addonInstance, const PERIPHERAL_EVENT*);
 
     /// @name Joystick operations
     ///{
     PERIPHERAL_ERROR (__cdecl* GetJoystickInfo)(void* addonInstance, unsigned int, JOYSTICK_INFO*);
-    void             (__cdecl* FreeJoystickInfo)(void* addonInstance, JOYSTICK_INFO*);
+    void (__cdecl* FreeJoystickInfo)(void* addonInstance, JOYSTICK_INFO*);
     PERIPHERAL_ERROR (__cdecl* GetFeatures)(void* addonInstance, const JOYSTICK_INFO*, const char*, unsigned int*, JOYSTICK_FEATURE**);
-    void             (__cdecl* FreeFeatures)(void* addonInstance, unsigned int, JOYSTICK_FEATURE*);
+    void (__cdecl* FreeFeatures)(void* addonInstance, unsigned int, JOYSTICK_FEATURE*);
     PERIPHERAL_ERROR (__cdecl* MapFeatures)(void* addonInstance, const JOYSTICK_INFO*, const char*, unsigned int, JOYSTICK_FEATURE*);
-    void             (__cdecl* SaveButtonMap)(void* addonInstance, const JOYSTICK_INFO*);
-    void             (__cdecl* ResetButtonMap)(void* addonInstance, const JOYSTICK_INFO*, const char*);
-    void             (__cdecl* PowerOffJoystick)(void* addonInstance, unsigned int);
+    void (__cdecl* SaveButtonMap)(void* addonInstance, const JOYSTICK_INFO*);
+    void (__cdecl* ResetButtonMap)(void* addonInstance, const JOYSTICK_INFO*, const char*);
+    void (__cdecl* PowerOffJoystick)(void* addonInstance, unsigned int);
     ///}
-  } PeripheralAddon;
+  } sKodiToAddonFuncTable_Peripheral;
 
 #ifdef __cplusplus
 }

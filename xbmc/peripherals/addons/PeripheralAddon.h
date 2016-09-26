@@ -135,7 +135,7 @@ namespace PERIPHERALS
     
   private:
     PERIPHERAL_PROPERTIES m_props;
-    PeripheralAddon m_struct;
+    sKodiToAddonFuncTable_Peripheral m_struct;
     void* m_addonInstance;
   };
 }
