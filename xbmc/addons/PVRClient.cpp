@@ -385,14 +385,14 @@ bool CPVRClient::GetAddonProperties(void)
   try
   {
     memset(&addonCapabilities, 0, sizeof(addonCapabilities));
-    PVR_ERROR retVal = m_struct.GetAddonCapabilities(m_addonInstance, &addonCapabilities);
+    PVR_ERROR retVal = m_struct.GetCapabilities(m_addonInstance, &addonCapabilities);
     if (retVal != PVR_ERROR_NO_ERROR)
     {
       CLog::Log(LOGERROR, "PVR - couldn't get the capabilities for add-on '%s'. Please contact the developer of this add-on: %s", GetFriendlyName().c_str(), Author().c_str());
       return false;
     }
   }
-  catch (std::exception &e) { LogException(e, "GetAddonCapabilities()"); return false; }
+  catch (std::exception &e) { LogException(e, "GetCapabilities()"); return false; }
 
   /* get the name of the backend */
   try { strBackendName = m_struct.GetBackendName(m_addonInstance); }
@@ -538,7 +538,7 @@ bool CPVRClient::GetAddonProperties(void)
   return true;
 }
 
-PVR_ADDON_CAPABILITIES CPVRClient::GetAddonCapabilities(void) const
+PVR_ADDON_CAPABILITIES CPVRClient::GetCapabilities(void) const
 {
   PVR_ADDON_CAPABILITIES addonCapabilities(m_addonCapabilities);
   return addonCapabilities;

@@ -42,7 +42,7 @@ extern "C"
    * @return PVR_ERROR_NO_ERROR if the properties were fetched successfully.
    * @remarks Valid implementation required.
    */
-  PVR_ERROR GetAddonCapabilities(void* addonInstance, PVR_ADDON_CAPABILITIES *pCapabilities);
+  PVR_ERROR GetCapabilities(void* addonInstance, PVR_ADDON_CAPABILITIES *pCapabilities);
 
   /*!
    * @return The name reported by the backend that will be displayed in the UI.
@@ -627,7 +627,7 @@ extern "C"
    */
   void __declspec(dllexport) get_addon(struct PVRClient* pClient)
   {
-    pClient->GetAddonCapabilities           = GetAddonCapabilities;
+    pClient->GetCapabilities                = GetCapabilities;
     pClient->GetStreamProperties            = GetStreamProperties;
     pClient->GetConnectionString            = GetConnectionString;
     pClient->GetBackendName                 = GetBackendName;
