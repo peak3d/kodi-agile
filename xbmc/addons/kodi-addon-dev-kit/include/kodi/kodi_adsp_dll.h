@@ -97,39 +97,6 @@ extern "C"
   /*! @name Audio DSP add-on methods */
   //@{
   /*!
-   * Get the KODI_AE_DSP_API_VERSION that was used to compile this add-on.
-   * Used to check if this add-on is compatible with KODI.
-   * @return The KODI_AE_DSP_API_VERSION that was used to compile this add-on.
-   * @remarks Valid implementation required.
-   */
-  const char* GetAudioDSPAPIVersion(void* addonInstance);
-
-  /*!
-   * Get the KODI_AE_DSP_MIN_API_VERSION that was used to compile this add-on.
-   * Used to check if this add-on is compatible with KODI.
-   * @return The KODI_AE_DSP_MIN_API_VERSION that was used to compile this add-on.
-   * @remarks Valid implementation required.
-   */
-  const char* GetMinimumAudioDSPAPIVersion(void* addonInstance);
-
-  /*!
-   * @brief Get the KODI_GUI_API_VERSION that was used to compile this add-on.
-   * Used to check if this add-on is compatible with KODI.
-   * @return The KODI_GUI_API_VERSION that was used to compile this add-on.
-   * @remarks Valid implementation required.
-   */
-  const char* GetGUIAPIVersion(void* addonInstance);
-
-  /*!
-   * @brief Get the KODI_GUI_MIN_API_VERSION that was used to compile this
-   * add-on.
-   * Used to check if this add-on is compatible with KODI.
-   * @return The KODI_GUI_MIN_API_VERSION that was used to compile this add-on.
-   * @remarks Valid implementation required.
-   */
-  const char* GetMinimumGUIAPIVersion(void* addonInstance);
-
-  /*!
    * @brief Get the list of features that this add-on provides.
    * Called by KODI to query the add-ons capabilities.
    * Used to check which options should be presented in the DSP, which methods
