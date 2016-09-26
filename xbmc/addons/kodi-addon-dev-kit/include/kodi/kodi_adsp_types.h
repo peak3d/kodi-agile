@@ -554,12 +554,12 @@ namespace adsp {
     ///                                 id ADDON_INSTANCE_ADSP.
     ///
     CAddon(void* instance)
-      : m_instance(static_cast<sFuncTable_PVRClient*>(instance))
+      : m_instance(static_cast<sFuncTable_AudioDSP*>(instance))
     {
     }
 
   private:
-    sFuncTable_PVRClient* m_instance;
+    sFuncTable_AudioDSP* m_instance;
   };
 
 } /* namespace adsp */
