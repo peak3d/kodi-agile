@@ -25,6 +25,8 @@
 #include "addons/interfaces/ExceptionHandling.h"
 #include "filesystem/Directory.h"
 #include "filesystem/SpecialProtocol.h"
+#include "games/controllers/Controller.h"
+#include "games/controllers/ControllerLayout.h"
 #include "input/joysticks/DriverPrimitive.h"
 #include "input/joysticks/IButtonMap.h"
 #include "input/joysticks/IDriverHandler.h"
@@ -98,9 +100,6 @@ void CPeripheralAddon::ResetProperties(void)
   m_strUserPath        = CSpecialProtocol::TranslatePath(Profile());
   m_strClientPath      = CSpecialProtocol::TranslatePath(Path());
 
-  m_props.user_path    = m_strUserPath.c_str();
-  m_props.addon_path   = m_strClientPath.c_str();
-
   m_apiVersion = ADDON::AddonVersion("0.0.0");
   
   memset(&m_struct, 0, sizeof(m_struct));
@@ -134,7 +133,15 @@ ADDON_STATUS CPeripheralAddon::CreateAddon(void)
   status = CAddonDll::Create();
 
   if (status == ADDON_STATUS_OK)
+  {
+    m_struct.props.user_path = m_strUserPath.c_str();
+    m_struct.props.addon_path = m_strClientPath.c_str();
+    m_struct.toKodi.kodiInstance = this;
+    m_struct.toKodi.TriggerScan = TriggerScan;
+    m_struct.toKodi.RefreshButtonMaps = RefreshButtonMaps;
+    m_struct.toKodi.FeatureCount = FeatureCount;
     status = CAddonDll::CreateInstance(ADDON_INSTANCE_PERIPHERAL, ID().c_str(), &m_struct, &m_addonInstance);
+  }
 
   if (status == ADDON_STATUS_OK)
   {
@@ -749,4 +756,35 @@ void CPeripheralAddon::ExceptionHandle(std::exception& ex, const char* function)
 {
   ADDON::LogException(this, ex, function); // Handle exception
   memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call  
+}
+
+void CPeripheralAddon::TriggerScan(void* kodiInstance)
+{
+  g_peripherals.TriggerDeviceScan(PERIPHERAL_BUS_ADDON);
+}
+
+void CPeripheralAddon::RefreshButtonMaps(void* kodiInstance, const char* deviceName, const char* controllerId)
+{
+  if (!kodiInstance)
+    return;
+
+  static_cast<CPeripheralAddon*>(kodiInstance)->RefreshButtonMaps(deviceName ? deviceName : "");
+}
+
+unsigned int CPeripheralAddon::FeatureCount(void* kodiInstance, const char* controllerId, JOYSTICK_FEATURE_TYPE type)
+{
+  using namespace ADDON;
+  using namespace GAME;
+
+  unsigned int count = 0;
+
+  AddonPtr addon;
+  if (CAddonMgr::GetInstance().GetAddon(controllerId, addon, ADDON_GAME_CONTROLLER))
+  {
+    ControllerPtr controller = std::static_pointer_cast<CController>(addon);
+    if (controller->LoadLayout())
+      count = controller->Layout().FeatureCount(CPeripheralAddonTranslator::TranslateFeatureType(type));
+  }
+
+  return count;
 }

@@ -93,6 +93,11 @@ namespace PERIPHERALS
     void UnregisterButtonMap(JOYSTICK::IButtonMap* buttonMap);
     void RefreshButtonMaps(const std::string& strDeviceName = "");
 
+    // Static callback functions for add-on to Kodi below
+    static void TriggerScan(void* kodiInstance);
+    static void RefreshButtonMaps(void* kodiInstance, const char* deviceName, const char* controllerId);
+    static unsigned int FeatureCount(void* kodiInstance, const char* controllerId, JOYSTICK_FEATURE_TYPE type);
+  
   private:
     /*!
      * @brief Helper functions

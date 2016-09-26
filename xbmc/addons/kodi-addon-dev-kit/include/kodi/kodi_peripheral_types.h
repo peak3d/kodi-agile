@@ -285,6 +285,7 @@ extern "C"
   //! @todo Mouse, light gun, multitouch
 typedef struct sAddonToKodiFuncTable_Peripheral
 {
+  void* kodiInstance;
   void (*TriggerScan)(void* kodiInstance);
   void (*RefreshButtonMaps)(void* kodiInstance, const char* deviceName, const char* controllerId);
   unsigned int (*FeatureCount)(void* kodiInstance, const char* controllerId, JOYSTICK_FEATURE_TYPE type);
