@@ -1,4 +1,4 @@
-
+#pragma once
 /*
  *      Copyright (C) 2014-2016 Team Kodi
  *      http://kodi.tv
@@ -289,8 +289,6 @@ extern "C"
    */
   typedef struct PeripheralAddon
   {
-    const char*      (__cdecl* GetPeripheralAPIVersion)(void* addonInstance);
-    const char*      (__cdecl* GetMinimumPeripheralAPIVersion)(void* addonInstance);
     PERIPHERAL_ERROR (__cdecl* GetAddonCapabilities)(void* addonInstance, PERIPHERAL_CAPABILITIES*);
     PERIPHERAL_ERROR (__cdecl* PerformDeviceScan)(void* addonInstance, unsigned int*, PERIPHERAL_INFO**);
     void             (__cdecl* FreeScanResults)(void* addonInstance, unsigned int, PERIPHERAL_INFO*);
