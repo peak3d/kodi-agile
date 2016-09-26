@@ -20,7 +20,6 @@
 #pragma once
 
 #include "addons/kodi-addon-dev-kit/include/kodi/kodi_peripheral_types.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/kodi_peripheral_utils.hpp"
 #include "input/joysticks/DriverPrimitive.h"
 #include "input/joysticks/JoystickTypes.h"
 
@@ -31,8 +30,8 @@ namespace PERIPHERALS
   public:
     static const char* TranslateError(PERIPHERAL_ERROR error);
 
-    static JOYSTICK::CDriverPrimitive TranslatePrimitive(const ADDON::DriverPrimitive& primitive);
-    static ADDON::DriverPrimitive     TranslatePrimitive(const JOYSTICK::CDriverPrimitive& primitive);
+    static JOYSTICK::CDriverPrimitive TranslatePrimitive(const kodi::addon::peripheral::DriverPrimitive& primitive);
+    static kodi::addon::peripheral::DriverPrimitive     TranslatePrimitive(const JOYSTICK::CDriverPrimitive& primitive);
 
     static JOYSTICK::HAT_DIRECTION       TranslateHatDirection(JOYSTICK_DRIVER_HAT_DIRECTION dir);
     static JOYSTICK_DRIVER_HAT_DIRECTION TranslateHatDirection(JOYSTICK::HAT_DIRECTION dir);
@@ -45,6 +44,6 @@ namespace PERIPHERALS
     static JOYSTICK::FEATURE_TYPE TranslateFeatureType(JOYSTICK_FEATURE_TYPE type);
     static JOYSTICK_FEATURE_TYPE  TranslateFeatureType(JOYSTICK::FEATURE_TYPE type);
 
-    static ADDON::DriverPrimitive Opposite(const ADDON::DriverPrimitive& semiaxis);
+    static kodi::addon::peripheral::DriverPrimitive Opposite(const kodi::addon::peripheral::DriverPrimitive& semiaxis);
   };
 }

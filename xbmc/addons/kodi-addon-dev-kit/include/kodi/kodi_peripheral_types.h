@@ -113,8 +113,6 @@ extern "C" {
 
   /*!
    * @brief Peripheral add-on capabilities.
-   * If a capability is set to true, then the corresponding methods from
-   * kodi_peripheral_dll.h need to be implemented.
    */
   typedef struct PERIPHERAL_CAPABILITIES
   {

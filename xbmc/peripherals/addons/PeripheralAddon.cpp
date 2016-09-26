@@ -356,7 +356,7 @@ bool CPeripheralAddon::PerformDeviceScan(PeripheralScanResults &results)
   {
     for (unsigned int i = 0; i < peripheralCount; i++)
     {
-      ADDON::Peripheral peripheral(pScanResults[i]);
+      kodi::addon::peripheral::Peripheral peripheral(pScanResults[i]);
 
       PeripheralScanResult result(PERIPHERAL_BUS_ADDON);
       switch (peripheral.Type())
@@ -416,7 +416,7 @@ bool CPeripheralAddon::ProcessEvents(void)
   {
     for (unsigned int i = 0; i < eventCount; i++)
     {
-      ADDON::PeripheralEvent event(pEvents[i]);
+      kodi::addon::peripheral::PeripheralEvent event(pEvents[i]);
       CPeripheral* device = GetPeripheral(event.PeripheralIndex());
       if (!device)
         continue;
@@ -523,7 +523,7 @@ bool CPeripheralAddon::GetJoystickProperties(unsigned int index, CPeripheralJoys
 
   if (retVal == PERIPHERAL_NO_ERROR)
   {
-    ADDON::Joystick addonJoystick(joystickStruct);
+    kodi::addon::peripheral::Joystick addonJoystick(joystickStruct);
     SetJoystickInfo(joystick, addonJoystick);
 
     try
@@ -550,7 +550,7 @@ bool CPeripheralAddon::GetFeatures(const CPeripheral* device,
 
   PERIPHERAL_ERROR retVal = PERIPHERAL_ERROR_UNKNOWN;
 
-  ADDON::Joystick joystickInfo;
+  kodi::addon::peripheral::Joystick joystickInfo;
   GetJoystickInfo(device, joystickInfo);
 
   JOYSTICK_INFO joystickStruct;
@@ -572,7 +572,7 @@ bool CPeripheralAddon::GetFeatures(const CPeripheral* device,
   {
     for (unsigned int i = 0; i < featureCount; i++)
     {
-      ADDON::JoystickFeature feature(pFeatures[i]);
+      kodi::addon::peripheral::JoystickFeature feature(pFeatures[i]);
       if (feature.Type() != JOYSTICK_FEATURE_TYPE_UNKNOWN)
         features[feature.Name()] = std::move(feature);
     }
@@ -594,14 +594,14 @@ bool CPeripheralAddon::GetFeatures(const CPeripheral* device,
 
 bool CPeripheralAddon::MapFeature(const CPeripheral* device,
                                   const std::string& strControllerId,
-                                  const ADDON::JoystickFeature& feature)
+                                  const kodi::addon::peripheral::JoystickFeature& feature)
 {
   if (!m_bProvidesButtonMaps)
     return false;
 
   PERIPHERAL_ERROR retVal = PERIPHERAL_ERROR_UNKNOWN;
 
-  ADDON::Joystick joystickInfo;
+  kodi::addon::peripheral::Joystick joystickInfo;
   GetJoystickInfo(device, joystickInfo);
 
   JOYSTICK_INFO joystickStruct;
@@ -634,7 +634,7 @@ void CPeripheralAddon::SaveButtonMap(const CPeripheral* device)
   if (!m_bProvidesButtonMaps)
     return;
 
-  ADDON::Joystick joystickInfo;
+  kodi::addon::peripheral::Joystick joystickInfo;
   GetJoystickInfo(device, joystickInfo);
 
   JOYSTICK_INFO joystickStruct;
@@ -653,7 +653,7 @@ void CPeripheralAddon::ResetButtonMap(const CPeripheral* device, const std::stri
   if (!m_bProvidesButtonMaps)
     return;
 
-  ADDON::Joystick joystickInfo;
+  kodi::addon::peripheral::Joystick joystickInfo;
   GetJoystickInfo(device, joystickInfo);
 
   JOYSTICK_INFO joystickStruct;
@@ -707,14 +707,14 @@ void CPeripheralAddon::RefreshButtonMaps(const std::string& strDeviceName /* = "
   }
 }
 
-void CPeripheralAddon::GetPeripheralInfo(const CPeripheral* device, ADDON::Peripheral& peripheralInfo)
+void CPeripheralAddon::GetPeripheralInfo(const CPeripheral* device, kodi::addon::peripheral::Peripheral& peripheralInfo)
 {
   peripheralInfo.SetName(device->DeviceName());
   peripheralInfo.SetVendorID(device->VendorId());
   peripheralInfo.SetProductID(device->ProductId());
 }
 
-void CPeripheralAddon::GetJoystickInfo(const CPeripheral* device, ADDON::Joystick& joystickInfo)
+void CPeripheralAddon::GetJoystickInfo(const CPeripheral* device, kodi::addon::peripheral::Joystick& joystickInfo)
 {
   GetPeripheralInfo(device, joystickInfo);
 
@@ -730,7 +730,7 @@ void CPeripheralAddon::GetJoystickInfo(const CPeripheral* device, ADDON::Joystic
   }
 }
 
-void CPeripheralAddon::SetJoystickInfo(CPeripheralJoystick& joystick, const ADDON::Joystick& joystickInfo)
+void CPeripheralAddon::SetJoystickInfo(CPeripheralJoystick& joystick, const kodi::addon::peripheral::Joystick& joystickInfo)
 {
   joystick.SetProvider(joystickInfo.Provider());
   joystick.SetRequestedPort(joystickInfo.RequestedPort());

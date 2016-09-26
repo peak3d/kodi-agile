@@ -292,9 +292,7 @@ install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbm
         COMPONENT kodi-visualization-dev)
 
 # Install kodi-peripheral-dev
-install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_peripheral_dll.h
-              ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_peripheral_types.h
-              ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_peripheral_utils.hpp
+install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_peripheral_types.h
         DESTINATION ${includedir}/${APP_NAME_LC}
         COMPONENT kodi-peripheral-dev)
 

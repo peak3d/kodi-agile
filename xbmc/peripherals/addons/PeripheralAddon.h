@@ -21,7 +21,6 @@
 
 #include "addons/AddonDll.h"
 #include "addons/kodi-addon-dev-kit/include/kodi/kodi_peripheral_types.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/kodi_peripheral_utils.hpp"
 #include "input/joysticks/JoystickTypes.h"
 #include "peripherals/PeripheralTypes.h"
 
@@ -40,7 +39,7 @@ namespace PERIPHERALS
   class CPeripheral;
   class CPeripheralJoystick;
 
-  typedef std::map<JOYSTICK::FeatureName, ADDON::JoystickFeature> FeatureMap;
+  typedef std::map<JOYSTICK::FeatureName, kodi::addon::peripheral::JoystickFeature> FeatureMap;
 
   class CPeripheralAddon : public ADDON::CAddonDll
   {
@@ -83,7 +82,7 @@ namespace PERIPHERALS
     bool GetJoystickProperties(unsigned int index, CPeripheralJoystick& joystick);
     bool HasButtonMaps(void) const { return m_bProvidesButtonMaps; }
     bool GetFeatures(const CPeripheral* device, const std::string& strControllerId, FeatureMap& features);
-    bool MapFeature(const CPeripheral* device, const std::string& strControllerId, const ADDON::JoystickFeature& feature);
+    bool MapFeature(const CPeripheral* device, const std::string& strControllerId, const kodi::addon::peripheral::JoystickFeature& feature);
     void SaveButtonMap(const CPeripheral* device);
     void ResetButtonMap(const CPeripheral* device, const std::string& strControllerId);
     void PowerOffJoystick(unsigned int index);
@@ -102,10 +101,10 @@ namespace PERIPHERALS
     /*!
      * @brief Helper functions
      */
-    static void GetPeripheralInfo(const CPeripheral* device, ADDON::Peripheral& peripheralInfo);
+    static void GetPeripheralInfo(const CPeripheral* device, kodi::addon::peripheral::Peripheral& peripheralInfo);
 
-    static void GetJoystickInfo(const CPeripheral* device, ADDON::Joystick& joystickInfo);
-    static void SetJoystickInfo(CPeripheralJoystick& joystick, const ADDON::Joystick& joystickInfo);
+    static void GetJoystickInfo(const CPeripheral* device, kodi::addon::peripheral::Joystick& joystickInfo);
+    static void SetJoystickInfo(CPeripheralJoystick& joystick, const kodi::addon::peripheral::Joystick& joystickInfo);
 
     /*!
      * @brief Reset all class members to their defaults. Called by the constructors

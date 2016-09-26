@@ -55,7 +55,7 @@ const char* CPeripheralAddonTranslator::TranslateError(const PERIPHERAL_ERROR er
   }
 }
 
-CDriverPrimitive CPeripheralAddonTranslator::TranslatePrimitive(const ADDON::DriverPrimitive& primitive)
+CDriverPrimitive CPeripheralAddonTranslator::TranslatePrimitive(const kodi::addon::peripheral::DriverPrimitive& primitive)
 {
   CDriverPrimitive retVal;
 
@@ -88,30 +88,30 @@ CDriverPrimitive CPeripheralAddonTranslator::TranslatePrimitive(const ADDON::Dri
   return retVal;
 }
 
-ADDON::DriverPrimitive CPeripheralAddonTranslator::TranslatePrimitive(const CDriverPrimitive& primitive)
+kodi::addon::peripheral::DriverPrimitive CPeripheralAddonTranslator::TranslatePrimitive(const CDriverPrimitive& primitive)
 {
-  ADDON::DriverPrimitive retVal;
+  kodi::addon::peripheral::DriverPrimitive retVal;
 
   switch (primitive.Type())
   {
     case BUTTON:
     {
-      retVal = ADDON::DriverPrimitive::CreateButton(primitive.Index());
+      retVal = kodi::addon::peripheral::DriverPrimitive::CreateButton(primitive.Index());
       break;
     }
     case HAT:
     {
-      retVal = ADDON::DriverPrimitive(primitive.Index(), TranslateHatDirection(primitive.HatDirection()));
+      retVal = kodi::addon::peripheral::DriverPrimitive(primitive.Index(), TranslateHatDirection(primitive.HatDirection()));
       break;
     }
     case SEMIAXIS:
     {
-      retVal = ADDON::DriverPrimitive(primitive.Index(), TranslateSemiAxisDirection(primitive.SemiAxisDirection()));
+      retVal = kodi::addon::peripheral::DriverPrimitive(primitive.Index(), TranslateSemiAxisDirection(primitive.SemiAxisDirection()));
       break;
     }
     case MOTOR:
     {
-      retVal = ADDON::DriverPrimitive::CreateMotor(primitive.Index());
+      retVal = kodi::addon::peripheral::DriverPrimitive::CreateMotor(primitive.Index());
       break;
     }
     default:
@@ -213,7 +213,7 @@ JOYSTICK_FEATURE_TYPE CPeripheralAddonTranslator::TranslateFeatureType(JOYSTICK:
   return JOYSTICK_FEATURE_TYPE_UNKNOWN;
 }
 
-ADDON::DriverPrimitive CPeripheralAddonTranslator::Opposite(const ADDON::DriverPrimitive& primitive)
+kodi::addon::peripheral::DriverPrimitive CPeripheralAddonTranslator::Opposite(const kodi::addon::peripheral::DriverPrimitive& primitive)
 {
-  return ADDON::DriverPrimitive(primitive.DriverIndex(), primitive.SemiAxisDirection() * -1);
+  return kodi::addon::peripheral::DriverPrimitive(primitive.DriverIndex(), primitive.SemiAxisDirection() * -1);
 }
