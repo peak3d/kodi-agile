@@ -30,9 +30,12 @@
 #define __declspec(X)
 #endif
 #endif
+#include <string>
+#include <vector>
 #include <string.h>
-#include <stdint.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 
 #include "xbmc_addon_types.h"
 #include "xbmc_epg_types.h"
@@ -82,6 +85,12 @@ struct DemuxPacket;
 
 /* min. PVR API version */
 #define XBMC_PVR_MIN_API_VERSION "5.2.0"
+
+
+#define DVD_TIME_BASE 1000000
+
+//! @todo original definition is in DVDClock.h
+#define DVD_NOPTS_VALUE 0xFFF0000000000000
 
 #ifdef __cplusplus
 extern "C" {
@@ -527,9 +536,31 @@ extern "C" {
     } data;
   } ATTRIBUTE_PACKED PVR_MENUHOOK_DATA;
 
-  /*!
-   * @brief Structure to transfer the methods from xbmc_pvr_dll.h to XBMC
-   */
+  typedef struct sAddonToKodiFuncTable_PVRClient
+  {
+    void* kodiInstance;
+    void (*TransferEpgEntry)(void* kodiInstance, const ADDON_HANDLE handle, const EPG_TAG *epgentry);
+    void (*TransferChannelEntry)(void* kodiInstance, const ADDON_HANDLE handle, const PVR_CHANNEL *chan);
+    void (*TransferTimerEntry)(void* kodiInstance, const ADDON_HANDLE handle, const PVR_TIMER *timer);
+    void (*TransferRecordingEntry)(void* kodiInstance, const ADDON_HANDLE handle, const PVR_RECORDING *recording);
+    void (*AddMenuHook)(void* kodiInstance, PVR_MENUHOOK *hook);
+    void (*Recording)(void* kodiInstance, const char *Name, const char *FileName, bool On);
+    void (*TriggerChannelUpdate)(void* kodiInstance);
+    void (*TriggerTimerUpdate)(void* kodiInstance);
+    void (*TriggerRecordingUpdate)(void* kodiInstance);
+    void (*TriggerChannelGroupsUpdate)(void* kodiInstance);
+    void (*TriggerEpgUpdate)(void* kodiInstance, unsigned int iChannelUid);
+
+    void (*TransferChannelGroup)(void* kodiInstance, const ADDON_HANDLE handle, const PVR_CHANNEL_GROUP *group);
+    void (*TransferChannelGroupMember)(void* kodiInstance, const ADDON_HANDLE handle, const PVR_CHANNEL_GROUP_MEMBER *member);
+
+    void (*FreeDemuxPacket)(void* kodiInstance, DemuxPacket* pPacket);
+    DemuxPacket* (*AllocateDemuxPacket)(void* kodiInstance, int iDataSize);
+    
+    void (*ConnectionStateChange)(void* addonData, const char* strConnectionString, PVR_CONNECTION_STATE newState, const char *strMessage);
+    void (*EpgEventStateChange)(void* addonData, EPG_TAG* tag, unsigned int iUniqueChannelId, EPG_EVENT_STATE newState);
+  } sAddonToKodiFuncTable_PVRClient;
+
   typedef struct sKodiToAddonFuncTable_PVRClient
   {
     PVR_ERROR    (__cdecl* GetCapabilities)(void* addonInstance, PVR_ADDON_CAPABILITIES*);
@@ -604,6 +635,13 @@ extern "C" {
     void         (__cdecl* OnPowerSavingActivated)(void* addonInstance);
     void         (__cdecl* OnPowerSavingDeactivated)(void* addonInstance);
   } sKodiToAddonFuncTable_PVRClient;
+
+  typedef struct sFuncTable_PVRClient
+  {
+    PVR_PROPERTIES props;
+    sAddonToKodiFuncTable_PVRClient toKodi;
+    sKodiToAddonFuncTable_PVRClient toAddon;
+  } sFuncTable_PVRClient;
 
 #ifdef __cplusplus
 }
