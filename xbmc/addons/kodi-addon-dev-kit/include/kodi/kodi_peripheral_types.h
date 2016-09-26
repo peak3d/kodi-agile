@@ -63,8 +63,7 @@
 #define DRIVER_INDEX_UNKNOWN  (-1)
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
   /// @name Peripheral types
@@ -313,15 +312,35 @@ typedef struct sKodiToAddonFuncTable_Peripheral
   ///}
 } sKodiToAddonFuncTable_Peripheral;
 
-typedef struct sFuncTable_Peripheral
+typedef struct sAddonInstance_Peripheral
 {
   PERIPHERAL_PROPS props;
   sAddonToKodiFuncTable_Peripheral toKodi;
   sKodiToAddonFuncTable_Peripheral toAddon;
-} sFuncTable_Peripheral;
+} sAddonInstance_Peripheral;
 
 #ifdef __cplusplus
-}
+namespace kodi {
+namespace addon {
+namespace peripheral {
+
+  class CAddon
+  {
+  public:
+    CAddon(void* instance)
+      : m_instance(static_cast<sAddonInstance_Peripheral*>(instance))
+    {
+    }
+
+  private:
+
+    sAddonInstance_Peripheral* m_instance;
+  };
+
+} /* namespace peripheral */
+} /* namespace addon */
+} /* namespace kodi */
+} /* extern "C" */
 #endif
 
 #endif // __PERIPHERAL_TYPES_H__

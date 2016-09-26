@@ -141,7 +141,7 @@ namespace PERIPHERALS
     void ExceptionHandle(std::exception& ex, const char* function);
 
     PERIPHERAL_PROPS m_props;
-    sFuncTable_Peripheral m_struct;
+    sAddonInstance_Peripheral m_struct;
     void* m_addonInstance;
   };
 }
