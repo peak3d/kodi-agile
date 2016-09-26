@@ -404,7 +404,7 @@ namespace ActiveAE
     ADDON::AddonVersion       m_apiVersion;
 
     AE_DSP_PROPERTIES m_props;
-    AudioDSP m_struct;
+    sKodiToAddonFuncTable_AudioDSP m_struct;
     void* m_addonInstance;
   };
 }
