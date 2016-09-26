@@ -100,7 +100,7 @@ namespace ActiveAE
      * @brief Query this add-on's capabilities.
      * @return pCapabilities The add-on's capabilities.
      */
-    AE_DSP_ADDON_CAPABILITIES GetAddonCapabilities(void) const;
+    AE_DSP_ADDON_CAPABILITIES GetCapabilities(void) const;
 
     /*!
      * @return The name reported by the backend.
@@ -174,7 +174,7 @@ namespace ActiveAE
      * @param array_in Pointer to data memory
      * @param samples Amount of samples inside array_in
      * @return true if work was OK
-     * @remarks Optional. Is set by AE_DSP_ADDON_CAPABILITIES and asked with GetAddonCapabilities
+     * @remarks Optional. Is set by AE_DSP_ADDON_CAPABILITIES and asked with GetCapabilities
      */
     bool InputProcess(const ADDON_HANDLE handle, const float **array_in, unsigned int samples);
 
