@@ -949,6 +949,21 @@ extern "C" {
     CAddon(void* instance)
       : m_instance(static_cast<sAddonInstance_Peripheral*>(instance))
     {
+      m_instance->toAddon.GetCapabilities = ADDON_GetCapabilities;
+      m_instance->toAddon.PerformDeviceScan = ADDON_PerformDeviceScan;
+      m_instance->toAddon.FreeScanResults = ADDON_FreeScanResults;
+      m_instance->toAddon.GetEvents = ADDON_GetEvents;
+      m_instance->toAddon.FreeEvents = ADDON_FreeEvents;
+      m_instance->toAddon.SendEvent = ADDON_SendEvent;
+
+      m_instance->toAddon.GetJoystickInfo = ADDON_GetJoystickInfo;
+      m_instance->toAddon.FreeJoystickInfo = ADDON_FreeJoystickInfo;
+      m_instance->toAddon.GetFeatures = ADDON_GetFeatures;
+      m_instance->toAddon.FreeFeatures = ADDON_FreeFeatures;
+      m_instance->toAddon.MapFeatures = ADDON_MapFeatures;
+      m_instance->toAddon.SaveButtonMap = ADDON_SaveButtonMap;
+      m_instance->toAddon.ResetButtonMap = ADDON_ResetButtonMap;
+      m_instance->toAddon.PowerOffJoystick = ADDON_PowerOffJoystick;
     }
     //--------------------------------------------------------------------------
 
@@ -1124,7 +1139,7 @@ extern "C" {
     //--------------------------------------------------------------------------
   
   private:
-    static inline void GetCapabilities(void* addonInstance, PERIPHERAL_CAPABILITIES* capabilities)
+    static inline void ADDON_GetCapabilities(void* addonInstance, PERIPHERAL_CAPABILITIES* capabilities)
     {
       if (!capabilities || !addonInstance)
         throw std::logic_error("GetCapabilities() called from Kodi with empty pointer");
@@ -1132,7 +1147,7 @@ extern "C" {
       static_cast<CAddon*>(addonInstance)->GetCapabilities(*capabilities);
     }
 
-    static inline PERIPHERAL_ERROR PerformDeviceScan(void* addonInstance, 
+    static inline PERIPHERAL_ERROR ADDON_PerformDeviceScan(void* addonInstance, 
                                                      unsigned int* peripheral_count, 
                                                      PERIPHERAL_INFO** scan_results)
     {
@@ -1149,7 +1164,7 @@ extern "C" {
       return error;
     }
 
-    static inline void FreeScanResults(void* addonInstance, unsigned int peripheral_count, PERIPHERAL_INFO* scan_results)
+    static inline void ADDON_FreeScanResults(void* addonInstance, unsigned int peripheral_count, PERIPHERAL_INFO* scan_results)
     {
       if (!scan_results || !addonInstance)
         throw std::logic_error("FreeScanResults() called from Kodi with empty pointer");
@@ -1157,7 +1172,7 @@ extern "C" {
       Peripherals::FreeStructs(peripheral_count, scan_results);
     }
 
-    static inline PERIPHERAL_ERROR GetEvents(void* addonInstance, unsigned int* event_count, PERIPHERAL_EVENT** events)
+    static inline PERIPHERAL_ERROR ADDON_GetEvents(void* addonInstance, unsigned int* event_count, PERIPHERAL_EVENT** events)
     {
       if (!event_count || !events || !addonInstance)
         throw std::logic_error("GetEvents() called from Kodi with empty pointer");
@@ -1172,7 +1187,7 @@ extern "C" {
       return error;
     }
 
-    static inline void FreeEvents(void* addonInstance, unsigned int event_count, PERIPHERAL_EVENT* events)
+    static inline void ADDON_FreeEvents(void* addonInstance, unsigned int event_count, PERIPHERAL_EVENT* events)
     {
       if (!events || !addonInstance)
         throw std::logic_error("FreeEvents() called from Kodi with empty pointer");
@@ -1180,7 +1195,7 @@ extern "C" {
       PeripheralEvents::FreeStructs(event_count, events);
     }
 
-    static inline bool SendEvent(void* addonInstance, const PERIPHERAL_EVENT* event)
+    static inline bool ADDON_SendEvent(void* addonInstance, const PERIPHERAL_EVENT* event)
     {
       if (!event || !addonInstance)
         throw std::logic_error("SendEvent() called from Kodi with empty pointer");
@@ -1188,7 +1203,7 @@ extern "C" {
       return static_cast<CAddon*>(addonInstance)->SendEvent(*event);
     } 
 
-    static inline PERIPHERAL_ERROR GetJoystickInfo(void* addonInstance, unsigned int index, JOYSTICK_INFO* info)
+    static inline PERIPHERAL_ERROR ADDON_GetJoystickInfo(void* addonInstance, unsigned int index, JOYSTICK_INFO* info)
     {
       if (!info || !addonInstance)
         throw std::logic_error("GetJoystickInfo() called from Kodi with empty pointer");
@@ -1201,7 +1216,7 @@ extern "C" {
       }
     }
 
-    static inline void FreeJoystickInfo(void* addonInstance, JOYSTICK_INFO* info)
+    static inline void ADDON_FreeJoystickInfo(void* addonInstance, JOYSTICK_INFO* info)
     {
       if (!info || !addonInstance)
         throw std::logic_error("FreeJoystickInfo() called from Kodi with empty pointer");
@@ -1209,7 +1224,7 @@ extern "C" {
       Joystick::FreeStruct(*info);
     }
 
-    static inline PERIPHERAL_ERROR GetFeatures(void* addonInstance,
+    static inline PERIPHERAL_ERROR ADDON_GetFeatures(void* addonInstance,
                                                const JOYSTICK_INFO* joystick,
                                                const char* controller_id,
                                                unsigned int* feature_count,
@@ -1228,7 +1243,7 @@ extern "C" {
       return error;
     }
 
-    static inline void FreeFeatures(void* addonInstance,
+    static inline void ADDON_FreeFeatures(void* addonInstance,
                                     unsigned int feature_count,
                                     JOYSTICK_FEATURE* features)
     {
@@ -1238,7 +1253,7 @@ extern "C" {
       JoystickFeatures::FreeStructs(feature_count, features);
     }
 
-    static inline PERIPHERAL_ERROR MapFeatures(void* addonInstance,
+    static inline PERIPHERAL_ERROR ADDON_MapFeatures(void* addonInstance,
                                                const JOYSTICK_INFO* joystick,
                                                const char* controller_id,
                                                unsigned int feature_count,
@@ -1251,7 +1266,7 @@ extern "C" {
       return static_cast<CAddon*>(addonInstance)->MapFeatures(Joystick(*joystick), controller_id, featureVector);
     }
 
-    static inline void SaveButtonMap(void* addonInstance,
+    static inline void ADDON_SaveButtonMap(void* addonInstance,
                                      const JOYSTICK_INFO* joystick)
     {
       if (!addonInstance || !joystick)
@@ -1261,7 +1276,7 @@ extern "C" {
       static_cast<CAddon*>(addonInstance)->SaveButtonMap(addonJoystick);
     }
 
-    static inline void ResetButtonMap(void* addonInstance,
+    static inline void ADDON_ResetButtonMap(void* addonInstance,
                                       const JOYSTICK_INFO* joystick,
                                       const char* controller_id)
     {
@@ -1272,7 +1287,7 @@ extern "C" {
       static_cast<CAddon*>(addonInstance)->ResetButtonMap(addonJoystick, controller_id);
     }
 
-    static inline void PowerOffJoystick(void* addonInstance,
+    static inline void ADDON_PowerOffJoystick(void* addonInstance,
                                         unsigned int index)
     {
       if (!addonInstance)
