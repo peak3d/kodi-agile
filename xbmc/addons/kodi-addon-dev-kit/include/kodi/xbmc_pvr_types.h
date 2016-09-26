@@ -643,7 +643,34 @@ extern "C" {
     sKodiToAddonFuncTable_PVRClient toAddon;
   } sFuncTable_PVRClient;
 
+
 #ifdef __cplusplus
-}
+namespace kodi {
+namespace addon {
+namespace pvr {
+
+  class CAddon
+  {
+  public:
+    //==========================================================================
+    /// @brief Class constructor
+    ///
+    /// @param[in] instance             The from Kodi given instance given be
+    ///                                 add-on CreateInstance call with instance
+    ///                                 id ADDON_INSTANCE_PVR.
+    ///
+    CAddon(void* instance)
+      : m_instance(static_cast<sFuncTable_PVRClient*>(instance))
+    {
+    }
+
+  private:
+    sFuncTable_PVRClient* m_instance;
+  };
+
+} /* namespace pvr */
+} /* namespace addon */
+} /* namespace kodi */
+} /* extern "C" */
 #endif
 
