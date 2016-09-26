@@ -673,4 +673,3 @@ namespace pvr {
 } /* namespace kodi */
 } /* extern "C" */
 #endif
-

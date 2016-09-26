@@ -539,6 +539,32 @@ extern "C" {
   } sFuncTable_AudioDSP;
 
 #ifdef __cplusplus
-}
+namespace kodi {
+namespace addon {
+namespace adsp {
+
+  class CAddon
+  {
+  public:
+    //==========================================================================
+    /// @brief Class constructor
+    ///
+    /// @param[in] instance             The from Kodi given instance given be
+    ///                                 add-on CreateInstance call with instance
+    ///                                 id ADDON_INSTANCE_ADSP.
+    ///
+    CAddon(void* instance)
+      : m_instance(static_cast<sFuncTable_PVRClient*>(instance))
+    {
+    }
+
+  private:
+    sFuncTable_PVRClient* m_instance;
+  };
+
+} /* namespace adsp */
+} /* namespace addon */
+} /* namespace kodi */
+} /* extern "C" */
 #endif
 
