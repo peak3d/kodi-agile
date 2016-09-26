@@ -292,7 +292,7 @@ typedef struct sAddonToKodiFuncTable_Peripheral
 
 typedef struct sKodiToAddonFuncTable_Peripheral
 {
-  PERIPHERAL_ERROR (__cdecl* GetCapabilities)(void* addonInstance, PERIPHERAL_CAPABILITIES*);
+  void (__cdecl* GetCapabilities)(void* addonInstance, PERIPHERAL_CAPABILITIES*);
   PERIPHERAL_ERROR (__cdecl* PerformDeviceScan)(void* addonInstance, unsigned int*, PERIPHERAL_INFO**);
   void (__cdecl* FreeScanResults)(void* addonInstance, unsigned int, PERIPHERAL_INFO*);
   PERIPHERAL_ERROR (__cdecl* GetEvents)(void* addonInstance, unsigned int*, PERIPHERAL_EVENT**);

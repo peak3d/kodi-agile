@@ -1,3 +1,4 @@
+#pragma once
 /*
  *      Copyright (C) 2014-2016 Team Kodi
  *      http://kodi.tv
@@ -17,7 +18,6 @@
  *  <http://www.gnu.org/licenses/>.
  *
  */
-#pragma once
 
 #include "addons/AddonDll.h"
 #include "addons/kodi-addon-dev-kit/include/kodi/kodi_peripheral_types.h"
@@ -113,7 +113,6 @@ namespace PERIPHERALS
     bool GetAddonProperties(void);
 
     bool LogError(const PERIPHERAL_ERROR error, const char *strMethod) const;
-    void LogException(const std::exception &e, const char *strFunctionName) const;
 
     /* @brief Cache for const char* members in PERIPHERAL_PROPERTIES */
     std::string         m_strUserPath;    /*!< @brief translated path to the user profile */
@@ -134,6 +133,8 @@ namespace PERIPHERALS
     CCriticalSection    m_critSection;
     
   private:
+    void ExceptionHandle(std::exception& ex, const char* function);
+
     PERIPHERAL_PROPS m_props;
     sFuncTable_Peripheral m_struct;
     void* m_addonInstance;

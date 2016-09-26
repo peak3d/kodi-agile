@@ -34,14 +34,13 @@ extern "C"
   /*!
    * @brief Get the list of features that this add-on provides
    * @param pCapabilities The add-on's capabilities.
-   * @return PERIPHERAL_NO_ERROR if the properties were fetched successfully.
    * @remarks Valid implementation required.
    *
    * Called by the frontend to query the add-on's capabilities and supported
    * peripherals. All capabilities that the add-on supports should be set to true.
    *
    */
-  PERIPHERAL_ERROR GetCapabilities(void* addonInstance, PERIPHERAL_CAPABILITIES *pCapabilities);
+  void GetCapabilities(void* addonInstance, PERIPHERAL_CAPABILITIES *pCapabilities);
 
   /*!
    * @brief Perform a scan for joysticks
