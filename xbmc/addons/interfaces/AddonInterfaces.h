@@ -77,11 +77,6 @@ namespace ADDON
     static void*        ADSPLib_RegisterMe             (void* addonData);
     static void         ADSPLib_UnRegisterMe           (void* addonData, void* cbTable);
     void*               GetHelperADSP()               { return m_helperADSP; }
-    /*\_________________________________________________________________________
-    \*/
-    static void*        PeripheralLib_RegisterMe       (void *addonData);
-    static void         PeripheralLib_UnRegisterMe     (void *addonData, void* cbTable);
-    void*               GetHelperPeripheral()         { return m_helperPeripheral; }
     /*
      * API level independent functions for Kodi
      */
@@ -97,7 +92,6 @@ namespace ADDON
     void*     m_helperPVR;
     void*     m_helperADSP;
     void*     m_helperCODEC;
-    void*     m_helperPeripheral;
   };
 
 } /* namespace ADDON */
