@@ -71,6 +71,8 @@
 extern "C" {
 #endif
 
+  typedef void* ADSPHANDLE;
+
   typedef unsigned int AE_DSP_STREAM_ID;
 
   /*!
@@ -471,9 +473,24 @@ extern "C" {
     } data;                                                               /*!< @brief related category related data */
   } ATTRIBUTE_PACKED AE_DSP_MENUHOOK_DATA;
 
-  /*!
-   * @brief Structure to transfer the methods from kodi_audiodsp_dll.h to KODI
-   */
+  typedef struct sAddonToKodiFuncTable_AudioDSP
+  {
+    void (*AddMenuHook)(void* kodiInstance, AE_DSP_MENUHOOK *hook);
+    void (*RemoveMenuHook)(void* kodiInstance, AE_DSP_MENUHOOK *hook);
+    void (*RegisterMode)(void* kodiInstance, AE_DSP_MODES::AE_DSP_MODE *mode);
+    void (*UnregisterMode)(void* kodiInstance, AE_DSP_MODES::AE_DSP_MODE *mode);
+
+    ADSPHANDLE (*SoundPlay_GetHandle)(void* kodiInstance, const char *filename);
+    void (*SoundPlay_ReleaseHandle)(void* kodiInstance, ADSPHANDLE handle);
+    void (*SoundPlay_Play)(void* kodiInstance, ADSPHANDLE handle);
+    void (*SoundPlay_Stop)(void* kodiInstance, ADSPHANDLE handle);
+    bool (*SoundPlay_IsPlaying)(void* kodiInstance, ADSPHANDLE handle);
+    void (*SoundPlay_SetChannel)(void* kodiInstance, ADSPHANDLE handle, AE_DSP_CHANNEL channel);
+    AE_DSP_CHANNEL (*SoundPlay_GetChannel)(void* kodiInstance, ADSPHANDLE handle);
+    void (*SoundPlay_SetVolume)(void* kodiInstance, ADSPHANDLE handle, float volume);
+    float (*SoundPlay_GetVolume)(void* kodiInstance, ADSPHANDLE handle);
+  } sAddonToKodiFuncTable_AudioDSP;
+
   typedef struct sKodiToAddonFuncTable_AudioDSP
   {
     AE_DSP_ERROR (__cdecl* GetCapabilities)                      (void* addonInstance, AE_DSP_ADDON_CAPABILITIES*);
@@ -513,6 +530,13 @@ extern "C" {
     float        (__cdecl* OutputResampleGetDelay)               (void* addonInstance, const ADDON_HANDLE);
     int          (__cdecl* OutputResampleSampleRate)             (void* addonInstance, const ADDON_HANDLE);
   } sKodiToAddonFuncTable_AudioDSP;
+
+  typedef struct sFuncTable_AudioDSP
+  {
+    AE_DSP_PROPERTIES props;
+    sAddonToKodiFuncTable_AudioDSP toKodi;
+    sKodiToAddonFuncTable_AudioDSP toAddon;
+  } sFuncTable_AudioDSP;
 
 #ifdef __cplusplus
 }
