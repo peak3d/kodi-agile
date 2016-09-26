@@ -385,12 +385,7 @@ bool CPVRClient::GetAddonProperties(void)
   try
   {
     memset(&addonCapabilities, 0, sizeof(addonCapabilities));
-    PVR_ERROR retVal = m_struct.GetCapabilities(m_addonInstance, &addonCapabilities);
-    if (retVal != PVR_ERROR_NO_ERROR)
-    {
-      CLog::Log(LOGERROR, "PVR - couldn't get the capabilities for add-on '%s'. Please contact the developer of this add-on: %s", GetFriendlyName().c_str(), Author().c_str());
-      return false;
-    }
+    m_struct.GetCapabilities(m_addonInstance, &addonCapabilities);
   }
   catch (std::exception &e) { LogException(e, "GetCapabilities()"); return false; }
 

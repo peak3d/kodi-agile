@@ -563,7 +563,7 @@ extern "C" {
 
   typedef struct sKodiToAddonFuncTable_PVRClient
   {
-    PVR_ERROR (__cdecl* GetCapabilities)(void* addonInstance, PVR_ADDON_CAPABILITIES*);
+    void (__cdecl* GetCapabilities)(void* addonInstance, PVR_ADDON_CAPABILITIES*);
     PVR_ERROR (__cdecl* GetStreamProperties)(void* addonInstance, PVR_STREAM_PROPERTIES*);
     const char*  (__cdecl* GetBackendName)(void* addonInstance);
     const char*  (__cdecl* GetBackendVersion)(void* addonInstance);
