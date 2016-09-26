@@ -33,6 +33,7 @@
 #endif
 
 #include <stdint.h>
+#include <string>
 
 #undef ATTRIBUTE_PACKED
 #undef PRAGMA_PACK_BEGIN
@@ -327,11 +328,62 @@ namespace peripheral {
   class CAddon
   {
   public:
+    //==========================================================================
+    /// @brief Class constructor
+    ///
+    /// @param[in] instance             The from Kodi given instance given be
+    ///                                 add-on CreateInstance call with instance
+    ///                                 id ADDON_INSTANCE_PERIPHERAL.
+    ///
     CAddon(void* instance)
       : m_instance(static_cast<sAddonInstance_Peripheral*>(instance))
     {
     }
+    //--------------------------------------------------------------------------
 
+    //==========================================================================
+    ///
+    /// @brief Trigger a scan for peripherals
+    ///
+    /// The add-on calls this if a change in hardware is detected.
+    ///
+    void TriggerScan(void)
+    {
+      return m_instance->toKodi.TriggerScan(m_instance->toKodi.kodiInstance);
+    }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    /// @brief Notify the frontend that button maps have changed
+    ///
+    /// @param[in] deviceName           [optional] The name of the device to
+    ///                                 refresh, or empty/null for all devices
+    /// @param[in] controllerId         [optional] The controller ID to refresh,
+    ///                                 or empty/null for all controllers
+    ///
+    void RefreshButtonMaps(const std::string& strDeviceName = "", const std::string& strControllerId = "")
+    {
+      return m_instance->toKodi.RefreshButtonMaps(m_instance->toKodi.kodiInstance, strDeviceName.c_str(), strControllerId.c_str());
+    }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    /// @brief Return the number of features belonging to the specified
+    /// controller
+    ///
+    /// @param[in] controllerId         The controller ID to enumerate
+    /// @param[in] type                 [optional]  Type to filter by, or 
+    ///                                 JOYSTICK_FEATURE_TYPE_UNKNOWN for all
+    ///                                 features
+    ///
+    /// @return The number of features matching the request parameters
+    ///
+    unsigned int FeatureCount(const std::string& strControllerId, JOYSTICK_FEATURE_TYPE type = JOYSTICK_FEATURE_TYPE_UNKNOWN)
+    {
+      return m_instance->toKodi.FeatureCount(m_instance->toKodi.kodiInstance, strControllerId.c_str(), type);
+    }
+    //--------------------------------------------------------------------------
+  
   private:
 
     sAddonInstance_Peripheral* m_instance;
