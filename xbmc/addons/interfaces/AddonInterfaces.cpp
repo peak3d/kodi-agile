@@ -29,7 +29,6 @@
 #include "addons/interfaces/Codec/AddonCallbacksCodec.h"
 #include "addons/interfaces/GUI/AddonCallbacksGUI.h"
 #include "addons/interfaces/GUI/AddonGUIWindow.h"
-#include "addons/interfaces/PVR/AddonCallbacksPVR.h"
 #include "filesystem/SpecialProtocol.h"
 #include "messaging/ApplicationMessenger.h"
 #include "utils/log.h"
@@ -45,7 +44,6 @@ CAddonInterfaces::CAddonInterfaces(CAddon* addon)
     m_helperAddOn(nullptr),
     m_helperAudioEngine(nullptr),
     m_helperGUI(nullptr),
-    m_helperPVR(nullptr),
     m_helperADSP(nullptr),
     m_helperCODEC(nullptr)
 {
@@ -58,8 +56,6 @@ CAddonInterfaces::CAddonInterfaces(CAddon* addon)
   m_callbacks->AudioEngineLib_UnRegisterMe  = CAddonInterfaces::AudioEngineLib_UnRegisterMe;
   m_callbacks->GUILib_RegisterMe            = CAddonInterfaces::GUILib_RegisterMe;
   m_callbacks->GUILib_UnRegisterMe          = CAddonInterfaces::GUILib_UnRegisterMe;
-  m_callbacks->PVRLib_RegisterMe            = CAddonInterfaces::PVRLib_RegisterMe;
-  m_callbacks->PVRLib_UnRegisterMe          = CAddonInterfaces::PVRLib_UnRegisterMe;
   m_callbacks->ADSPLib_RegisterMe           = CAddonInterfaces::ADSPLib_RegisterMe;
   m_callbacks->ADSPLib_UnRegisterMe         = CAddonInterfaces::ADSPLib_UnRegisterMe;
   m_callbacks->CodecLib_RegisterMe          = CAddonInterfaces::CodecLib_RegisterMe;
@@ -70,7 +66,6 @@ CAddonInterfaces::~CAddonInterfaces()
 {
   delete static_cast<KodiAPI::AddOn::CAddonCallbacksAddon*>(m_helperAddOn);
   delete static_cast<KodiAPI::AudioEngine::CAddonCallbacksAudioEngine*>(m_helperAudioEngine);
-  delete static_cast<KodiAPI::PVR::CAddonCallbacksPVR*>(m_helperPVR);
   delete static_cast<KodiAPI::GUI::CAddonCallbacksGUI*>(m_helperGUI);
   delete static_cast<KodiAPI::AudioDSP::CAddonCallbacksADSP*>(m_helperADSP);
   delete static_cast<KodiAPI::Codec::CAddonCallbacksCodec*>(m_helperCODEC);
@@ -161,33 +156,6 @@ void CAddonInterfaces::GUILib_UnRegisterMe(void *addonData, void *cbTable)
 
   delete static_cast<KodiAPI::GUI::CAddonCallbacksGUI*>(addon->m_helperGUI);
   addon->m_helperGUI = nullptr;
-}
-/*\_____________________________________________________________________________
-\*/
-void* CAddonInterfaces::PVRLib_RegisterMe(void *addonData)
-{
-  CAddonInterfaces* addon = static_cast<CAddonInterfaces*>(addonData);
-  if (addon == nullptr)
-  {
-    CLog::Log(LOGERROR, "CAddonInterfaces - %s - called with a null pointer", __FUNCTION__);
-    return nullptr;
-  }
-
-  addon->m_helperPVR = new KodiAPI::PVR::CAddonCallbacksPVR(addon->m_addon);
-  return static_cast<KodiAPI::PVR::CAddonCallbacksPVR*>(addon->m_helperPVR)->GetCallbacks();
-}
-
-void CAddonInterfaces::PVRLib_UnRegisterMe(void *addonData, void *cbTable)
-{
-  CAddonInterfaces* addon = static_cast<CAddonInterfaces*>(addonData);
-  if (addon == nullptr)
-  {
-    CLog::Log(LOGERROR, "CAddonInterfaces - %s - called with a null pointer", __FUNCTION__);
-    return;
-  }
-
-  delete static_cast<KodiAPI::PVR::CAddonCallbacksPVR*>(addon->m_helperPVR);
-  addon->m_helperPVR = nullptr;
 }
 /*\_____________________________________________________________________________
 \*/

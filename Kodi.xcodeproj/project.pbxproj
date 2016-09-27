@@ -4820,7 +4820,6 @@
 		EDE8C7151C7F618500A86ECC /* libKODI_guilib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libKODI_guilib.h; path = "kodi-addon-dev-kit/include/kodi/libKODI_guilib.h"; sourceTree = "<group>"; };
 		EDE8C7161C7F618500A86ECC /* libXBMC_addon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libXBMC_addon.h; path = "kodi-addon-dev-kit/include/kodi/libXBMC_addon.h"; sourceTree = "<group>"; };
 		EDE8C7171C7F618500A86ECC /* libXBMC_codec.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libXBMC_codec.h; path = "kodi-addon-dev-kit/include/kodi/libXBMC_codec.h"; sourceTree = "<group>"; };
-		EDE8C7181C7F618500A86ECC /* libXBMC_pvr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libXBMC_pvr.h; path = "kodi-addon-dev-kit/include/kodi/libXBMC_pvr.h"; sourceTree = "<group>"; };
 		EDE8C7191C7F618500A86ECC /* xbmc_addon_cpp_dll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xbmc_addon_cpp_dll.h; path = "kodi-addon-dev-kit/include/kodi/xbmc_addon_cpp_dll.h"; sourceTree = "<group>"; };
 		EDE8C71A1C7F618500A86ECC /* xbmc_addon_dll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xbmc_addon_dll.h; path = "kodi-addon-dev-kit/include/kodi/xbmc_addon_dll.h"; sourceTree = "<group>"; };
 		EDE8C71B1C7F618500A86ECC /* xbmc_addon_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xbmc_addon_types.h; path = "kodi-addon-dev-kit/include/kodi/xbmc_addon_types.h"; sourceTree = "<group>"; };
@@ -9116,7 +9115,6 @@
 				EDE8C7151C7F618500A86ECC /* libKODI_guilib.h */,
 				EDE8C7161C7F618500A86ECC /* libXBMC_addon.h */,
 				EDE8C7171C7F618500A86ECC /* libXBMC_codec.h */,
-				EDE8C7181C7F618500A86ECC /* libXBMC_pvr.h */,
 				EDE8C7191C7F618500A86ECC /* xbmc_addon_cpp_dll.h */,
 				EDE8C71A1C7F618500A86ECC /* xbmc_addon_dll.h */,
 				EDE8C71B1C7F618500A86ECC /* xbmc_addon_types.h */,

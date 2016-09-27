@@ -64,11 +64,6 @@ namespace ADDON
     void*               GUILib_GetHelper()            { return m_helperGUI; }
     /*\_________________________________________________________________________
     \*/
-    static void*        PVRLib_RegisterMe              (void* addonData);
-    static void         PVRLib_UnRegisterMe            (void* addonData, void* cbTable);
-    void*               PVRLib_GetHelper()            { return m_helperPVR; }
-    /*\_________________________________________________________________________
-    \*/
     static void*        CodecLib_RegisterMe            (void* addonData);
     static void         CodecLib_UnRegisterMe          (void* addonData, void* cbTable);
     void*               GetHelperCODEC()              { return m_helperCODEC; }
@@ -89,7 +84,6 @@ namespace ADDON
     void*     m_helperAddOn;
     void*     m_helperAudioEngine;
     void*     m_helperGUI;
-    void*     m_helperPVR;
     void*     m_helperADSP;
     void*     m_helperCODEC;
   };
