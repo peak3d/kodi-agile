@@ -662,7 +662,1140 @@ namespace pvr {
     CAddon(void* instance)
       : m_instance(static_cast<sFuncTable_PVRClient*>(instance))
     {
+      m_instance->toAddon.GetCapabilities = ADDON_GetCapabilities;
+      m_instance->toAddon.GetStreamProperties = ADDON_GetStreamProperties;
+      m_instance->toAddon.GetBackendName = ADDON_GetBackendName;
+      m_instance->toAddon.GetBackendVersion = ADDON_GetBackendVersion;
+      m_instance->toAddon.GetConnectionString = ADDON_GetConnectionString;
+      m_instance->toAddon.GetDriveSpace = ADDON_GetDriveSpace;
+      m_instance->toAddon.MenuHook = ADDON_MenuHook;
+      m_instance->toAddon.GetEpg = ADDON_GetEPG;
+      m_instance->toAddon.GetChannelGroupsAmount = ADDON_GetChannelGroupsAmount;
+      m_instance->toAddon.GetChannelGroups = ADDON_GetChannelGroups;
+      m_instance->toAddon.GetChannelGroupMembers = ADDON_GetChannelGroupMembers;
+      m_instance->toAddon.OpenDialogChannelScan = ADDON_OpenDialogChannelScan;
+      m_instance->toAddon.GetChannelsAmount = ADDON_GetChannelsAmount;
+      m_instance->toAddon.GetChannels = ADDON_GetChannels;
+      m_instance->toAddon.DeleteChannel = ADDON_DeleteChannel;
+      m_instance->toAddon.RenameChannel = ADDON_RenameChannel;
+      m_instance->toAddon.MoveChannel = ADDON_MoveChannel;
+      m_instance->toAddon.OpenDialogChannelSettings = ADDON_OpenDialogChannelSettings;
+      m_instance->toAddon.OpenDialogChannelAdd = ADDON_OpenDialogChannelAdd;
+      m_instance->toAddon.GetRecordingsAmount = ADDON_GetRecordingsAmount;
+      m_instance->toAddon.GetRecordings = ADDON_GetRecordings;
+      m_instance->toAddon.DeleteRecording = ADDON_DeleteRecording;
+      m_instance->toAddon.UndeleteRecording = ADDON_UndeleteRecording;
+      m_instance->toAddon.DeleteAllRecordingsFromTrash = ADDON_DeleteAllRecordingsFromTrash;
+      m_instance->toAddon.RenameRecording = ADDON_RenameRecording;
+      m_instance->toAddon.SetRecordingPlayCount = ADDON_SetRecordingPlayCount;
+      m_instance->toAddon.SetRecordingLastPlayedPosition = ADDON_SetRecordingLastPlayedPosition;
+      m_instance->toAddon.GetRecordingLastPlayedPosition = ADDON_GetRecordingLastPlayedPosition;
+      m_instance->toAddon.GetRecordingEdl = ADDON_GetRecordingEdl;
+      m_instance->toAddon.GetTimerTypes = ADDON_GetTimerTypes;
+      m_instance->toAddon.GetTimersAmount = ADDON_GetTimersAmount;
+      m_instance->toAddon.GetTimers = ADDON_GetTimers;
+      m_instance->toAddon.AddTimer = ADDON_AddTimer;
+      m_instance->toAddon.DeleteTimer = ADDON_DeleteTimer;
+      m_instance->toAddon.UpdateTimer = ADDON_UpdateTimer;
+      m_instance->toAddon.OpenLiveStream = ADDON_OpenLiveStream;
+      m_instance->toAddon.CloseLiveStream = ADDON_CloseLiveStream;
+      m_instance->toAddon.ReadLiveStream = ADDON_ReadLiveStream;
+      m_instance->toAddon.SeekLiveStream = ADDON_SeekLiveStream;
+      m_instance->toAddon.PositionLiveStream = ADDON_PositionLiveStream;
+      m_instance->toAddon.LengthLiveStream = ADDON_LengthLiveStream;
+      m_instance->toAddon.SwitchChannel = ADDON_SwitchChannel;
+      m_instance->toAddon.SignalStatus = ADDON_SignalStatus;
+      m_instance->toAddon.GetLiveStreamURL = ADDON_GetLiveStreamURL;
+      m_instance->toAddon.OpenRecordedStream = ADDON_OpenRecordedStream;
+      m_instance->toAddon.CloseRecordedStream = ADDON_CloseRecordedStream;
+      m_instance->toAddon.ReadRecordedStream = ADDON_ReadRecordedStream;
+      m_instance->toAddon.SeekRecordedStream = ADDON_SeekRecordedStream;
+      m_instance->toAddon.PositionRecordedStream = ADDON_PositionRecordedStream;
+      m_instance->toAddon.LengthRecordedStream = ADDON_LengthRecordedStream;
+      m_instance->toAddon.DemuxReset = ADDON_DemuxReset;
+      m_instance->toAddon.DemuxAbort = ADDON_DemuxAbort;
+      m_instance->toAddon.DemuxFlush = ADDON_DemuxFlush;
+      m_instance->toAddon.DemuxRead = ADDON_DemuxRead;
+      m_instance->toAddon.GetChannelSwitchDelay = ADDON_GetChannelSwitchDelay;
+      m_instance->toAddon.CanPauseStream = ADDON_CanPauseStream;
+      m_instance->toAddon.PauseStream = ADDON_PauseStream;
+      m_instance->toAddon.CanSeekStream = ADDON_CanSeekStream;
+      m_instance->toAddon.SeekTime = ADDON_SeekTime;
+      m_instance->toAddon.SetSpeed = ADDON_SetSpeed;
+      m_instance->toAddon.GetPlayingTime = ADDON_GetPlayingTime;
+      m_instance->toAddon.GetBufferTimeStart = ADDON_GetBufferTimeStart;
+      m_instance->toAddon.GetBufferTimeEnd = ADDON_GetBufferTimeEnd;
+      m_instance->toAddon.GetBackendHostname = ADDON_GetBackendHostname;
+      m_instance->toAddon.IsTimeshifting = ADDON_IsTimeshifting;
+      m_instance->toAddon.IsRealTimeStream = ADDON_IsRealTimeStream;
+      m_instance->toAddon.SetEPGTimeFrame = ADDON_SetEPGTimeFrame;
+      m_instance->toAddon.OnSystemSleep = ADDON_OnSystemSleep;
+      m_instance->toAddon.OnSystemWake = ADDON_OnSystemWake;
+      m_instance->toAddon.OnPowerSavingActivated = ADDON_OnPowerSavingActivated;
+      m_instance->toAddon.OnPowerSavingDeactivated = ADDON_OnPowerSavingDeactivated;
     }
+    //--------------------------------------------------------------------------
+
+    /// @name PVR add-on methods
+    //@{
+    //==========================================================================
+    ///
+    /// @brief Get the list of features that this add-on provides.
+    ///
+    /// Called by Kodi to query the add-on's capabilities.
+    ///
+    /// Used to check which options should be presented in the UI, which methods
+    /// to call, etc.
+    ///
+    /// All capabilities that the add-on supports should be set to true. As default
+    /// them set from Kodi to false.
+    ///
+    /// @param[out] capabilities    The add-on's capabilities, see PVR_ADDON_CAPABILITIES
+    ///                             for detailed informations.
+    ///
+    /// @note Valid implementation required.
+    ///
+    virtual void GetCapabilities(PVR_ADDON_CAPABILITIES& capabilities)=0;
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief PVR add-ons backend name.
+    ///
+    /// @return               The name reported by the backend that will be
+    ///                       displayed in the UI.
+    ///
+    /// @note Valid implementation required.
+    ///
+    virtual const char* GetBackendName()=0;
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief PVR add-ons client backend version.
+    ///
+    /// @return               The version string reported by the backend that
+    ///                       will be displayed in the UI.
+    ///
+    /// @note Valid implementation required.
+    ///
+    virtual std::string GetBackendVersion()=0;
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Get the hostname of the pvr backend server
+    ///
+    /// @return               hostname as ip address or alias.
+    ///
+    /// @remarks If backend does not utilize a server ignore this function.
+    ///
+    virtual std::string GetBackendHostname() { }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief PVR add-ons connection string of client.
+    ///
+    /// @return               The connection string reported by the backend that
+    ///                       will be displayed in the UI.
+    ///
+    /// @note Valid implementation required.
+    ///
+    virtual std::string GetConnectionString()=0;
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Get the disk space reported by the backend (if supported).
+    ///
+    /// @param[in] total      The total disk space in bytes.
+    /// @param[in] used       The used disk space in bytes.
+    /// @return               \ref PVR_ERROR_NO_ERROR if the drive space has been
+    ///                       fetched successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Optional.
+    ///
+    virtual PVR_ERROR GetDriveSpace(long long& total, long long& used) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Call one of the menu hooks (if supported).
+    ///
+    /// Supported PVR_MENUHOOK instances have to be added in ADDON_Create(), by
+    /// calling AddMenuHook() on the callback.
+    ///
+    /// @param[in] menuhook   The hook to call.
+    /// @param[in] item       The selected item for which the hook was called.
+    /// @return               \ref PVR_ERROR_NO_ERROR if the hook was called
+    ///                       successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Optional.
+    ///
+    virtual PVR_ERROR MenuHook(const PVR_MENUHOOK& menuhook, const PVR_MENUHOOK_DATA &item) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+    //@}
+
+    /// @name PVR channel group methods
+    ///  @remarks Only used by Kodi is bSupportsChannelGroups is set to true.
+    ///           If a group or one of the group members changes after the initial import, or if a new one was added, then the add-on
+    ///           should call TriggerChannelGroupsUpdate()
+    ///
+    //@{
+    //==========================================================================
+    ///
+    /// @brief Get the total amount of channel groups on the backend if it
+    /// supports channel groups.
+    ///
+    /// @return               The amount of channels, or -1 on error.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsChannelGroups is 
+    /// set to true.
+    ///
+    virtual int GetChannelGroupsAmount() { return -1; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Request the list of all channel groups from the backend if it
+    /// supports channel groups.
+    ///
+    /// @param[in] radio      True to get the radio channel groups, false to get
+    ///                       the TV channel groups.
+    /// @param[out] groups    List to store availanle channel groups withe the
+    ///
+    /// @return               \ref PVR_ERROR_NO_ERROR if the list has been
+    ///                       fetched successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsChannelGroups is
+    /// set to true.
+    ///
+    virtual PVR_ERROR GetChannelGroups(bool radio, std::vector<PVR_CHANNEL_GROUP>& groups) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+
+    //==========================================================================
+    ///
+    /// @brief Request the list of all group members of a group from the backend
+    /// if it supports channel groups.
+    ///
+    /// @param[in] group      The group to get the members for.
+    /// @param[out] members   list of all group members of group
+    /// @return               \ref PVR_ERROR_NO_ERROR if the list has been
+    ///                       fetched successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsChannelGroups is
+    /// set to true.
+    ///
+    virtual PVR_ERROR GetChannelGroupMembers(const PVR_CHANNEL_GROUP& group, std::vector<PVR_CHANNEL_GROUP_MEMBER>& members) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+    //@}
+
+    /// @name PVR channel methods
+    /// @remarks Either bSupportsTV or bSupportsRadio is required to be set to true.
+    ///          If a channel changes after the initial import, or if a new one was added, then the add-on
+    ///          should call TriggerChannelUpdate()
+    ///
+    //@{
+
+    //==========================================================================
+    ///
+    /// @brief To get total amount of channels on the backend
+    ///
+    /// @return               The total amount of channels on the backend, or -1
+    ///                       on error.
+    ///
+    /// @note Valid implementation required.
+    ///
+    virtual int GetChannelsAmount()=0;
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Request the list of all channels from the backend.
+    ///
+    /// @param[in] bRadio     True to get the radio channels, false to get the
+    ///                       TV channels.
+    /// @param[out] channels  list to add available channls defined with the
+    ///                       PVR_CHANNEL structure
+    ///
+    /// @return               \ref PVR_ERROR_NO_ERROR if the list has been
+    ///                       fetched successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks If PVR_ADDON_CAPABILITIES::bSupportsTV is set to true, a valid
+    /// result set needs to be provided for bRadio = false.\n
+    /// If PVR_ADDON_CAPABILITIES::bSupportsRadio is set to true, a valid result
+    /// set needs to be provided for bRadio = true.\n
+    /// At least one of these two must provide a valid result set.
+    ///
+    virtual PVR_ERROR GetChannels(bool bRadio, std::vector<PVR_CHANNEL> &channels) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Delete a channel from the backend.
+    ///
+    /// @param[in] channel    The channel to delete.
+    /// @return               \ref PVR_ERROR_NO_ERROR if the channel has been
+    ///                       deleted successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsChannelSettings is
+    /// set to true.
+    ///
+    virtual PVR_ERROR DeleteChannel(const PVR_CHANNEL& channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Rename a channel on the backend.
+    ///
+    /// @param[in] channel    The channel to rename, containing the new channel
+    ///                       name.
+    /// @return               \ref PVR_ERROR_NO_ERROR if the channel has been
+    ///                       renamed successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Optional, and only used if PVR_ADDON_CAPABILITIES::bSupportsChannelSettings
+    /// is set to true.
+    ///
+    virtual PVR_ERROR RenameChannel(const PVR_CHANNEL& channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Move a channel to another channel number on the backend.
+    ///
+    /// @param[in] channel    The channel to move, containing the new channel
+    ///                       number.
+    /// @return               \ref PVR_ERROR_NO_ERROR if the channel has been
+    ///                       moved successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Optional, and only used if bSupportsChannelSettings is set to
+    /// true.
+    ///
+    virtual PVR_ERROR MoveChannel(const PVR_CHANNEL& channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Show the channel scan dialog if this backend supports it.
+    ///
+    /// @return               \ref PVR_ERROR_NO_ERROR if the dialog was displayed
+    ///                       successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsChannelScan is set
+    /// to true.
+    ///
+    /// @note see \ref CPP_kodi_gui "kodi::gui" about related parts
+    ///
+    virtual PVR_ERROR OpenDialogChannelScan() { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Show the channel settings dialog, if supported by the backend.
+    ///
+    /// @param[in] channel    The channel to show the dialog for.
+    /// @return               \ref PVR_ERROR_NO_ERROR if the dialog has been
+    ///                       displayed successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsChannelSettings is
+    /// set to true.
+    ///
+    /// @note see \ref CPP_kodi_gui "kodi::gui" about related parts
+    ///
+    virtual PVR_ERROR OpenDialogChannelSettings(const PVR_CHANNEL& channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Show the dialog to add a channel on the backend, if supported by
+    /// the backend.
+    ///
+    /// @param[in] channel    The channel to add.
+    /// @return               \ref PVR_ERROR_NO_ERROR if the channel has been
+    ///                       added successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsChannelSettings is
+    /// set to true.
+    ///
+    /// @note see \ref CPP_kodi_gui "kodi::gui" about related parts
+    ///
+    virtual PVR_ERROR OpenDialogChannelAdd(const PVR_CHANNEL& channel) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+    //@}
+
+    /// @name PVR EPG methods
+    ///  @remarks Only used by Kodi if bSupportsEPG is set to true.
+    ///
+    //@{
+    //==========================================================================
+    ///
+    /// @brief Request the EPG for a channel from the backend.
+    ///
+    /// @param[in] handle     Handle to pass to the callback method.
+    /// @param[in] channel    The channel to get the EPG table for.
+    /// @param[in] start      Get events after this time (UTC).
+    /// @param[in] end        Get events before this time (UTC).
+    /// @return               \ref PVR_ERROR_NO_ERROR if the table has been
+    ///                       fetched successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsEPG is set to true.
+    ///
+    virtual PVR_ERROR GetEPG(const PVR_CHANNEL& channel, time_t iStart, time_t iEnd, std::vector<EPG_TAG> &epg) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Tell the client the time frame to use when notifying epg events
+    /// back to Kodi.
+    ///
+    /// The client might push epg events asynchronously to Kodi using the
+    /// callback function EpgEventStateChange. To be able to only push events
+    /// that are actually of interest for Kodi, client needs to know about the
+    /// epg time frame Kodi uses. Kodi supplies the current epg time frame value
+    /// in PVR_PROPERTIES.iEpgMaxDays when creating the addon and calls
+    /// SetEPGTimeFrame later whenever Kodi's epg time frame value changes.
+    ///
+    /// @param[in] days       number of days from "now". EPG_TIMEFRAME_UNLIMITED
+    ///                       means that Kodi is interested in all epg events,
+    ///                       regardless of event times.
+    /// @return               \ref PVR_ERROR_NO_ERROR if new value was successfully
+    ///                       set. See \ref PVR_ERROR for all possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsEPG is set to true.
+    ///
+    virtual PVR_ERROR SetEPGTimeFrame(int days) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+    //@}
+
+    /// @name PVR recording methods
+    ///  @remarks Only used by Kodi is bSupportsRecordings is set to true.
+    ///           If a recording changes after the initial import, or if a new one was added,
+    ///           then the add-on should call TriggerRecordingUpdate()
+    ///
+    //@{
+
+    //==========================================================================
+    ///
+    /// @brief To get the amount of usable or deleted recordings.
+    ///
+    /// @param[in] deleted    if set return deleted recording (called if
+    ///                       PVR_ADDON_CAPABILITIES::bSupportsRecordingsUndelete
+    ///                       set to true)
+    /// @return               The total amount of recordings on the backend or
+    ///                       -1 on error.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsRecordings is set
+    /// to true.
+    ///
+    virtual int GetRecordingsAmount(bool deleted) { return -1; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Request the list of all recordings from the backend, if supported.
+    ///
+    /// Recording entries are added to Kodi by insert them to vector recording.
+    ///
+    /// @param[in] deleted    if set return deleted recording (called if
+    ///                       PVR_ADDON_CAPABILITIES::bSupportsRecordingsUndelete
+    ///                       set to true)
+    /// @param[out] recording the vector list where available recordings becomes
+    ///                       inserted with the PVR_RECORDING structure.
+    /// @return               \ref PVR_ERROR_NO_ERROR if the recordings have been
+    ///                       fetched successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsRecordings is set
+    /// to true.
+    ///
+    virtual PVR_ERROR GetRecordings(bool deleted, std::vector<PVR_RECORDING> &recording) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Delete a recording on the backend.
+    ///
+    /// @param[in] recording  The recording to delete.
+    /// @return               \ref PVR_ERROR_NO_ERROR if the recording has been
+    ///                       deleted successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsRecordings is set
+    /// to true.
+    ///
+    virtual PVR_ERROR DeleteRecording(const PVR_RECORDING& recording) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Undelete a recording on the backend.
+    ///
+    /// @param[in] recording  The recording to undelete.
+    /// @return               \ref PVR_ERROR_NO_ERROR if the recording has been
+    ///                       undeleted successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsRecordings is set
+    /// to true.
+    ///
+    virtual PVR_ERROR UndeleteRecording(const PVR_RECORDING& recording) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Delete all recordings permanent which in the deleted folder on
+    /// the backend.
+    ///
+    /// @return               \ref PVR_ERROR_NO_ERROR if the recordings has been
+    ///                       deleted successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsRecordingsUndelete
+    /// is set to true.
+    ///
+    virtual PVR_ERROR DeleteAllRecordingsFromTrash() { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Rename a recording on the backend.
+    ///
+    /// @param[in] recording  The recording to rename, containing the new name.
+    /// @return               \ref PVR_ERROR_NO_ERROR if the recording has been
+    ///                       renamed successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsRecordings is set
+    /// to true.
+    ///
+    virtual PVR_ERROR RenameRecording(const PVR_RECORDING& recording) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Set the play count of a recording on the backend.
+    ///
+    /// @param[in] recording  The recording to change the play count.
+    /// @param[in] count      Play count.
+    /// @return               \ref PVR_ERROR_NO_ERROR if the recording's play count
+    ///                       has been set successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsRecordings is set
+    /// to true.
+    ///
+    virtual PVR_ERROR SetRecordingPlayCount(const PVR_RECORDING& recording, int count) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Set the last watched position of a recording on the backend.
+    ///
+    /// @param[in] recording  The recording.
+    /// @param[in] position   The last watched position in seconds
+    /// @return               \ref PVR_ERROR_NO_ERROR if the position has been
+    ///                       stored successfully. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsRecordings is set
+    /// to true.
+    ///
+    virtual PVR_ERROR SetRecordingLastPlayedPosition(const PVR_RECORDING& recording, int lastplayedposition) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Retrieve the last watched position of a recording on the backend.
+    ///
+    /// @param[in] recording  The recording.
+    /// @return               The last watched position in seconds or -1 on
+    ///                       error
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsRecordings is set
+    /// to true.
+    ///
+    virtual int GetRecordingLastPlayedPosition(const PVR_RECORDING& recording) { return -1; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Retrieve the edit decision list (EDL) of a recording on the
+    /// backend.
+    ///
+    /// @param[in] recording  The recording.
+    /// @param[out] edl       The function has to write the EDL list (defined as
+    ///                       struct PVR_EDL_ENTRY) into this array.
+    /// @return               \ref PVR_ERROR_NO_ERROR if the EDL was successfully
+    ///                       read. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsRecordings is set
+    /// to true. Return PVR_ERROR_NOT_IMPLEMENTED if this add-on won't provide
+    /// this function.
+    ///
+    virtual PVR_ERROR GetRecordingEdl(const PVR_RECORDING&, std::vector<PVR_EDL_ENTRY> &edl) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+    //@}
+
+    /// @name PVR timer methods
+    ///  @remarks Only used by Kodi is bSupportsTimers is set to true.
+    ///           If a timer changes after the initial import, or if a new one was added,
+    ///           then the add-on should call TriggerTimerUpdate()
+    ///
+    //@{
+
+    //==========================================================================
+    ///
+    /// @brief Retrieve the timer types supported by the backend.
+    ///
+    /// @param types[out]     The function has to write the definition of the
+    ///                       supported timer types into this array.
+    /// @return               \ref PVR_ERROR_NO_ERROR if the types were successfully
+    ///                       written to the array. See \ref PVR_ERROR for all
+    ///                       possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsTimers is set to true.
+    ///
+    virtual PVR_ERROR GetTimerTypes(std::vector<PVR_TIMER_TYPE> &types) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief To get the complete amount of timers present on backend.
+    ///
+    /// @return                 The total amount of timers on the backend or -1
+    ///                         on error.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsTimers is set to true.
+    ///
+    virtual int GetTimersAmount() { return -1; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Request the list of all timers from the backend if supported.
+    ///
+    /// @param timers[out]      Vector list to store available timers defined
+    ///                         with PVR_TIMER
+    /// @return                 \ref PVR_ERROR_NO_ERROR if the list has been
+    ///                         fetched successfully. See \ref PVR_ERROR for all
+    ///                         possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsTimers is set to
+    /// true.
+    ///
+    virtual PVR_ERROR GetTimers(std::vector<PVR_TIMER> &timers) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Add a timer on the backend.
+    ///
+    /// @param[in] timer        The timer to add.
+    /// @return                 \ref PVR_ERROR_NO_ERROR if the timer has been
+    ///                         added successfully. See \ref PVR_ERROR for all
+    ///                         possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsTimers is set to
+    /// true.
+    ///
+    virtual PVR_ERROR AddTimer(const PVR_TIMER& timer) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Delete a timer on the backend.
+    ///
+    /// @param[in] timer        The timer to delete.
+    /// @param[in] forceDelete  Set to true to delete a timer that is currently
+    ///                         recording a program.
+    /// @return                 \ref PVR_ERROR_NO_ERROR if the timer has been
+    ///                         deleted successfully. See \ref PVR_ERROR for all
+    ///                         possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsTimers is set to
+    /// true.
+    ///
+    virtual PVR_ERROR DeleteTimer(const PVR_TIMER& timer, bool forceDelete) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Update the timer information on the backend.
+    ///
+    /// @param[in] timer        The timer to update.
+    /// @return                 \ref PVR_ERROR_NO_ERROR if the timer has been
+    ///                         updated successfully. See \ref PVR_ERROR for all
+    ///                         possible values.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bSupportsTimers is set to
+    /// true.
+    ///
+    virtual PVR_ERROR UpdateTimer(const PVR_TIMER& timer) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+    //@}
+
+    /// @name PVR live stream methods, used to open and close a stream to a channel, and optionally perform read operations on the stream
+    //@{
+    //==========================================================================
+    ///
+    /// @brief Open a live stream on the backend.
+    ///
+    /// @param[in] channel      The channel to stream.
+    /// @return                 True if the stream has been opened successfully,
+    ///                         false otherwise.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bHandlesInputStream or
+    /// PVR_ADDON_CAPABILITIES::bHandlesDemuxing is set to true.
+    ///
+    virtual bool OpenLiveStream(const PVR_CHANNEL& channel) { return false; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Close an open live stream.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bHandlesInputStream or
+    /// PVR_ADDON_CAPABILITIES::bHandlesDemuxing is set to true.
+    ///
+    virtual void CloseLiveStream() { }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Read from an open live stream.
+    ///
+    /// @param[out] buffer      The buffer to store the data in.
+    /// @param[in] bufferSize   The amount of bytes to read.
+    /// @return                 The amount of bytes that were actually read from
+    ///                         the stream.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bHandlesInputStream is set
+    /// to true.
+    ///
+    virtual int ReadLiveStream(unsigned char* buffer, unsigned int bufferSize) { return -1; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Seek in a live stream on a backend that supports timeshifting.
+    ///
+    /// @param[in] position   The position to seek to.
+    /// @param[in] whence     [optional] offset relative to
+    ///                       You can set the value of whence to one of three
+    ///                       things:
+    ///  |   Value  | int | Description                                        |
+    ///  |:--------:|:---:|:---------------------------------------------------|
+    ///  | SEEK_SET |  0  | position is relative to the beginning of the file. This is probably what you had in mind anyway, and is the most commonly used value for whence.
+    ///  | SEEK_CUR |  1  | position is relative to the current file pointer position. So, in effect, you can say, "Move to my current position plus 30 bytes," or, "move to my current position minus 20 bytes."
+    ///  | SEEK_END |  2  | position is relative to the end of the file. Just like SEEK_SET except from the other end of the file. Be sure to use negative values for offset if you want to back up from the end of the file, instead of going past the end into oblivion.
+    /// @return                         Returns the resulting offset location as
+    ///                                 measured in bytes from the beginning of
+    ///                                 the stream. On error, the value -1 is
+    ///                                 returned.
+    ///
+
+    ///
+    /// @remarks Optional, and only used if PVR_ADDON_CAPABILITIES::bHandlesInputStream
+    /// is set to true.
+    ///
+    virtual long long SeekLiveStream(long long position, int whence = SEEK_SET) { return -1; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief To get position in the stream that's currently being read.
+    ///
+    /// @return                 The position in the stream that's currently
+    ///                         being read.
+    ///
+    /// @remarks Optional, and only used if PVR_ADDON_CAPABILITIES::bHandlesInputStream
+    /// is set to true.
+    ///
+    virtual long long PositionLiveStream() { return -1; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief To get total length of the stream that's currently being read.
+    ///
+    /// @return                 The total length of the stream that's currently
+    ///                         being read.
+    ///
+    /// @remarks Optional, and only used if PVR_ADDON_CAPABILITIES::bHandlesInputStream
+    /// is set to true.
+    ///
+    virtual long long LengthLiveStream() { return -1; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Switch to another channel. Only to be called when a live stream
+    /// has already been opened.
+    ///
+    /// @param[in] channel      The channel to switch to.
+    /// @return                 True if the switch was successful, false
+    ///                         otherwise.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bHandlesInputStream or
+    /// PVR_ADDON_CAPABILITIES::bHandlesDemuxing is set to true.
+    ///
+    virtual bool SwitchChannel(const PVR_CHANNEL& channel) { return false; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Delay to use when using switching channels for add-ons not
+    /// providing an input stream.
+    ///
+    /// If the add-on does provide an input stream, then this method will not be
+    /// called.
+    ///
+    /// Those add-ons can do that in OpenLiveStream() if needed.
+    ///
+    /// @return                 The delay in milliseconds.
+    ///
+    virtual unsigned int GetChannelSwitchDelay(void) { return 0; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Get the signal status of the stream that's currently open.
+    ///
+    /// @param[out] signalStatus        The signal status.
+    /// @return                         True if the signal status has been read
+    ///                                 successfully, false otherwise.
+    ///
+    /// @remarks Optional, and only used if PVR_ADDON_CAPABILITIES::bHandlesInputStream
+    /// or PVR_ADDON_CAPABILITIES::bHandlesDemuxing is set to true.
+    ///
+    virtual PVR_ERROR SignalStatus(PVR_SIGNAL_STATUS& signalStatus) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Get the stream URL for a channel from the backend. Used by the
+    /// MediaPortal add-on.
+    ///
+    /// @param[out] channel     The channel to get the stream URL for.
+    /// @return                 The requested URL.
+    ///
+    /// @remarks Optional, and only used if PVR_ADDON_CAPABILITIES::bHandlesInputStream
+    /// is set to true.
+    ///
+    virtual std::string GetLiveStreamURL(const PVR_CHANNEL& channel) { return ""; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Get the stream properties of the stream that's currently being
+    /// read.
+    ///
+    /// @param[out] properties  The properties of the currently playing stream.
+    /// @return                 \ref PVR_ERROR_NO_ERROR if the properties have
+    ///                         been fetched successfully. See \ref PVR_ERROR
+    ///                         for all possible values.
+    ///
+    /// @remarks Optional, and only used if PVR_ADDON_CAPABILITIES::bHandlesInputStream
+    /// or PVR_ADDON_CAPABILITIES::bHandlesDemuxing is set to true.
+    ///
+    virtual PVR_ERROR GetStreamProperties(PVR_STREAM_PROPERTIES& properties) { return PVR_ERROR_NOT_IMPLEMENTED; }
+    //--------------------------------------------------------------------------
+    //@}
+
+    /// @name PVR recording stream methods, used to open and close a stream to a recording, and perform read operations on the stream.
+    /// @remarks This will only be used if the backend doesn't provide a direct URL in the recording tag.
+    ///
+    //@{
+    //==========================================================================
+    ///
+    /// @brief Open a stream to a recording on the backend.
+    ///
+    /// @param[in] recording    The recording to open.
+    /// @return                 True if the stream has been opened successfully,
+    ///                         false otherwise.
+    ///
+    /// @remarks Optional, and only used if
+    /// PVR_ADDON_CAPABILITIES::bSupportsRecordings is set to true.
+    ///
+    virtual bool OpenRecordedStream(const PVR_RECORDING& recording) { return false; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Close an open stream from a recording.
+    ///
+    /// @remarks Optional, and only used if
+    /// PVR_ADDON_CAPABILITIES::bSupportsRecordings is set to true.
+    ///
+    virtual void CloseRecordedStream() { }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Read from a recording.
+    ///
+    /// @param[out] pBuffer     The buffer to store the data in.
+    /// @param[in] iBufferSize  The amount of bytes to read.
+    /// @return                 The amount of bytes that were actually read from
+    ///                         the stream.
+    ///
+    /// @remarks Optional, and only used if
+    /// PVR_ADDON_CAPABILITIES::bSupportsRecordings is set to true,
+    /// but required if OpenRecordedStream() is implemented.
+    ///
+    virtual int ReadRecordedStream(unsigned char* buffer, unsigned int bufferSize) { return -1; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Seek in a recorded stream.
+    ///
+    /// @param[in] iPosition    The position to seek to.
+    /// @param[in] iWhence      ?
+    /// @return                 The new position.
+    ///
+    /// @remarks Optional, and only used if
+    /// PVR_ADDON_CAPABILITIES::bSupportsRecordings is set to true.
+    ///
+    virtual long long SeekRecordedStream(long long iPosition, int iWhence = SEEK_SET) { return -1; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief To get position in the stream that's currently being read.
+    ///
+    /// @return                 The position in the stream that's currently
+    ///                         being read.
+    ///
+    /// @remarks Optional, and only used if
+    /// PVR_ADDON_CAPABILITIES::bSupportsRecordings is set to true.
+    ///
+    virtual long long PositionRecordedStream() { return -1; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief To get total length of the stream that's currently being read
+    ///
+    /// @return                 The total length of the stream that's currently
+    ///                         being read.
+    ///
+    /// @remarks Optional, and only used if
+    /// PVR_ADDON_CAPABILITIES::bSupportsRecordings is set to true.
+    ///
+    virtual long long LengthRecordedStream() { return -1; }
+    //--------------------------------------------------------------------------
+
+    //@}
+
+    /// @name PVR demultiplexer methods
+    ///  @remarks Only used by Kodi is bHandlesDemuxing is set to true.
+    ///
+    //@{
+    //==========================================================================
+    ///
+    /// @brief Reset the demultiplexer in the add-on.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bHandlesDemuxing is set to
+    /// true.
+    ///
+    virtual void DemuxReset() { }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Abort the demultiplexer thread in the add-on.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bHandlesDemuxing is set to
+    /// true.
+    ///
+    virtual void DemuxAbort() { }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Flush all data that's currently in the demultiplexer buffer in
+    /// the add-on.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bHandlesDemuxing is set to
+    /// true.
+    ///
+    virtual void DemuxFlush() { }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Read the next packet from the demultiplexer, if there is one.
+    ///
+    /// @return The next packet.\n
+    ///         If there is no next packet, then the add-on should return the
+    ///         packet created by calling AllocateDemuxPacket(0) on the callback.
+    ///         If the stream changed and Kodi's player needs to be reinitialised,
+    ///         then, the add-on should call AllocateDemuxPacket(0) on the
+    ///         callback, and set the streamid to DMX_SPECIALID_STREAMCHANGE and
+    ///         return the value.\n
+    ///         The add-on should return nullptr if an error occured.
+    ///
+    /// @remarks Required if PVR_ADDON_CAPABILITIES::bHandlesDemuxing is set to
+    /// true.
+    ///
+    virtual DemuxPacket* DemuxRead() { return nullptr; }
+    //--------------------------------------------------------------------------
+    //@}
+
+    //==========================================================================
+    ///
+    /// @brief Check if the backend support pausing the currently playing stream
+    ///
+    /// This will enable/disable the pause button in Kodi based on the return
+    /// value
+    ///
+    /// @return               false if the PVR addon/backend does not support
+    ///                       pausing, true if possible
+    ///
+    virtual bool CanPauseStream() { return false; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Check if the backend supports seeking for the currently playing
+    /// stream
+    ///
+    /// This will enable/disable the rewind/forward buttons in Kodi based on the
+    /// return value
+    ///
+    /// @return               false if the PVR addon/backend does not support
+    ///                       seeking, true if possible
+    ///
+    virtual bool CanSeekStream() { return false; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Notify the pvr addon that Kodi (un)paused the currently playing
+    /// stream
+    ///
+    /// @param[in] paused     true if stream is paused otherwise false
+    ///
+    virtual void PauseStream(bool paused) { }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Notify the pvr addon/demuxer that Kodi wishes to seek the stream
+    /// by time
+    ///
+    /// @param[in] time       The absolute time since stream start
+    /// @param[in] backwards  True to seek to keyframe BEFORE time, else AFTER
+    /// @param[out] startpts  can be updated to point to where display should
+    ///                       start
+    /// @return               True if the seek operation was possible
+    ///
+    /// @remarks Optional, and only used if addon has its own demuxer.
+    ///
+    virtual bool SeekTime(int time, bool backwards, double &startpts) { return false; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Notify the pvr addon/demuxer that Kodi wishes to change playback
+    /// speed
+    ///
+    /// @param[in] speed        The requested playback speed
+    ///
+    /// @remarks Optional, and only used if addon has its own demuxer.
+    ///
+    virtual void SetSpeed(int speed) { }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Get actual playing time from addon.
+    ///
+    /// With timeshift enabled this is different to live.
+    ///
+    /// @return time as UTC
+    ///
+    virtual time_t GetPlayingTime() { return 0; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Get time of oldest packet in timeshift buffer
+    ///
+    /// @return time as UTC
+    ///
+    virtual time_t GetBufferTimeStart() { return 0; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Get time of latest packet in timeshift buffer
+    ///
+    /// @return time as UTC
+    ///
+    virtual time_t GetBufferTimeEnd() { return 0; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Check if timeshift is active
+    ///
+    /// @return true if timeshift is active
+    ///
+    virtual bool IsTimeshifting() { return false; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Check for real-time streaming
+    ///
+    /// @return true if current stream is real-time
+    ///
+    virtual bool IsRealTimeStream() { return true; }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Notify the pvr addon for power management events
+    ///
+    virtual void OnSystemSleep() { }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Notify the pvr addon about a system wake event.
+    ///
+    virtual void OnSystemWake() { }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Notify the pvr addon that power saving becomes activated.
+    ///
+    virtual void OnPowerSavingActivated() { }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Notify the pvr addon about power saving becomes deactivated.
+    ///
+    virtual void OnPowerSavingDeactivated() { }
     //--------------------------------------------------------------------------
 
     //==========================================================================
@@ -811,6 +1944,418 @@ namespace pvr {
     //--------------------------------------------------------------------------
 
   private:
+    static inline void ADDON_GetCapabilities(void* addonInstance, PVR_ADDON_CAPABILITIES *capabilities)
+    {
+      static_cast<CAddon*>(addonInstance)->GetCapabilities(*capabilities);
+    }
+
+    static inline const char* ADDON_GetBackendName(void* addonInstance)
+    {
+      CAddon* me = static_cast<CAddon*>(addonInstance);
+      me->m_backendName = me->GetBackendName();
+      return me->m_backendName.c_str();
+    }
+
+    static inline const char* ADDON_GetBackendVersion(void* addonInstance)
+    {
+      CAddon* me = static_cast<CAddon*>(addonInstance);
+      me->m_backendVersion = me->GetBackendVersion();
+      return me->m_backendVersion.c_str();
+    }
+
+    static inline const char* ADDON_GetConnectionString(void* addonInstance)
+    {
+      CAddon* me = static_cast<CAddon*>(addonInstance);
+      me->m_connectionString = me->GetConnectionString();
+      return me->m_connectionString.c_str();
+    }
+
+    static inline PVR_ERROR ADDON_GetDriveSpace(void* addonInstance, long long* total, long long* used)
+    {
+      static_cast<CAddon*>(addonInstance)->GetDriveSpace(*total, *used);
+    }
+
+    static inline PVR_ERROR ADDON_MenuHook(void* addonInstance, const PVR_MENUHOOK& menuhook, const PVR_MENUHOOK_DATA &item)
+    {
+      static_cast<CAddon*>(addonInstance)->MenuHook(menuhook, item);
+    }
+
+    static inline int ADDON_GetChannelGroupsAmount(void* addonInstance)
+    {
+      return static_cast<CAddon*>(addonInstance)->GetChannelGroupsAmount();
+    }
+
+    static inline PVR_ERROR ADDON_GetChannelGroups(void* addonInstance, ADDON_HANDLE handle, bool radio)
+    {
+      CAddon* me = static_cast<CAddon*>(addonInstance);
+      std::vector<PVR_CHANNEL_GROUP> group;
+      PVR_ERROR error = me->GetChannelGroups(radio, group);
+      for (auto iter : group)
+        me->m_instance->toKodi.TransferChannelGroup(me->m_instance->toKodi.kodiInstance, handle, &iter);
+      return error;
+    }
+    
+    static inline PVR_ERROR ADDON_GetChannelGroupMembers(void* addonInstance, ADDON_HANDLE handle, const PVR_CHANNEL_GROUP& group)
+    {
+      CAddon* me = static_cast<CAddon*>(addonInstance);
+      std::vector<PVR_CHANNEL_GROUP_MEMBER> members;
+      PVR_ERROR error = me->GetChannelGroupMembers(group, members);
+      for (auto iter : members)
+        me->m_instance->toKodi.TransferChannelGroupMember(me->m_instance->toKodi.kodiInstance, handle, &iter);
+      return error;
+    }
+
+    static inline int ADDON_GetChannelsAmount(void* addonInstance)
+    {
+      return static_cast<CAddon*>(addonInstance)->GetChannelsAmount();
+    }
+
+    static inline PVR_ERROR ADDON_GetChannels(void* addonInstance, ADDON_HANDLE handle, bool radio)
+    {
+      CAddon* me = static_cast<CAddon*>(addonInstance);
+      std::vector<PVR_CHANNEL> channels;
+      PVR_ERROR error = me->GetChannels(radio, channels);
+      for (auto iter : channels)
+        me->m_instance->toKodi.TransferChannelEntry(me->m_instance->toKodi.kodiInstance, handle, &iter);
+      return error;
+    }
+
+    static inline PVR_ERROR ADDON_DeleteChannel(void* addonInstance, const PVR_CHANNEL& channel)
+    {
+      return static_cast<CAddon*>(addonInstance)->DeleteChannel(channel);
+    }
+
+    static inline PVR_ERROR ADDON_RenameChannel(void* addonInstance, const PVR_CHANNEL& channel)
+    {
+      return static_cast<CAddon*>(addonInstance)->RenameChannel(channel);
+    }
+
+    static inline PVR_ERROR ADDON_MoveChannel(void* addonInstance, const PVR_CHANNEL& channel)
+    {
+      return static_cast<CAddon*>(addonInstance)->MoveChannel(channel);
+    }
+
+    static inline PVR_ERROR ADDON_OpenDialogChannelScan(void* addonInstance)
+    {
+      return static_cast<CAddon*>(addonInstance)->OpenDialogChannelScan();
+    }
+
+    static inline PVR_ERROR ADDON_OpenDialogChannelSettings(void* addonInstance, const PVR_CHANNEL& channel)
+    {
+      return static_cast<CAddon*>(addonInstance)->OpenDialogChannelSettings(channel);
+    }
+
+    static inline PVR_ERROR ADDON_OpenDialogChannelAdd(void* addonInstance, const PVR_CHANNEL& channel)
+    {
+      return static_cast<CAddon*>(addonInstance)->OpenDialogChannelAdd(channel);
+    }
+
+    static inline PVR_ERROR ADDON_GetEPG(void* addonInstance, ADDON_HANDLE handle, const PVR_CHANNEL& channel, time_t start, time_t end)
+    {
+      CAddon* me = static_cast<CAddon*>(addonInstance);
+      std::vector<EPG_TAG> epg;
+      PVR_ERROR error = me->GetEPG(channel, start, end, epg);
+      for (auto iter : epg)
+        me->m_instance->toKodi.TransferEpgEntry(me->m_instance->toKodi.kodiInstance, handle, &iter);
+      return error;
+    }
+
+    static inline PVR_ERROR ADDON_SetEPGTimeFrame(void* addonInstance, int days)
+    {
+      return static_cast<CAddon*>(addonInstance)->SetEPGTimeFrame(days);
+    }
+
+    static inline int ADDON_GetRecordingsAmount(void* addonInstance, bool deleted)
+    {
+      return static_cast<CAddon*>(addonInstance)->GetRecordingsAmount(deleted);
+    }
+
+    static inline PVR_ERROR ADDON_GetRecordings(void* addonInstance, ADDON_HANDLE handle, bool deleted)
+    {
+      CAddon* me = static_cast<CAddon*>(addonInstance);
+      std::vector<PVR_RECORDING> recording;
+      PVR_ERROR error = me->GetRecordings(deleted, recording);
+      for (auto iter : recording)
+        me->m_instance->toKodi.TransferRecordingEntry(me->m_instance->toKodi.kodiInstance, handle, &iter);
+      return error;
+    }
+
+    static inline PVR_ERROR ADDON_DeleteRecording(void* addonInstance, const PVR_RECORDING& recording)
+    {
+      return static_cast<CAddon*>(addonInstance)->DeleteRecording(recording);
+    }
+
+    static inline PVR_ERROR ADDON_UndeleteRecording(void* addonInstance, const PVR_RECORDING& recording)
+    {
+      return static_cast<CAddon*>(addonInstance)->UndeleteRecording(recording);
+    }
+
+    static inline PVR_ERROR ADDON_DeleteAllRecordingsFromTrash(void* addonInstance)
+    {
+      return static_cast<CAddon*>(addonInstance)->DeleteAllRecordingsFromTrash();
+    }
+
+    static inline PVR_ERROR ADDON_RenameRecording(void* addonInstance, const PVR_RECORDING& recording)
+    {
+      return static_cast<CAddon*>(addonInstance)->RenameRecording(recording);
+    }
+
+    static inline PVR_ERROR ADDON_SetRecordingPlayCount(void* addonInstance, const PVR_RECORDING& recording, int count)
+    {
+      return static_cast<CAddon*>(addonInstance)->SetRecordingPlayCount(recording, count);
+    }
+
+    static inline PVR_ERROR ADDON_SetRecordingLastPlayedPosition(void* addonInstance, const PVR_RECORDING& recording, int lastplayedposition)
+    {
+      return static_cast<CAddon*>(addonInstance)->SetRecordingLastPlayedPosition(recording, lastplayedposition);
+    }
+
+    static inline int ADDON_GetRecordingLastPlayedPosition(void* addonInstance, const PVR_RECORDING& recording)
+    {
+      return static_cast<CAddon*>(addonInstance)->GetRecordingLastPlayedPosition(recording);
+    }
+
+    static inline PVR_ERROR ADDON_GetRecordingEdl(void* addonInstance, const PVR_RECORDING& recording, PVR_EDL_ENTRY edl[], int *size)
+    {
+      CAddon* me = static_cast<CAddon*>(addonInstance);
+      me->m_edlList.clear();
+      PVR_ERROR error = me->GetRecordingEdl(recording, me->m_edlList);
+      edl = me->m_edlList.data();
+      *size = me->m_edlList.size();
+      return error;
+    }
+
+    static inline PVR_ERROR ADDON_GetTimerTypes(void* addonInstance, PVR_TIMER_TYPE types[], int *typesCount)
+    {
+      CAddon* me = static_cast<CAddon*>(addonInstance);
+      me->m_timerTypesList.clear();
+      PVR_ERROR error = me->GetTimerTypes(me->m_timerTypesList);
+      types = me->m_timerTypesList.data();
+      *typesCount = me->m_timerTypesList.size();
+      return error;
+    }
+
+    static inline int ADDON_GetTimersAmount(void* addonInstance)
+    {
+      return static_cast<CAddon*>(addonInstance)->GetTimersAmount();
+    }
+
+    static inline PVR_ERROR ADDON_GetTimers(void* addonInstance, ADDON_HANDLE handle)
+    {
+      CAddon* me = static_cast<CAddon*>(addonInstance);
+      std::vector<PVR_TIMER> timers;
+      PVR_ERROR error = me->GetTimers(timers);
+      for (auto iter : timers)
+        me->m_instance->toKodi.TransferTimerEntry(me->m_instance->toKodi.kodiInstance, handle, &iter);
+      return error;
+    }
+
+    static inline PVR_ERROR ADDON_AddTimer(void* addonInstance, const PVR_TIMER& timer)
+    {
+      return static_cast<CAddon*>(addonInstance)->AddTimer(timer);
+    }
+
+    static inline PVR_ERROR ADDON_DeleteTimer(void* addonInstance, const PVR_TIMER& timer, bool forceDelete)
+    {
+      return static_cast<CAddon*>(addonInstance)->DeleteTimer(timer, forceDelete);
+    }
+
+    static inline PVR_ERROR ADDON_UpdateTimer(void* addonInstance, const PVR_TIMER& timer)
+    {
+      return static_cast<CAddon*>(addonInstance)->UpdateTimer(timer);
+    }
+
+    static inline bool ADDON_OpenLiveStream(void* addonInstance, const PVR_CHANNEL& channel)
+    {
+      return static_cast<CAddon*>(addonInstance)->OpenLiveStream(channel);
+    }
+
+    static inline void ADDON_CloseLiveStream(void* addonInstance)
+    {
+      static_cast<CAddon*>(addonInstance)->CloseLiveStream();
+    }
+
+    static inline int ADDON_ReadLiveStream(void* addonInstance, unsigned char* buffer, unsigned int bufferSize)
+    {
+      return static_cast<CAddon*>(addonInstance)->ReadLiveStream(buffer, bufferSize);
+    }
+
+    static inline long long ADDON_SeekLiveStream(void* addonInstance, long long position, int whence)
+    {
+      return static_cast<CAddon*>(addonInstance)->SeekLiveStream(position, whence);
+    }
+
+    static inline long long ADDON_PositionLiveStream(void* addonInstance)
+    {
+      return static_cast<CAddon*>(addonInstance)->PositionLiveStream();
+    }
+
+    static inline long long ADDON_LengthLiveStream(void* addonInstance)
+    {
+      return static_cast<CAddon*>(addonInstance)->LengthLiveStream();
+    }
+
+    static inline bool ADDON_SwitchChannel(void* addonInstance, const PVR_CHANNEL& channel)
+    {
+      return static_cast<CAddon*>(addonInstance)->SwitchChannel(channel);
+    }
+
+    static inline PVR_ERROR ADDON_SignalStatus(void* addonInstance, PVR_SIGNAL_STATUS& signalStatus)
+    {
+      return static_cast<CAddon*>(addonInstance)->SignalStatus(signalStatus);
+    }
+
+    static inline const char* ADDON_GetLiveStreamURL(void* addonInstance, const PVR_CHANNEL& channel)
+    {
+      CAddon* me = static_cast<CAddon*>(addonInstance);
+      me->m_liveStreamURL = me->GetLiveStreamURL(channel);
+      return me->m_liveStreamURL.c_str();
+    }
+    
+    static inline PVR_ERROR ADDON_GetStreamProperties(void* addonInstance, PVR_STREAM_PROPERTIES* properties)
+    {
+      return static_cast<CAddon*>(addonInstance)->GetStreamProperties(*properties);
+    }
+
+    static inline bool ADDON_OpenRecordedStream(void* addonInstance, const PVR_RECORDING& recording)
+    {
+      return static_cast<CAddon*>(addonInstance)->OpenRecordedStream(recording);
+    }
+
+    static inline void ADDON_CloseRecordedStream(void* addonInstance)
+    {
+      static_cast<CAddon*>(addonInstance)->CloseRecordedStream();
+    }
+
+    static inline int ADDON_ReadRecordedStream(void* addonInstance, unsigned char* buffer, unsigned int bufferSize)
+    {
+      return static_cast<CAddon*>(addonInstance)->ReadRecordedStream(buffer, bufferSize);
+    }
+
+    static inline long long ADDON_SeekRecordedStream(void* addonInstance, long long position, int whence)
+    {
+      return static_cast<CAddon*>(addonInstance)->SeekRecordedStream(position, whence);
+    }
+
+    static inline long long ADDON_PositionRecordedStream(void* addonInstance)
+    {
+      return static_cast<CAddon*>(addonInstance)->PositionRecordedStream();
+    }
+
+    static inline long long ADDON_LengthRecordedStream(void* addonInstance)
+    {
+      return static_cast<CAddon*>(addonInstance)->LengthRecordedStream();
+    }
+
+    static inline void ADDON_DemuxReset(void* addonInstance)
+    {
+      static_cast<CAddon*>(addonInstance)->DemuxReset();
+    }
+
+    static inline void ADDON_DemuxAbort(void* addonInstance)
+    {
+      static_cast<CAddon*>(addonInstance)->DemuxAbort();
+    }
+
+    static inline void ADDON_DemuxFlush(void* addonInstance)
+    {
+      static_cast<CAddon*>(addonInstance)->DemuxFlush();
+    }
+
+    static inline DemuxPacket* ADDON_DemuxRead(void* addonInstance)
+    {
+      return static_cast<CAddon*>(addonInstance)->DemuxRead();
+    }
+
+    static inline unsigned int ADDON_GetChannelSwitchDelay(void* addonInstance)
+    {
+      return static_cast<CAddon*>(addonInstance)->GetChannelSwitchDelay();
+    }
+
+    static inline bool ADDON_CanPauseStream(void* addonInstance)
+    {
+      return static_cast<CAddon*>(addonInstance)->CanPauseStream();
+    }
+
+    static inline bool ADDON_CanSeekStream(void* addonInstance)
+    {
+      return static_cast<CAddon*>(addonInstance)->CanSeekStream();
+    }
+
+    static inline void ADDON_PauseStream(void* addonInstance, bool paused)
+    {
+      static_cast<CAddon*>(addonInstance)->PauseStream(paused);
+    }
+
+    static inline bool ADDON_SeekTime(void* addonInstance, int time, bool backwards, double *startpts)
+    {
+      return static_cast<CAddon*>(addonInstance)->SeekTime(time, backwards, *startpts);
+    }
+
+    static inline void ADDON_SetSpeed(void* addonInstance, int speed)
+    {
+      static_cast<CAddon*>(addonInstance)->SetSpeed(speed);
+    }
+
+    static inline time_t ADDON_GetPlayingTime(void* addonInstance)
+    {
+      return static_cast<CAddon*>(addonInstance)->GetPlayingTime();
+    }
+
+    static inline time_t ADDON_GetBufferTimeStart(void* addonInstance)
+    {
+      return static_cast<CAddon*>(addonInstance)->GetBufferTimeStart();
+    }
+
+    static inline time_t ADDON_GetBufferTimeEnd(void* addonInstance)
+    {
+      return static_cast<CAddon*>(addonInstance)->GetBufferTimeEnd();
+    }
+
+    static inline const char* ADDON_GetBackendHostname(void* addonInstance)
+    {
+      CAddon* me = static_cast<CAddon*>(addonInstance);
+      me->m_backendHostname = me->GetBackendHostname();
+      return me->m_backendHostname.c_str();
+    }
+
+    static inline bool ADDON_IsTimeshifting(void* addonInstance)
+    {
+      return static_cast<CAddon*>(addonInstance)->IsTimeshifting();
+    }
+
+    static inline bool ADDON_IsRealTimeStream(void* addonInstance)
+    {
+      return static_cast<CAddon*>(addonInstance)->IsRealTimeStream();
+    }
+  
+    static inline void ADDON_OnSystemSleep(void* addonInstance)
+    {
+      static_cast<CAddon*>(addonInstance)->OnSystemSleep();
+    }
+
+    static inline void ADDON_OnSystemWake(void* addonInstance)
+    {
+      static_cast<CAddon*>(addonInstance)->OnSystemWake();
+    }
+
+    static inline void ADDON_OnPowerSavingActivated(void* addonInstance)
+    {
+      static_cast<CAddon*>(addonInstance)->OnPowerSavingActivated();
+    }
+
+    static inline void ADDON_OnPowerSavingDeactivated(void* addonInstance)
+    {
+      static_cast<CAddon*>(addonInstance)->OnPowerSavingDeactivated();
+    }
+
+    std::string m_backendName;
+    std::string m_backendVersion;
+    std::string m_backendHostname;
+    std::string m_connectionString;
+    std::string m_liveStreamURL;
+    std::vector<PVR_EDL_ENTRY> m_edlList;
+    std::vector<PVR_TIMER_TYPE> m_timerTypesList;
     sFuncTable_PVRClient* m_instance;
   };
 
