@@ -132,10 +132,7 @@ void CPVRClient::ResetProperties(int iClientId /* = PVR_INVALID_CLIENT_ID */)
 {
   /* initialise members */
   m_strUserPath           = CSpecialProtocol::TranslatePath(Profile());
-  m_props.strUserPath     = m_strUserPath.c_str();
   m_strClientPath         = CSpecialProtocol::TranslatePath(Path());
-  m_props.strClientPath   = m_strClientPath.c_str();
-  m_props.iEpgMaxDays     = CSettings::GetInstance().GetInt(CSettings::SETTING_EPG_DAYSTODISPLAY);
   m_menuhooks.clear();
   m_timertypes.clear();
   m_bReadyToUse           = false;
@@ -154,6 +151,9 @@ void CPVRClient::ResetProperties(int iClientId /* = PVR_INVALID_CLIENT_ID */)
   m_apiVersion = AddonVersion("0.0.0");
   
   memset(&m_struct, 0, sizeof(m_struct));
+  m_struct.props.strUserPath = m_strUserPath.c_str();
+  m_struct.props.strClientPath = m_strClientPath.c_str();
+  m_struct.props.iEpgMaxDays = CSettings::GetInstance().GetInt(CSettings::SETTING_EPG_DAYSTODISPLAY);
 }
 
 ADDON_STATUS CPVRClient::Create(int iClientId)
@@ -385,27 +385,27 @@ bool CPVRClient::GetAddonProperties(void)
   try
   {
     memset(&addonCapabilities, 0, sizeof(addonCapabilities));
-    m_struct.GetCapabilities(m_addonInstance, &addonCapabilities);
+    m_struct.toAddon.GetCapabilities(m_addonInstance, &addonCapabilities);
   }
   catch (std::exception &e) { LogException(e, "GetCapabilities()"); return false; }
 
   /* get the name of the backend */
-  try { strBackendName = m_struct.GetBackendName(m_addonInstance); }
+  try { strBackendName = m_struct.toAddon.GetBackendName(m_addonInstance); }
   catch (std::exception &e) { LogException(e, "GetBackendName()"); return false;  }
 
   /* get the connection string */
-  try { strConnectionString = m_struct.GetConnectionString(m_addonInstance); }
+  try { strConnectionString = m_struct.toAddon.GetConnectionString(m_addonInstance); }
   catch (std::exception &e) { LogException(e, "GetConnectionString()"); return false;  }
 
   /* display name = backend name:connection string */
   strFriendlyName = StringUtils::Format("%s:%s", strBackendName.c_str(), strConnectionString.c_str());
 
   /* backend version number */
-  try { strBackendVersion = m_struct.GetBackendVersion(m_addonInstance); }
+  try { strBackendVersion = m_struct.toAddon.GetBackendVersion(m_addonInstance); }
   catch (std::exception &e) { LogException(e, "GetBackendVersion()"); return false;  }
 
   /* backend hostname */
-  try { strBackendHostname = m_struct.GetBackendHostname(m_addonInstance); }
+  try { strBackendHostname = m_struct.toAddon.GetBackendHostname(m_addonInstance); }
   catch (std::exception &e) { LogException(e, "GetBackendHostname()"); return false; }
 
   /* timer types */
@@ -416,7 +416,7 @@ bool CPVRClient::GetAddonProperties(void)
       std::unique_ptr<PVR_TIMER_TYPE[]> types_array(new PVR_TIMER_TYPE[PVR_ADDON_TIMERTYPE_ARRAY_SIZE]);
       int size = PVR_ADDON_TIMERTYPE_ARRAY_SIZE;
 
-      PVR_ERROR retval = m_struct.GetTimerTypes(m_addonInstance, types_array.get(), &size);
+      PVR_ERROR retval = m_struct.toAddon.GetTimerTypes(m_addonInstance, types_array.get(), &size);
 
       if (retval == PVR_ERROR_NOT_IMPLEMENTED)
       {
@@ -569,7 +569,7 @@ PVR_ERROR CPVRClient::GetDriveSpace(long long *iTotal, long long *iUsed)
   if (!m_bReadyToUse)
     return PVR_ERROR_SERVER_ERROR;
 
-  try { return m_struct.GetDriveSpace(m_addonInstance, iTotal, iUsed); }
+  try { return m_struct.toAddon.GetDriveSpace(m_addonInstance, iTotal, iUsed); }
   catch (std::exception &e) { LogException(e, __FUNCTION__); }
 
   /* default to 0 on error */
@@ -587,7 +587,7 @@ PVR_ERROR CPVRClient::StartChannelScan(void)
   if (!m_addonCapabilities.bSupportsChannelScan)
     return PVR_ERROR_NOT_IMPLEMENTED;
 
-  try { return m_struct.OpenDialogChannelScan(m_addonInstance); }
+  try { return m_struct.toAddon.OpenDialogChannelScan(m_addonInstance); }
   catch (std::exception &e) { LogException(e, __FUNCTION__); }
 
   return PVR_ERROR_UNKNOWN;
@@ -607,7 +607,7 @@ PVR_ERROR CPVRClient::OpenDialogChannelAdd(const CPVRChannelPtr &channel)
     PVR_CHANNEL addonChannel;
     WriteClientChannelInfo(channel, addonChannel);
 
-    retVal = m_struct.OpenDialogChannelAdd(m_addonInstance, addonChannel);
+    retVal = m_struct.toAddon.OpenDialogChannelAdd(m_addonInstance, addonChannel);
     LogError(retVal, __FUNCTION__);
   }
   catch (std::exception &e)
@@ -632,7 +632,7 @@ PVR_ERROR CPVRClient::OpenDialogChannelSettings(const CPVRChannelPtr &channel)
     PVR_CHANNEL addonChannel;
     WriteClientChannelInfo(channel, addonChannel);
 
-    retVal = m_struct.OpenDialogChannelSettings(m_addonInstance, addonChannel);
+    retVal = m_struct.toAddon.OpenDialogChannelSettings(m_addonInstance, addonChannel);
     LogError(retVal, __FUNCTION__);
   }
   catch (std::exception &e)
@@ -657,7 +657,7 @@ PVR_ERROR CPVRClient::DeleteChannel(const CPVRChannelPtr &channel)
     PVR_CHANNEL addonChannel;
     WriteClientChannelInfo(channel, addonChannel);
 
-    retVal = m_struct.DeleteChannel(m_addonInstance, addonChannel);
+    retVal = m_struct.toAddon.DeleteChannel(m_addonInstance, addonChannel);
     LogError(retVal, __FUNCTION__);
   }
   catch (std::exception &e)
@@ -682,7 +682,7 @@ PVR_ERROR CPVRClient::RenameChannel(const CPVRChannelPtr &channel)
     PVR_CHANNEL addonChannel;
     WriteClientChannelInfo(channel, addonChannel);
 
-    retVal = m_struct.RenameChannel(m_addonInstance, addonChannel);
+    retVal = m_struct.toAddon.RenameChannel(m_addonInstance, addonChannel);
     LogError(retVal, __FUNCTION__);
   }
   catch (std::exception &e)
@@ -731,7 +731,7 @@ void CPVRClient::CallMenuHook(const PVR_MENUHOOK &hook, const CFileItem *item)
       }
     }
 
-    m_struct.MenuHook(m_addonInstance, hook, hookData);
+    m_struct.toAddon.MenuHook(m_addonInstance, hook, hookData);
   }
   catch (std::exception &e) { LogException(e, __FUNCTION__); }
 }
@@ -754,7 +754,7 @@ PVR_ERROR CPVRClient::GetEPGForChannel(const CPVRChannelPtr &channel, CEpg *epg,
     handle.callerAddress  = this;
     handle.dataAddress    = epg;
     handle.dataIdentifier = bSaveInDb ? 1 : 0; // used by the callback method CAddonCallbacksPVR::PVRTransferEpgEntry()
-    retVal = m_struct.GetEpg(m_addonInstance, &handle,
+    retVal = m_struct.toAddon.GetEpg(m_addonInstance, &handle,
         addonChannel,
         start ? start - g_advancedSettings.m_iPVRTimeCorrection : 0,
         end ? end - g_advancedSettings.m_iPVRTimeCorrection : 0);
@@ -780,7 +780,7 @@ PVR_ERROR CPVRClient::SetEPGTimeFrame(int iDays)
   PVR_ERROR retVal(PVR_ERROR_UNKNOWN);
   try
   {
-    retVal = m_struct.SetEPGTimeFrame(m_addonInstance, iDays);
+    retVal = m_struct.toAddon.SetEPGTimeFrame(m_addonInstance, iDays);
 
     LogError(retVal, __FUNCTION__);
   }
@@ -802,7 +802,7 @@ int CPVRClient::GetChannelGroupsAmount(void)
   if (!m_addonCapabilities.bSupportsChannelGroups)
     return iReturn;
 
-  try { iReturn = m_struct.GetChannelGroupsAmount(m_addonInstance); }
+  try { iReturn = m_struct.toAddon.GetChannelGroupsAmount(m_addonInstance); }
   catch (std::exception &e) { LogException(e, __FUNCTION__); }
 
   return iReturn;
@@ -822,7 +822,7 @@ PVR_ERROR CPVRClient::GetChannelGroups(CPVRChannelGroups *groups)
     ADDON_HANDLE_STRUCT handle;
     handle.callerAddress = this;
     handle.dataAddress = groups;
-    retVal = m_struct.GetChannelGroups(m_addonInstance, &handle, groups->IsRadio());
+    retVal = m_struct.toAddon.GetChannelGroups(m_addonInstance, &handle, groups->IsRadio());
 
     LogError(retVal, __FUNCTION__);
   }
@@ -854,7 +854,7 @@ PVR_ERROR CPVRClient::GetChannelGroupMembers(CPVRChannelGroup *group)
 
     CLog::Log(LOGDEBUG, "PVR - %s - get group members for group '%s' from add-on '%s'",
         __FUNCTION__, tag.strGroupName, GetFriendlyName().c_str());
-    retVal = m_struct.GetChannelGroupMembers(m_addonInstance, &handle, tag);
+    retVal = m_struct.toAddon.GetChannelGroupMembers(m_addonInstance, &handle, tag);
 
     LogError(retVal, __FUNCTION__);
   }
@@ -871,7 +871,7 @@ int CPVRClient::GetChannelsAmount(void)
   int iReturn(-EINVAL);
   if (m_bReadyToUse && (m_addonCapabilities.bSupportsTV || m_addonCapabilities.bSupportsRadio))
   {
-    try { iReturn = m_struct.GetChannelsAmount(m_addonInstance); }
+    try { iReturn = m_struct.toAddon.GetChannelsAmount(m_addonInstance); }
     catch (std::exception &e) { LogException(e, __FUNCTION__); }
   }
 
@@ -894,7 +894,7 @@ PVR_ERROR CPVRClient::GetChannels(CPVRChannelGroup &channels, bool radio)
     ADDON_HANDLE_STRUCT handle;
     handle.callerAddress = this;
     handle.dataAddress = (CPVRChannelGroup*) &channels;
-    retVal = m_struct.GetChannels(m_addonInstance, &handle, radio);
+    retVal = m_struct.toAddon.GetChannels(m_addonInstance, &handle, radio);
 
     LogError(retVal, __FUNCTION__);
   }
@@ -915,7 +915,7 @@ int CPVRClient::GetRecordingsAmount(bool deleted)
 
   try
   {
-    iReturn = m_struct.GetRecordingsAmount(m_addonInstance, deleted);
+    iReturn = m_struct.toAddon.GetRecordingsAmount(m_addonInstance, deleted);
   }
   catch (std::exception &e)
   {
@@ -939,7 +939,7 @@ PVR_ERROR CPVRClient::GetRecordings(CPVRRecordings *results, bool deleted)
     ADDON_HANDLE_STRUCT handle;
     handle.callerAddress = this;
     handle.dataAddress = (CPVRRecordings*) results;
-    retVal = m_struct.GetRecordings(m_addonInstance, &handle, deleted);
+    retVal = m_struct.toAddon.GetRecordings(m_addonInstance, &handle, deleted);
 
     LogError(retVal, __FUNCTION__);
   }
@@ -965,7 +965,7 @@ PVR_ERROR CPVRClient::DeleteRecording(const CPVRRecording &recording)
     PVR_RECORDING tag;
     WriteClientRecordingInfo(recording, tag);
 
-    retVal = m_struct.DeleteRecording(m_addonInstance, tag);
+    retVal = m_struct.toAddon.DeleteRecording(m_addonInstance, tag);
 
     LogError(retVal, __FUNCTION__);
   }
@@ -991,7 +991,7 @@ PVR_ERROR CPVRClient::UndeleteRecording(const CPVRRecording &recording)
     PVR_RECORDING tag;
     WriteClientRecordingInfo(recording, tag);
 
-    retVal = m_struct.UndeleteRecording(m_addonInstance, tag);
+    retVal = m_struct.toAddon.UndeleteRecording(m_addonInstance, tag);
 
     LogError(retVal, __FUNCTION__);
   }
@@ -1014,7 +1014,7 @@ PVR_ERROR CPVRClient::DeleteAllRecordingsFromTrash()
   PVR_ERROR retVal(PVR_ERROR_UNKNOWN);
   try
   {
-    retVal = m_struct.DeleteAllRecordingsFromTrash(m_addonInstance);
+    retVal = m_struct.toAddon.DeleteAllRecordingsFromTrash(m_addonInstance);
 
     LogError(retVal, __FUNCTION__);
   }
@@ -1040,7 +1040,7 @@ PVR_ERROR CPVRClient::RenameRecording(const CPVRRecording &recording)
     PVR_RECORDING tag;
     WriteClientRecordingInfo(recording, tag);
 
-    retVal = m_struct.RenameRecording(m_addonInstance, tag);
+    retVal = m_struct.toAddon.RenameRecording(m_addonInstance, tag);
 
     LogError(retVal, __FUNCTION__);
   }
@@ -1066,7 +1066,7 @@ PVR_ERROR CPVRClient::SetRecordingPlayCount(const CPVRRecording &recording, int 
     PVR_RECORDING tag;
     WriteClientRecordingInfo(recording, tag);
 
-    retVal = m_struct.SetRecordingPlayCount(m_addonInstance, tag, count);
+    retVal = m_struct.toAddon.SetRecordingPlayCount(m_addonInstance, tag, count);
 
     LogError(retVal, __FUNCTION__);
   }
@@ -1092,7 +1092,7 @@ PVR_ERROR CPVRClient::SetRecordingLastPlayedPosition(const CPVRRecording &record
     PVR_RECORDING tag;
     WriteClientRecordingInfo(recording, tag);
 
-    retVal = m_struct.SetRecordingLastPlayedPosition(m_addonInstance, tag, lastplayedposition);
+    retVal = m_struct.toAddon.SetRecordingLastPlayedPosition(m_addonInstance, tag, lastplayedposition);
 
     LogError(retVal, __FUNCTION__);
   }
@@ -1118,7 +1118,7 @@ int CPVRClient::GetRecordingLastPlayedPosition(const CPVRRecording &recording)
     PVR_RECORDING tag;
     WriteClientRecordingInfo(recording, tag);
 
-    iReturn = m_struct.GetRecordingLastPlayedPosition(m_addonInstance, tag);
+    iReturn = m_struct.toAddon.GetRecordingLastPlayedPosition(m_addonInstance, tag);
   }
   catch (std::exception &e)
   {
@@ -1144,7 +1144,7 @@ std::vector<PVR_EDL_ENTRY> CPVRClient::GetRecordingEdl(const CPVRRecording &reco
 
     PVR_EDL_ENTRY edl_array[PVR_ADDON_EDL_LENGTH];
     int size = PVR_ADDON_EDL_LENGTH;
-    PVR_ERROR retval = m_struct.GetRecordingEdl(m_addonInstance, tag, edl_array, &size);
+    PVR_ERROR retval = m_struct.toAddon.GetRecordingEdl(m_addonInstance, tag, edl_array, &size);
     if (retval == PVR_ERROR_NO_ERROR)
     {
       edl.reserve(size);
@@ -1171,7 +1171,7 @@ int CPVRClient::GetTimersAmount(void)
   if (!m_addonCapabilities.bSupportsTimers)
     return iReturn;
 
-  try { iReturn = m_struct.GetTimersAmount(m_addonInstance); }
+  try { iReturn = m_struct.toAddon.GetTimersAmount(m_addonInstance); }
   catch (std::exception &e) { LogException(e, __FUNCTION__); }
 
   return iReturn;
@@ -1191,7 +1191,7 @@ PVR_ERROR CPVRClient::GetTimers(CPVRTimers *results)
     ADDON_HANDLE_STRUCT handle;
     handle.callerAddress = this;
     handle.dataAddress = (CPVRTimers*) results;
-    retVal = m_struct.GetTimers(m_addonInstance, &handle);
+    retVal = m_struct.toAddon.GetTimers(m_addonInstance, &handle);
 
     LogError(retVal, __FUNCTION__);
   }
@@ -1217,7 +1217,7 @@ PVR_ERROR CPVRClient::AddTimer(const CPVRTimerInfoTag &timer)
     PVR_TIMER tag;
     WriteClientTimerInfo(timer, tag);
 
-    retVal = m_struct.AddTimer(m_addonInstance, tag);
+    retVal = m_struct.toAddon.AddTimer(m_addonInstance, tag);
 
     LogError(retVal, __FUNCTION__);
   }
@@ -1243,7 +1243,7 @@ PVR_ERROR CPVRClient::DeleteTimer(const CPVRTimerInfoTag &timer, bool bForce /* 
     PVR_TIMER tag;
     WriteClientTimerInfo(timer, tag);
 
-    retVal = m_struct.DeleteTimer(m_addonInstance, tag, bForce);
+    retVal = m_struct.toAddon.DeleteTimer(m_addonInstance, tag, bForce);
 
     LogError(retVal, __FUNCTION__);
   }
@@ -1269,7 +1269,7 @@ PVR_ERROR CPVRClient::RenameTimer(const CPVRTimerInfoTag &timer, const std::stri
     PVR_TIMER tag;
     WriteClientTimerInfo(timer, tag);
 
-    retVal = m_struct.UpdateTimer(m_addonInstance, tag);
+    retVal = m_struct.toAddon.UpdateTimer(m_addonInstance, tag);
 
     LogError(retVal, __FUNCTION__);
   }
@@ -1295,7 +1295,7 @@ PVR_ERROR CPVRClient::UpdateTimer(const CPVRTimerInfoTag &timer)
     PVR_TIMER tag;
     WriteClientTimerInfo(timer, tag);
 
-    retVal = m_struct.UpdateTimer(m_addonInstance, tag);
+    retVal = m_struct.toAddon.UpdateTimer(m_addonInstance, tag);
 
     LogError(retVal, __FUNCTION__);
   }
@@ -1320,12 +1320,12 @@ int CPVRClient::ReadStream(void* lpBuf, int64_t uiBufSize)
 {
   if (IsPlayingLiveStream())
   {
-    try { return m_struct.ReadLiveStream(m_addonInstance, (unsigned char *)lpBuf, (int)uiBufSize); }
+    try { return m_struct.toAddon.ReadLiveStream(m_addonInstance, (unsigned char *)lpBuf, (int)uiBufSize); }
     catch (std::exception &e) { LogException(e, "ReadLiveStream()"); }
   }
   else if (IsPlayingRecording())
   {
-    try { return m_struct.ReadRecordedStream(m_addonInstance, (unsigned char *)lpBuf, (int)uiBufSize); }
+    try { return m_struct.toAddon.ReadRecordedStream(m_addonInstance, (unsigned char *)lpBuf, (int)uiBufSize); }
     catch (std::exception &e) { LogException(e, "ReadRecordedStream()"); }
   }
   return -EINVAL;
@@ -1335,12 +1335,12 @@ int64_t CPVRClient::SeekStream(int64_t iFilePosition, int iWhence/* = SEEK_SET*/
 {
   if (IsPlayingLiveStream())
   {
-    try { return m_struct.SeekLiveStream(m_addonInstance, iFilePosition, iWhence); }
+    try { return m_struct.toAddon.SeekLiveStream(m_addonInstance, iFilePosition, iWhence); }
     catch (std::exception &e) { LogException(e, "SeekLiveStream()"); }
   }
   else if (IsPlayingRecording())
   {
-    try { return m_struct.SeekRecordedStream(m_addonInstance, iFilePosition, iWhence); }
+    try { return m_struct.toAddon.SeekRecordedStream(m_addonInstance, iFilePosition, iWhence); }
     catch (std::exception &e) { LogException(e, "SeekRecordedStream()"); }
   }
   return -EINVAL;
@@ -1350,7 +1350,7 @@ bool CPVRClient::SeekTime(int time, bool backwards, double *startpts)
 {
   if (IsPlaying())
   {
-    try { return m_struct.SeekTime(m_addonInstance, time, backwards, startpts); }
+    try { return m_struct.toAddon.SeekTime(m_addonInstance, time, backwards, startpts); }
     catch (std::exception &e) { LogException(e, "SeekTime()"); }
   }
   return false;
@@ -1360,12 +1360,12 @@ int64_t CPVRClient::GetStreamPosition(void)
 {
   if (IsPlayingLiveStream())
   {
-    try { return m_struct.PositionLiveStream(m_addonInstance); }
+    try { return m_struct.toAddon.PositionLiveStream(m_addonInstance); }
     catch (std::exception &e) { LogException(e, "PositionLiveStream()"); }
   }
   else if (IsPlayingRecording())
   {
-    try { return m_struct.PositionRecordedStream(m_addonInstance); }
+    try { return m_struct.toAddon.PositionRecordedStream(m_addonInstance); }
     catch (std::exception &e) { LogException(e, "PositionRecordedStream()"); }
   }
   return -EINVAL;
@@ -1375,12 +1375,12 @@ int64_t CPVRClient::GetStreamLength(void)
 {
   if (IsPlayingLiveStream())
   {
-    try { return m_struct.LengthLiveStream(m_addonInstance); }
+    try { return m_struct.toAddon.LengthLiveStream(m_addonInstance); }
     catch (std::exception &e) { LogException(e, "LengthLiveStream()"); }
   }
   else if (IsPlayingRecording())
   {
-    try { return m_struct.LengthRecordedStream(m_addonInstance); }
+    try { return m_struct.toAddon.LengthRecordedStream(m_addonInstance); }
     catch (std::exception &e) { LogException(e, "LengthRecordedStream()"); }
   }
   return -EINVAL;
@@ -1396,7 +1396,7 @@ bool CPVRClient::SwitchChannel(const CPVRChannelPtr &channel)
     WriteClientChannelInfo(channel, tag);
     try
     {
-      bSwitched = m_struct.SwitchChannel(m_addonInstance, tag);
+      bSwitched = m_struct.toAddon.SwitchChannel(m_addonInstance, tag);
     }
     catch (std::exception &e) { LogException(e, __FUNCTION__); }
   }
@@ -1417,7 +1417,7 @@ bool CPVRClient::SignalQuality(PVR_SIGNAL_STATUS &qualityinfo)
   {
     try
     {
-      return m_struct.SignalStatus(m_addonInstance, qualityinfo) == PVR_ERROR_NO_ERROR;
+      return m_struct.toAddon.SignalStatus(m_addonInstance, qualityinfo) == PVR_ERROR_NO_ERROR;
     }
     catch (std::exception &e)
     {
@@ -1438,7 +1438,7 @@ std::string CPVRClient::GetLiveStreamURL(const CPVRChannelPtr &channel)
   {
     PVR_CHANNEL tag;
     WriteClientChannelInfo(channel, tag);
-    strReturn = m_struct.GetLiveStreamURL(m_addonInstance, tag);
+    strReturn = m_struct.toAddon.GetLiveStreamURL(m_addonInstance, tag);
   }
   catch (std::exception &e)
   {
@@ -1453,7 +1453,7 @@ PVR_ERROR CPVRClient::GetStreamProperties(PVR_STREAM_PROPERTIES *props)
   if (!IsPlaying())
     return PVR_ERROR_REJECTED;
 
-  try { return m_struct.GetStreamProperties(m_addonInstance, props); }
+  try { return m_struct.toAddon.GetStreamProperties(m_addonInstance, props); }
   catch (std::exception &e) { LogException(e, __FUNCTION__); }
 
   return PVR_ERROR_UNKNOWN;
@@ -1463,7 +1463,7 @@ void CPVRClient::DemuxReset(void)
 {
   if (m_bReadyToUse && m_addonCapabilities.bHandlesDemuxing)
   {
-    try { m_struct.DemuxReset(m_addonInstance); }
+    try { m_struct.toAddon.DemuxReset(m_addonInstance); }
     catch (std::exception &e) { LogException(e, __FUNCTION__); }
   }
 }
@@ -1472,7 +1472,7 @@ void CPVRClient::DemuxAbort(void)
 {
   if (m_bReadyToUse && m_addonCapabilities.bHandlesDemuxing)
   {
-    try { m_struct.DemuxAbort(m_addonInstance); }
+    try { m_struct.toAddon.DemuxAbort(m_addonInstance); }
     catch (std::exception &e) { LogException(e, __FUNCTION__); }
   }
 }
@@ -1481,7 +1481,7 @@ void CPVRClient::DemuxFlush(void)
 {
   if (m_bReadyToUse && m_addonCapabilities.bHandlesDemuxing)
   {
-    try { m_struct.DemuxFlush(m_addonInstance); }
+    try { m_struct.toAddon.DemuxFlush(m_addonInstance); }
     catch (std::exception &e) { LogException(e, __FUNCTION__); }
   }
 }
@@ -1490,7 +1490,7 @@ DemuxPacket* CPVRClient::DemuxRead(void)
 {
   if (m_bReadyToUse && m_addonCapabilities.bHandlesDemuxing)
   {
-    try { return m_struct.DemuxRead(m_addonInstance); }
+    try { return m_struct.toAddon.DemuxRead(m_addonInstance); }
     catch (std::exception &e) { LogException(e, __FUNCTION__); }
   }
   return NULL;
@@ -1715,7 +1715,7 @@ bool CPVRClient::OpenStream(const CPVRChannelPtr &channel, bool bIsSwitchingChan
     AddonVersion checkVersion("1.1.0");
     if (m_apiVersion >= checkVersion)
     {
-      unsigned int iWaitTimeMs = m_struct.GetChannelSwitchDelay(m_addonInstance);
+      unsigned int iWaitTimeMs = m_struct.toAddon.GetChannelSwitchDelay(m_addonInstance);
       if (iWaitTimeMs > 0)
         XbmcThreads::ThreadSleep(iWaitTimeMs);
     }
@@ -1728,7 +1728,7 @@ bool CPVRClient::OpenStream(const CPVRChannelPtr &channel, bool bIsSwitchingChan
 
     try
     {
-      bReturn = m_struct.OpenLiveStream(m_addonInstance, tag);
+      bReturn = m_struct.toAddon.OpenLiveStream(m_addonInstance, tag);
     }
     catch (std::exception &e) { LogException(e, __FUNCTION__); }
   }
@@ -1757,7 +1757,7 @@ bool CPVRClient::OpenStream(const CPVRRecordingPtr &recording)
 
     try
     {
-      bReturn = m_struct.OpenRecordedStream(m_addonInstance, tag);
+      bReturn = m_struct.toAddon.OpenRecordedStream(m_addonInstance, tag);
     }
     catch (std::exception &e) { LogException(e, __FUNCTION__); }
   }
@@ -1777,7 +1777,7 @@ void CPVRClient::CloseStream(void)
 {
   if (IsPlayingLiveStream())
   {
-    try { m_struct.CloseLiveStream(m_addonInstance); }
+    try { m_struct.toAddon.CloseLiveStream(m_addonInstance); }
     catch (std::exception &e) { LogException(e, "CloseLiveStream()"); }
 
     CSingleLock lock(m_critSection);
@@ -1785,7 +1785,7 @@ void CPVRClient::CloseStream(void)
   }
   else if (IsPlayingRecording())
   {
-    try { m_struct.CloseRecordedStream(m_addonInstance); }
+    try { m_struct.toAddon.CloseRecordedStream(m_addonInstance); }
     catch (std::exception &e) { LogException(e, "CloseRecordedStream()"); }
 
     CSingleLock lock(m_critSection);
@@ -1797,7 +1797,7 @@ void CPVRClient::PauseStream(bool bPaused)
 {
   if (IsPlaying())
   {
-    try { m_struct.PauseStream(m_addonInstance, bPaused); }
+    try { m_struct.toAddon.PauseStream(m_addonInstance, bPaused); }
     catch (std::exception &e) { LogException(e, "PauseStream()"); }
   }
 }
@@ -1806,7 +1806,7 @@ void CPVRClient::SetSpeed(int speed)
 {
   if (IsPlaying())
   {
-    try { m_struct.SetSpeed(m_addonInstance, speed); }
+    try { m_struct.toAddon.SetSpeed(m_addonInstance, speed); }
     catch (std::exception &e) { LogException(e, "SetSpeed()"); }
   }
 }
@@ -1818,7 +1818,7 @@ bool CPVRClient::CanPauseStream(void) const
   {
     try
     {
-      bReturn = m_struct.CanPauseStream(m_addonInstance);
+      bReturn = m_struct.toAddon.CanPauseStream(m_addonInstance);
     }
     catch (std::exception &e) { LogException(e, __FUNCTION__); }
   }
@@ -1833,7 +1833,7 @@ bool CPVRClient::CanSeekStream(void) const
   {
     try
     {
-      bReturn = m_struct.CanSeekStream(m_addonInstance);
+      bReturn = m_struct.toAddon.CanSeekStream(m_addonInstance);
     }
     catch (std::exception &e) { LogException(e, __FUNCTION__); }
   }
@@ -1847,8 +1847,8 @@ bool CPVRClient::IsTimeshifting(void) const
   {
     try
     {
-      if (m_struct.IsTimeshifting)
-        bReturn = m_struct.IsTimeshifting(m_addonInstance);
+      if (m_struct.toAddon.IsTimeshifting)
+        bReturn = m_struct.toAddon.IsTimeshifting(m_addonInstance);
     }
     catch (std::exception &e) { LogException(e, __FUNCTION__); }
   }
@@ -1862,7 +1862,7 @@ time_t CPVRClient::GetPlayingTime(void) const
   {
     try
     {
-      time = m_struct.GetPlayingTime(m_addonInstance);
+      time = m_struct.toAddon.GetPlayingTime(m_addonInstance);
     }
     catch (std::exception &e) { LogException(e, __FUNCTION__); }
   }
@@ -1881,7 +1881,7 @@ time_t CPVRClient::GetBufferTimeStart(void) const
   {
     try
     {
-      time = m_struct.GetBufferTimeStart(m_addonInstance);
+      time = m_struct.toAddon.GetBufferTimeStart(m_addonInstance);
     }
     catch (std::exception &e) { LogException(e, __FUNCTION__); }
   }
@@ -1895,7 +1895,7 @@ time_t CPVRClient::GetBufferTimeEnd(void) const
   {
     try
     {
-      time = m_struct.GetBufferTimeEnd(m_addonInstance);
+      time = m_struct.toAddon.GetBufferTimeEnd(m_addonInstance);
     }
     catch (std::exception &e) { LogException(e, __FUNCTION__); }
   }
@@ -1980,7 +1980,7 @@ bool CPVRClient::IsRealTimeStream(void) const
   {
     try
     {
-      bReturn = m_struct.IsRealTimeStream(m_addonInstance);
+      bReturn = m_struct.toAddon.IsRealTimeStream(m_addonInstance);
     }
     catch (std::exception &e) { LogException(e, __FUNCTION__); }
   }
@@ -1994,7 +1994,7 @@ void CPVRClient::OnSystemSleep(void)
 
   try
   {
-    m_struct.OnSystemSleep(m_addonInstance);
+    m_struct.toAddon.OnSystemSleep(m_addonInstance);
   }
   catch (std::exception &e) { LogException(e, __FUNCTION__); }
 }
@@ -2006,7 +2006,7 @@ void CPVRClient::OnSystemWake(void)
 
   try
   {
-    m_struct.OnSystemWake(m_addonInstance);
+    m_struct.toAddon.OnSystemWake(m_addonInstance);
   }
   catch (std::exception &e) { LogException(e, __FUNCTION__); }
 }
@@ -2018,7 +2018,7 @@ void CPVRClient::OnPowerSavingActivated(void)
 
   try
   {
-    m_struct.OnPowerSavingActivated(m_addonInstance);
+    m_struct.toAddon.OnPowerSavingActivated(m_addonInstance);
   }
   catch (std::exception &e) { LogException(e, __FUNCTION__); }
 }
@@ -2030,7 +2030,7 @@ void CPVRClient::OnPowerSavingDeactivated(void)
 
   try
   {
-    m_struct.OnPowerSavingDeactivated(m_addonInstance);
+    m_struct.toAddon.OnPowerSavingDeactivated(m_addonInstance);
   }
   catch (std::exception &e) { LogException(e, __FUNCTION__); }
 }
