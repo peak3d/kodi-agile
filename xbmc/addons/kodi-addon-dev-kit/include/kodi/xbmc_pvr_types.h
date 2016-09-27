@@ -663,6 +663,152 @@ namespace pvr {
       : m_instance(static_cast<sFuncTable_PVRClient*>(instance))
     {
     }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Add or replace a menu hook for the context menu for this add-on
+    ///
+    /// @param[in] hook                 The hook to add
+    ///
+    void AddMenuHook(PVR_MENUHOOK* hook)
+    {
+      return m_instance->toKodi.AddMenuHook(m_instance->toKodi.kodiInstance, hook);
+    }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Display a notification in Kodi that a recording started or stopped on the server
+    ///
+    /// @param[in] recordingname        The name of the recording to display
+    /// @param[in] filename             The filename of the recording
+    /// @param[in] on                   True when recording started, false when
+    ///                                 it stopped
+    ///
+    void Recording(std::string recordingname, std::string filename, bool on)
+    {
+      return m_instance->toKodi.Recording(m_instance->toKodi.kodiInstance, recordingname.c_str(), filename.c_str(), on);
+    }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Request Kodi to update it's list of timers
+    ///
+    void TriggerTimerUpdate(void)
+    {
+      return m_instance->toKodi.TriggerTimerUpdate(m_instance->toKodi.kodiInstance);
+    }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Request Kodi to update it's list of recordings
+    ///
+    void TriggerRecordingUpdate(void)
+    {
+      return m_instance->toKodi.TriggerRecordingUpdate(m_instance->toKodi.kodiInstance);
+    }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Request Kodi to update it's list of channels
+    ///
+    void TriggerChannelUpdate(void)
+    {
+      return m_instance->toKodi.TriggerChannelUpdate(m_instance->toKodi.kodiInstance);
+    }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Schedule an EPG update for the given channel channel
+    ///
+    /// @param[in] channelUid           The unique id of the channel for this
+    ///                                 add-on
+    ///
+    void TriggerEpgUpdate(unsigned int channelUid)
+    {
+      return m_instance->toKodi.TriggerEpgUpdate(m_instance->toKodi.kodiInstance, channelUid);
+    }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Request Kodi to update it's list of channel groups
+    ///
+    void TriggerChannelGroupsUpdate(void)
+    {
+      return m_instance->toKodi.TriggerChannelGroupsUpdate(m_instance->toKodi.kodiInstance);
+    }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Free a packet that was allocated with AllocateDemuxPacket
+    ///
+    /// @param[in] packet              The packet to free
+    ///
+    void FreeDemuxPacket(DemuxPacket* packet)
+    {
+      return m_instance->toKodi.FreeDemuxPacket(m_instance->toKodi.kodiInstance, packet);
+    }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Allocate a demux packet. Free with FreeDemuxPacket
+    ///
+    /// @param[in] datasize             The size of the data that will go into
+    ///                                 the packet
+    /// @return                         The allocated packet
+    ///
+    DemuxPacket* AllocateDemuxPacket(int datasize)
+    {
+      return m_instance->toKodi.AllocateDemuxPacket(m_instance->toKodi.kodiInstance, datasize);
+    }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Notify a state change for a PVR backend connection
+    ///
+    /// @param[in] connectionString     The connection string reported by the
+    ///                                 backend that can be displayed in the UI.
+    /// @param[in] newState             The new state.
+    /// @param[in] message              A localized addon-defined string 
+    ///                                 representing the new state, that can be
+    ///                                 displayed in the UI or NULL if the 
+    ///                                 Kodi-defined default string for the new
+    ///                                 state shall be displayed.
+    ///
+    void ConnectionStateChange(std::string connectionString, PVR_CONNECTION_STATE newState, std::string message)
+    {
+      return m_instance->toKodi.ConnectionStateChange(m_instance->toKodi.kodiInstance, connectionString.c_str(), newState, message.c_str());
+    }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Notify a state change for an EPG event
+    ///
+    /// @param[in] tag                  The EPG event.
+    /// @param[in] uniqueChannelId      The unique id of the channel for the EPG
+    ///                                 event
+    /// @param[in] newState             The new state. For EPG_EVENT_CREATED and
+    ///                                 EPG_EVENT_UPDATED, tag must be filled
+    ///                                 with all available event data, not just
+    ///                                 a delta. For EPG_EVENT_DELETED, it is
+    ///                                 sufficient to fill
+    ///                                 EPG_TAG.iUniqueBroadcastId
+    ///
+    void EpgEventStateChange(EPG_TAG *tag, unsigned int uniqueChannelId, EPG_EVENT_STATE newState)
+    {
+      return m_instance->toKodi.EpgEventStateChange(m_instance->toKodi.kodiInstance, tag, uniqueChannelId, newState);
+    }
+    //--------------------------------------------------------------------------
 
   private:
     sFuncTable_PVRClient* m_instance;

@@ -20,7 +20,12 @@
 
 #include "Application.h"
 #include "addons/kodi-addon-dev-kit/include/kodi/libKODI_guilib.h"
+#include "cores/VideoPlayer/DVDDemuxers/DVDDemuxUtils.h"
+#include "dialogs/GUIDialogKaiToast.h"
 #include "epg/Epg.h"
+#include "epg/EpgContainer.h"
+#include "events/EventLog.h"
+#include "events/NotificationEvent.h"
 #include "messaging/ApplicationMessenger.h"
 #include "messaging/helpers/DialogHelper.h"
 #include "settings/AdvancedSettings.h"
@@ -32,6 +37,7 @@
 #include "pvr/PVRManager.h"
 #include "pvr/addons/PVRClients.h"
 #include "pvr/channels/PVRChannelGroupsContainer.h"
+#include "pvr/channels/PVRChannelGroupInternal.h"
 #include "pvr/recordings/PVRRecordings.h"
 #include "pvr/timers/PVRTimers.h"
 #include "pvr/timers/PVRTimerInfoTag.h"
@@ -151,9 +157,28 @@ void CPVRClient::ResetProperties(int iClientId /* = PVR_INVALID_CLIENT_ID */)
   m_apiVersion = AddonVersion("0.0.0");
   
   memset(&m_struct, 0, sizeof(m_struct));
+
   m_struct.props.strUserPath = m_strUserPath.c_str();
   m_struct.props.strClientPath = m_strClientPath.c_str();
   m_struct.props.iEpgMaxDays = CSettings::GetInstance().GetInt(CSettings::SETTING_EPG_DAYSTODISPLAY);
+
+  m_struct.toKodi.TransferEpgEntry  = PVRTransferEpgEntry;
+  m_struct.toKodi.TransferChannelEntry = PVRTransferChannelEntry;
+  m_struct.toKodi.TransferTimerEntry = PVRTransferTimerEntry;
+  m_struct.toKodi.TransferRecordingEntry = PVRTransferRecordingEntry;
+  m_struct.toKodi.AddMenuHook = PVRAddMenuHook;
+  m_struct.toKodi.Recording = PVRRecording;
+  m_struct.toKodi.TriggerChannelUpdate = PVRTriggerChannelUpdate;
+  m_struct.toKodi.TriggerChannelGroupsUpdate = PVRTriggerChannelGroupsUpdate;
+  m_struct.toKodi.TriggerTimerUpdate = PVRTriggerTimerUpdate;
+  m_struct.toKodi.TriggerRecordingUpdate = PVRTriggerRecordingUpdate;
+  m_struct.toKodi.TriggerEpgUpdate = PVRTriggerEpgUpdate;
+  m_struct.toKodi.FreeDemuxPacket = PVRFreeDemuxPacket;
+  m_struct.toKodi.AllocateDemuxPacket = PVRAllocateDemuxPacket;
+  m_struct.toKodi.TransferChannelGroup = PVRTransferChannelGroup;
+  m_struct.toKodi.TransferChannelGroupMember = PVRTransferChannelGroupMember;
+  m_struct.toKodi.ConnectionStateChange = PVRConnectionStateChange;
+  m_struct.toKodi.EpgEventStateChange = PVREpgEventStateChange;
 }
 
 ADDON_STATUS CPVRClient::Create(int iClientId)
@@ -753,7 +778,7 @@ PVR_ERROR CPVRClient::GetEPGForChannel(const CPVRChannelPtr &channel, CEpg *epg,
     ADDON_HANDLE_STRUCT handle;
     handle.callerAddress  = this;
     handle.dataAddress    = epg;
-    handle.dataIdentifier = bSaveInDb ? 1 : 0; // used by the callback method CAddonCallbacksPVR::PVRTransferEpgEntry()
+    handle.dataIdentifier = bSaveInDb ? 1 : 0; // used by the callback method CPVRClient::PVRTransferEpgEntry()
     retVal = m_struct.toAddon.GetEpg(m_addonInstance, &handle,
         addonChannel,
         start ? start - g_advancedSettings.m_iPVRTimeCorrection : 0,
@@ -2033,4 +2058,339 @@ void CPVRClient::OnPowerSavingDeactivated(void)
     m_struct.toAddon.OnPowerSavingDeactivated(m_addonInstance);
   }
   catch (std::exception &e) { LogException(e, __FUNCTION__); }
+}
+
+void CPVRClient::PVRTransferChannelGroup(void* kodiInstance, const ADDON_HANDLE handle, const PVR_CHANNEL_GROUP *group)
+{
+  if (!handle)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  CPVRChannelGroups *kodiGroups = static_cast<CPVRChannelGroups *>(handle->dataAddress);
+  if (!group || !kodiGroups)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  if (strlen(group->strGroupName) == 0)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - empty group name", __FUNCTION__);
+    return;
+  }
+
+  /* transfer this entry to the groups container */
+  CPVRChannelGroup transferGroup(*group);
+  kodiGroups->UpdateFromClient(transferGroup);
+}
+
+void CPVRClient::PVRTransferChannelGroupMember(void* kodiInstance, const ADDON_HANDLE handle, const PVR_CHANNEL_GROUP_MEMBER *member)
+{
+  if (!handle)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  CPVRClient *client      = static_cast<CPVRClient*>(kodiInstance);
+  CPVRChannelGroup *group = static_cast<CPVRChannelGroup *>(handle->dataAddress);
+  if (!member || !client || !group)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  CPVRChannelPtr channel  = g_PVRChannelGroups->GetByUniqueID(member->iChannelUniqueId, client->GetID());
+  if (!channel)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - cannot find group '%s' or channel '%d'", __FUNCTION__, member->strGroupName, member->iChannelUniqueId);
+  }
+  else if (group->IsRadio() == channel->IsRadio())
+  {
+    /* transfer this entry to the group */
+    group->AddToGroup(channel, member->iChannelNumber);
+  }
+}
+
+void CPVRClient::PVRTransferEpgEntry(void* kodiInstance, const ADDON_HANDLE handle, const EPG_TAG *epgentry)
+{
+  if (!handle)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  CEpg *kodiEpg = static_cast<CEpg *>(handle->dataAddress);
+  if (!kodiEpg)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  /* transfer this entry to the epg */
+  kodiEpg->UpdateEntry(epgentry, handle->dataIdentifier == 1 /* update db */);
+}
+
+void CPVRClient::PVRTransferChannelEntry(void* kodiInstance, const ADDON_HANDLE handle, const PVR_CHANNEL *channel)
+{
+  if (!handle)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  CPVRClient *client = static_cast<CPVRClient*>(kodiInstance);
+  CPVRChannelGroupInternal *kodiChannels = static_cast<CPVRChannelGroupInternal*>(handle->dataAddress);
+  if (!channel || !client || !kodiChannels)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  /* transfer this entry to the internal channels group */
+  CPVRChannelPtr transferChannel(new CPVRChannel(*channel, client->GetID()));
+  kodiChannels->UpdateFromClient(transferChannel);
+}
+
+void CPVRClient::PVRTransferRecordingEntry(void* kodiInstance, const ADDON_HANDLE handle, const PVR_RECORDING *recording)
+{
+  if (!handle)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  CPVRClient *client             = static_cast<CPVRClient*>(kodiInstance);
+  CPVRRecordings *kodiRecordings = static_cast<CPVRRecordings *>(handle->dataAddress);
+  if (!recording || !client || !kodiRecordings)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  /* transfer this entry to the recordings container */
+  CPVRRecordingPtr transferRecording(new CPVRRecording(*recording, client->GetID()));
+  kodiRecordings->UpdateFromClient(transferRecording);
+}
+
+void CPVRClient::PVRTransferTimerEntry(void* kodiInstance, const ADDON_HANDLE handle, const PVR_TIMER *timer)
+{
+  if (!handle)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  CPVRClient *client     = static_cast<CPVRClient*>(kodiInstance);
+  CPVRTimers *kodiTimers = static_cast<CPVRTimers *>(handle->dataAddress);
+  if (!timer || !client || !kodiTimers)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  /* Note: channel can be NULL here, for instance for epg-based timer rules ("record on any channel" condition). */
+  CPVRChannelPtr channel = g_PVRChannelGroups->GetByUniqueID(timer->iClientChannelUid, client->GetID());
+
+  /* transfer this entry to the timers container */
+  CPVRTimerInfoTagPtr transferTimer(new CPVRTimerInfoTag(*timer, channel, client->GetID()));
+  kodiTimers->UpdateFromClient(transferTimer);
+}
+
+void CPVRClient::PVRAddMenuHook(void* kodiInstance, PVR_MENUHOOK *hook)
+{
+  CPVRClient *client = static_cast<CPVRClient*>(kodiInstance);
+  if (!hook || !client)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  PVR_MENUHOOKS *hooks = client->GetMenuHooks();
+  if (hooks)
+  {
+    PVR_MENUHOOK hookInt;
+    hookInt.iHookId            = hook->iHookId;
+    hookInt.iLocalizedStringId = hook->iLocalizedStringId;
+    hookInt.category           = hook->category;
+
+    /* add this new hook */
+    hooks->push_back(hookInt);
+  }
+}
+
+void CPVRClient::PVRRecording(void* kodiInstance, const char *strName, const char *strFileName, bool bOnOff)
+{
+  CPVRClient *client = static_cast<CPVRClient*>(kodiInstance);
+  if (!client || !strFileName)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  std::string strLine1 = StringUtils::Format(g_localizeStrings.Get(bOnOff ? 19197 : 19198).c_str(), client->Name().c_str());
+  std::string strLine2;
+  if (strName)
+    strLine2 = strName;
+  else if (strFileName)
+    strLine2 = strFileName;
+
+  /* display a notification for 5 seconds */
+  CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, strLine1, strLine2, 5000, false);
+  CEventLog::GetInstance().Add(EventPtr(new CNotificationEvent(client->Name(), strLine1, client->Icon(), strLine2)));
+
+  CLog::Log(LOGDEBUG, "PVR - %s - recording %s on client '%s'. name='%s' filename='%s'",
+      __FUNCTION__, bOnOff ? "started" : "finished", client->Name().c_str(), strName, strFileName);
+}
+
+void CPVRClient::PVRTriggerChannelUpdate(void* kodiInstance)
+{
+  /* update the channels table in the next iteration of the pvrmanager's main loop */
+  g_PVRManager.TriggerChannelsUpdate();
+}
+
+void CPVRClient::PVRTriggerTimerUpdate(void* kodiInstance)
+{
+  /* update the timers table in the next iteration of the pvrmanager's main loop */
+  g_PVRManager.TriggerTimersUpdate();
+}
+
+void CPVRClient::PVRTriggerRecordingUpdate(void* kodiInstance)
+{
+  /* update the recordings table in the next iteration of the pvrmanager's main loop */
+  g_PVRManager.TriggerRecordingsUpdate();
+}
+
+void CPVRClient::PVRTriggerChannelGroupsUpdate(void* kodiInstance)
+{
+  /* update all channel groups in the next iteration of the pvrmanager's main loop */
+  g_PVRManager.TriggerChannelGroupsUpdate();
+}
+
+void CPVRClient::PVRTriggerEpgUpdate(void* kodiInstance, unsigned int iChannelUid)
+{
+  if (!kodiInstance)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  g_EpgContainer.UpdateRequest(static_cast<CPVRClient*>(kodiInstance)->GetID(), iChannelUid);
+}
+
+void CPVRClient::PVRFreeDemuxPacket(void* kodiInstance, DemuxPacket* pPacket)
+{
+  CDVDDemuxUtils::FreeDemuxPacket(pPacket);
+}
+
+DemuxPacket* CPVRClient::PVRAllocateDemuxPacket(void* kodiInstance, int iDataSize)
+{
+  return CDVDDemuxUtils::AllocateDemuxPacket(iDataSize);
+}
+
+void CPVRClient::PVRConnectionStateChange(void* kodiInstance, const char* strConnectionString, PVR_CONNECTION_STATE newState, const char *strMessage)
+{
+  CPVRClient *client = static_cast<CPVRClient*>(kodiInstance);
+  if (!client || !strConnectionString)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  const PVR_CONNECTION_STATE prevState(client->GetConnectionState());
+  if (prevState == newState)
+    return;
+
+  CLog::Log(LOGDEBUG, "PVR - %s - state for connection '%s' on client '%s' changed from '%d' to '%d'", __FUNCTION__, strConnectionString, client->Name().c_str(), prevState, newState);
+
+  client->SetConnectionState(newState);
+
+  std::string msg;
+  if (strMessage != nullptr)
+    msg = strMessage;
+
+  g_PVRManager.ConnectionStateChange(client->GetID(), std::string(strConnectionString), newState, msg);
+}
+
+namespace PVR
+{
+  typedef struct EpgEventStateChange
+  {
+    int             iClientId;
+    unsigned int    iUniqueChannelId;
+    CEpgInfoTagPtr  event;
+    EPG_EVENT_STATE state;
+
+    EpgEventStateChange(int _iClientId, unsigned int _iUniqueChannelId, EPG_TAG *_event, EPG_EVENT_STATE _state)
+    : iClientId(_iClientId),
+      iUniqueChannelId(_iUniqueChannelId),
+      event(new CEpgInfoTag(*_event)),
+      state(_state) {}
+
+  } EpgEventStateChange;
+}
+
+void CPVRClient::UpdateEpgEvent(const EpgEventStateChange &ch, bool bQueued)
+{
+  const CPVRChannelPtr channel(g_PVRChannelGroups->GetByUniqueID(ch.iUniqueChannelId, ch.iClientId));
+  if (channel)
+  {
+    const CEpgPtr epg(channel->GetEPG());
+    if (epg)
+    {
+      if (!epg->UpdateEntry(ch.event, ch.state))
+        CLog::Log(LOGERROR, "PVR - %s - epg update failed for %sevent change (%d)",
+                  __FUNCTION__, bQueued ? "queued " : "", ch.event->UniqueBroadcastID());
+    }
+    else
+    {
+      CLog::Log(LOGERROR, "PVR - %s - channel '%s' does not have an EPG! Unable to deliver %sevent change (%d)!",
+                __FUNCTION__, channel->ChannelName().c_str(), bQueued ? "queued " : "", ch.event->UniqueBroadcastID());
+    }
+  }
+  else
+    CLog::Log(LOGERROR, "PVR - %s - invalid channel (%d)! Unable to deliver %sevent change (%d)!",
+              __FUNCTION__, ch.iUniqueChannelId, bQueued ? "queued " : "", ch.event->UniqueBroadcastID());
+}
+
+void CPVRClient::PVREpgEventStateChange(void* kodiInstance, EPG_TAG* tag, unsigned int iUniqueChannelId, EPG_EVENT_STATE newState)
+{
+  CPVRClient *client = static_cast<CPVRClient*>(kodiInstance);
+  if (!client || !tag)
+  {
+    CLog::Log(LOGERROR, "PVR - %s - invalid handler data", __FUNCTION__);
+    return;
+  }
+
+  static CCriticalSection queueMutex;
+  static std::vector<EpgEventStateChange> queuedChanges;
+
+  // during Kodi startup, addons may push updates very early, even before EPGs are ready to use.
+  if (g_PVRManager.EpgsCreated())
+  {
+    {
+      // deliver queued changes, if any. discard event if delivery fails.
+      CSingleLock lock(queueMutex);
+      if (!queuedChanges.empty())
+        CLog::Log(LOGNOTICE, "PVR - %s - processing %ld queued epg event changes.", __FUNCTION__, queuedChanges.size());
+
+      while (!queuedChanges.empty())
+      {
+        auto it = queuedChanges.begin();
+        UpdateEpgEvent(*it, true);
+        queuedChanges.erase(it);
+      }
+    }
+
+    // deliver current change.
+    UpdateEpgEvent(EpgEventStateChange(client->GetID(), iUniqueChannelId, tag, newState), false);
+  }
+  else
+  {
+    // queue for later delivery.
+    CSingleLock lock(queueMutex);
+    queuedChanges.push_back(EpgEventStateChange(client->GetID(), iUniqueChannelId, tag, newState));
+  }
 }
