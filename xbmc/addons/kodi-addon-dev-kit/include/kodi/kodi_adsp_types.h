@@ -475,6 +475,7 @@ extern "C" {
 
   typedef struct sAddonToKodiFuncTable_AudioDSP
   {
+    void* kodiInstance;
     void (*AddMenuHook)(void* kodiInstance, AE_DSP_MENUHOOK *hook);
     void (*RemoveMenuHook)(void* kodiInstance, AE_DSP_MENUHOOK *hook);
     void (*RegisterMode)(void* kodiInstance, AE_DSP_MODES::AE_DSP_MODE *mode);
@@ -557,6 +558,52 @@ namespace adsp {
       : m_instance(static_cast<sFuncTable_AudioDSP*>(instance))
     {
     }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Add or replace a menu hook for the context menu for this add-on
+    /// @param hook The hook to add
+    ///
+    void AddMenuHook(AE_DSP_MENUHOOK* hook)
+    {
+      return m_instance->toKodi.AddMenuHook(m_instance->toKodi.kodiInstance, hook);
+    }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Remove a menu hook for the context menu for this add-on
+    /// @param hook The hook to remove
+    ///
+    void RemoveMenuHook(AE_DSP_MENUHOOK* hook)
+    {
+      return m_instance->toKodi.RemoveMenuHook(m_instance->toKodi.kodiInstance, hook);
+    }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Add or replace master mode information inside audio dsp database.
+    /// Becomes identifier written inside mode to iModeID if it was 0 (undefined)
+    /// @param mode The master mode to add or update inside database
+    ///
+    void RegisterMode(AE_DSP_MODES::AE_DSP_MODE* mode)
+    {
+      return m_instance->toKodi.RegisterMode(m_instance->toKodi.kodiInstance, mode);
+    }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    ///
+    /// @brief Remove a master mode from audio dsp database
+    /// @param mode The Mode to remove
+    ///
+    void UnregisterMode(AE_DSP_MODES::AE_DSP_MODE* mode)
+    {
+      return m_instance->toKodi.UnregisterMode(m_instance->toKodi.kodiInstance, mode);
+    }
+    //--------------------------------------------------------------------------
 
   private:
     sFuncTable_AudioDSP* m_instance;

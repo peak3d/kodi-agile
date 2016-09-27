@@ -373,6 +373,35 @@ namespace ActiveAE
 
     static const char *ToString(const AE_DSP_ERROR error);
 
+    /*!
+    * @brief Add or replace a menu hook for the menu for this add-on
+    * @param kodiInstance A pointer to the add-on.
+    * @param hook The hook to add.
+    */
+    static void ADSPAddMenuHook(void* kodiInstance, AE_DSP_MENUHOOK* hook);
+
+    /*!
+    * @brief Remove a menu hook for the menu for this add-on
+    * @param kodiInstance A pointer to the add-on.
+    * @param hook The hook to remove.
+    */
+    static void ADSPRemoveMenuHook(void* kodiInstance, AE_DSP_MENUHOOK* hook);
+
+    /*!
+    * @brief Add or replace master mode information inside audio dsp database.
+    * Becomes identifier written inside mode to iModeID if it was 0 (undefined)
+    * @param kodiInstance A pointer to the add-on.
+    * @param mode The master mode to add or update inside database
+    */
+    static void ADSPRegisterMode(void* kodiInstance, AE_DSP_MODES::AE_DSP_MODE* mode);
+
+    /*!
+    * @brief Remove a master mode from audio dsp database
+    * @param kodiInstance A pointer to the add-on.
+    * @param mode The Mode to remove
+    */
+    static void ADSPUnregisterMode(void* kodiInstance, AE_DSP_MODES::AE_DSP_MODE* mode);
+
   private:
     /*!
      * @brief Resets all class members to their defaults. Called by the constructors.
@@ -403,8 +432,7 @@ namespace ActiveAE
 
     ADDON::AddonVersion       m_apiVersion;
 
-    AE_DSP_PROPERTIES m_props;
-    sKodiToAddonFuncTable_AudioDSP m_struct;
+    sFuncTable_AudioDSP m_struct;
     void* m_addonInstance;
   };
 }
