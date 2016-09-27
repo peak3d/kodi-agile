@@ -263,7 +263,7 @@ extern "C" {
 
   /*!
    * @brief PVR add-on capabilities. All capabilities are set to "false" as default.
-   * If a capabilty is set to true, then the corresponding methods from xbmc_pvr_dll.h need to be implemented.
+   * If a capabilty is set to true, then the corresponding methods need to be implemented.
    */
   typedef struct PVR_ADDON_CAPABILITIES
   {

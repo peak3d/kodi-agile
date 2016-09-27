@@ -275,7 +275,6 @@ install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/kod
 
 # Install kodi-pvr-dev
 install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_epg_types.h
-              ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_dll.h
               ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h
         DESTINATION ${includedir}/${APP_NAME_LC}
         COMPONENT kodi-pvr-dev)
