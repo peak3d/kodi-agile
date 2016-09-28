@@ -176,7 +176,7 @@ typedef struct sKodiToAddonFuncTable_Addon
   bool (__cdecl* HasSettings)();
   unsigned int (__cdecl* GetSettings)(ADDON_StructSetting ***sSet);
   ADDON_STATUS (__cdecl* SetSetting)(const char *settingName, const void *settingValue);
-  void (__cdecl* FreeSettings)();
+  void (__cdecl* FreeSettings)(unsigned int elements, ADDON_StructSetting*** set);
   ADDON_STATUS (__cdecl* CreateInstance)(int instanceType, const char* instanceID, void* instance, void** addonInstance);
   void (__cdecl* DestroyInstance)(int instanceType, void* instance);
 } sKodiToAddonFuncTable_Addon;
@@ -248,6 +248,37 @@ namespace addon {
   //
   //=-----=------=------=------=------=------=------=------=------=------=-----=
 
+  
+  //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Function used on Kodi itself to transfer back from add-on given data with
+  // "ADDON_StructSetting***" to "std::vector<CAddonSetting>"
+  //
+  // Note: Not needed on add-on itself, only here to have all related parts on
+  // same place!
+  //
+  static inline void StructToVec(unsigned int elements, ADDON_StructSetting*** sSet, std::vector<CAddonSetting> *vecSet)
+  {
+    if (elements == 0)
+      return;
+      
+    vecSet->clear();
+    for(unsigned int i = 0; i < elements; i++)
+    {
+      CAddonSetting vSet((CAddonSetting::SETTING_TYPE)(*sSet)[i]->type, (*sSet)[i]->id, (*sSet)[i]->label);
+      if((*sSet)[i]->type == CAddonSetting::SPIN)
+      {
+        for(unsigned int j=0;j<(*sSet)[i]->entry_elements;j++)
+        {
+          vSet.AddEntry((*sSet)[i]->entry[j]);
+        }
+      }
+      vSet.Current = (*sSet)[i]->current;
+      vecSet->push_back(vSet);
+    }
+  }
+  //
+  //=-----=------=------=------=------=------=------=------=------=------=-----=
+
 
   //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   // Add-on main instance class.
@@ -278,7 +309,6 @@ namespace addon {
     virtual bool HasSettings() { return false; }
     virtual bool GetSettings(std::vector<CAddonSetting>& settings) { return false; }
     virtual ADDON_STATUS SetSetting(std::string& settingName, const void *settingValue) { return ADDON_STATUS_UNKNOWN; }
-    virtual void FreeSettings() { }
     
     virtual ADDON_STATUS CreateInstance(int instanceType, std::string instanceID, KODI_HANDLE instance, KODI_HANDLE& addonInstance) { return ADDON_STATUS_UNKNOWN; }
     
@@ -304,7 +334,7 @@ namespace addon {
           return 0;
 
         *sSet = (ADDON_StructSetting**)malloc(settings.size()*sizeof(ADDON_StructSetting*));
-        for(unsigned int i = 0;i < settings.size(); ++i)
+        for (unsigned int i = 0;i < settings.size(); ++i)
         {
           (*sSet)[i] = nullptr;
           (*sSet)[i] = (ADDON_StructSetting*)malloc(sizeof(ADDON_StructSetting));
@@ -347,7 +377,27 @@ namespace addon {
       return ret;
     }
 
-    static inline void ADDONBASE_FreeSettings() { CAddon::m_createdAddon->FreeSettings(); }
+    static inline void ADDONBASE_FreeSettings(unsigned int elements, ADDON_StructSetting*** set)
+    {
+      if (elements == 0)
+        return;
+
+      for (unsigned int i = 0; i < elements; ++i)
+      {
+        if ((*set)[i]->type == CAddonSetting::SPIN)
+        {
+          for (unsigned int j = 0; j < (*set)[i]->entry_elements; ++j)
+          {
+            free((*set)[i]->entry[j]);
+          }
+          free((*set)[i]->entry);
+        }
+        free((*set)[i]->id);
+        free((*set)[i]->label);
+        free((*set)[i]);
+      }
+      free(*set);
+    }
 
     static inline ADDON_STATUS ADDONBASE_CreateInstance(int instanceType, const char* instanceID, KODI_HANDLE instance, KODI_HANDLE* addonInstance)
     {

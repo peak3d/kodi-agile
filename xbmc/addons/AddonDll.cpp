@@ -316,15 +316,15 @@ bool CAddonDll::LoadSettings()
     return false;
 
   ADDON_StructSetting** sSet;
-  std::vector<DllSetting> vSet;
+  std::vector<kodi::addon::CAddonSetting> vSet;
   unsigned entries = 0;
   try
   {
     if (m_interface.toAddon.GetSettings)
     {
       entries = m_interface.toAddon.GetSettings(&sSet);
-      DllUtils::StructToVec(entries, &sSet, &vSet);
-      m_interface.toAddon.FreeSettings();
+      kodi::addon::StructToVec(entries, &sSet, &vSet);
+      m_interface.toAddon.FreeSettings(entries, &sSet);
     }
   }
   catch (std::exception &e)
@@ -342,7 +342,7 @@ bool CAddonDll::LoadSettings()
 
     for (unsigned i=0; i < entries; i++)
     {
-       DllSetting& setting = vSet[i];
+       kodi::addon::CAddonSetting& setting = vSet[i];
        m_addonXmlDoc.RootElement()->InsertEndChild(MakeSetting(setting));
     }
     CAddon::SettingsFromXML(m_addonXmlDoc, true);
@@ -355,28 +355,28 @@ bool CAddonDll::LoadSettings()
   return true;
 }
 
-TiXmlElement CAddonDll::MakeSetting(DllSetting& setting) const
+TiXmlElement CAddonDll::MakeSetting(kodi::addon::CAddonSetting& setting) const
 {
   TiXmlElement node("setting");
 
-  switch (setting.type)
+  switch (setting.Type)
   {
-    case DllSetting::CHECK:
+    case kodi::addon::CAddonSetting::CHECK:
     {
-      node.SetAttribute("id", setting.id);
+      node.SetAttribute("id", setting.Id);
       node.SetAttribute("type", "bool");
-      node.SetAttribute("label", setting.label);
+      node.SetAttribute("label", setting.Label);
       break;
     }
-    case DllSetting::SPIN:
+    case kodi::addon::CAddonSetting::SPIN:
     {
-      node.SetAttribute("id", setting.id);
+      node.SetAttribute("id", setting.Id);
       node.SetAttribute("type", "enum");
-      node.SetAttribute("label", setting.label);
+      node.SetAttribute("label", setting.Label);
       std::string values;
-      for (unsigned int i = 0; i < setting.entry.size(); i++)
+      for (unsigned int i = 0; i < setting.Entries.size(); i++)
       {
-        values.append(setting.entry[i]);
+        values.append(setting.Entries[i]);
         values.append("|");
       }
       node.SetAttribute("values", values.c_str());

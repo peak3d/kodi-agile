@@ -1,8 +1,7 @@
 # Please also update bindings in ../../project/cmake/scripts/linux/Install.cmake
 # TODO: Cleanup file after autotools is gone
 
-BINDINGS =xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_addon_cpp_dll.h
-BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_addon_types.h
+BINDINGS =xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_addon_types.h
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_adsp_types.h
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_audiodec_types.h
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_audioenc_types.h

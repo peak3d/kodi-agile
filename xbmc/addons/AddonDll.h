@@ -79,7 +79,7 @@ namespace ADDON
     bool m_needsavedsettings;
 
     virtual ADDON_STATUS TransferSettings();
-    TiXmlElement MakeSetting(DllSetting& setting) const;
+    TiXmlElement MakeSetting(kodi::addon::CAddonSetting& setting) const;
 
     static void AddOnStatusCallback(void *userData, const ADDON_STATUS status, const char* msg);
     static bool AddOnGetSetting(void *userData, const char *settingName, void *settingValue);
