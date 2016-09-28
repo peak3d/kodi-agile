@@ -38,8 +38,8 @@ extern "C" {
 #endif
 
   ADDON_STATUS __declspec(dllexport) ADDON_Create(void *callbacks);
-  void         __declspec(dllexport) ADDON_Stop();
   void         __declspec(dllexport) ADDON_Destroy();
+  void         __declspec(dllexport) ADDON_Stop();
   ADDON_STATUS __declspec(dllexport) ADDON_GetStatus();
   bool         __declspec(dllexport) ADDON_HasSettings();
   unsigned int __declspec(dllexport) ADDON_GetSettings(ADDON_StructSetting ***sSet);

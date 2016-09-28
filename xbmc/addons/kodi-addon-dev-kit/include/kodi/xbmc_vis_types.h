@@ -23,8 +23,9 @@
   Common data structures shared between Kodi and Kodi's visualisations
  */
 
+#include "xbmc_addon_types.h"
+
 #include <cstddef>
-#include "xbmc_addon_dll.h"
 #include <string>
 #include <vector>
 

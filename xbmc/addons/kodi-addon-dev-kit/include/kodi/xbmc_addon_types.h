@@ -20,9 +20,27 @@
  *
  */
 
+#include <cstring>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
+#ifdef TARGET_WINDOWS
+#include <windows.h>
+#else
+#ifndef __cdecl
+#define __cdecl
+#endif
+#ifndef __declspec
+#define __declspec(X)
+#endif
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef void* KODI_HANDLE;
 
 typedef enum ADDON_INSTANCE_TYPE
 {
@@ -145,7 +163,234 @@ typedef enum eAudioChannel
   AUDIO_CH_MAX
 } eAudioChannel;
 
-#ifdef __cplusplus
-};
-#endif
+typedef struct sAddonToKodiFuncTable_Addon
+{
+  void* kodiInstance;
+} sAddonToKodiFuncTable_Addon;
 
+typedef struct sKodiToAddonFuncTable_Addon
+{
+  void (__cdecl* Destroy)();
+  void (__cdecl* Stop)();
+  ADDON_STATUS (__cdecl* GetStatus)();
+  bool (__cdecl* HasSettings)();
+  unsigned int (__cdecl* GetSettings)(ADDON_StructSetting ***sSet);
+  ADDON_STATUS (__cdecl* SetSetting)(const char *settingName, const void *settingValue);
+  void (__cdecl* FreeSettings)();
+  ADDON_STATUS (__cdecl* CreateInstance)(int instanceType, const char* instanceID, void* instance, void** addonInstance);
+  void (__cdecl* DestroyInstance)(int instanceType, void* instance);
+} sKodiToAddonFuncTable_Addon;
+
+typedef struct sFuncTable_Addon
+{
+  const char* libBasePath;  ///< Never, never change this!!!
+  sAddonToKodiFuncTable_Addon toKodi;
+  sKodiToAddonFuncTable_Addon toAddon;
+} sFuncTable_Addon;
+
+#ifdef __cplusplus
+namespace kodi {
+namespace addon {
+  //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  //
+  class IAddonInstance
+  {
+  public:
+    IAddonInstance(ADDON_INSTANCE_TYPE type) : m_type(type) {}
+    virtual ~IAddonInstance() { }
+
+    const ADDON_INSTANCE_TYPE m_type;
+  };
+  //
+  //=-----=------=------=------=------=------=------=------=------=------=-----=
+
+
+  //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Add-on settings handle class
+  //
+  class CAddonSetting
+  {
+  public:
+    enum SETTING_TYPE { NONE=0, CHECK, SPIN };
+
+    CAddonSetting(SETTING_TYPE type, std::string id, std::string label)
+      : Type(type),
+        Id(id),
+        Label(label),
+        Current(0)
+    {
+    }
+
+    CAddonSetting(const CAddonSetting &rhs) // copy constructor
+    {
+      Id = rhs.Id;
+      Label = rhs.Label;
+      Current = rhs.Current;
+      Type = rhs.Type;
+      for (unsigned int i = 0; i < rhs.Entries.size(); ++i)
+        Entries.push_back(rhs.Entries[i]);
+    }
+
+    void AddEntry(std::string label)
+    {
+      if (Label.empty() || Type != SPIN)
+        return;
+      Entries.push_back(Label);
+    }
+
+    // data members
+    SETTING_TYPE Type;
+    std::string Id;
+    std::string Label;
+    int Current;
+    std::vector<std::string> Entries;
+  };
+  //
+  //=-----=------=------=------=------=------=------=------=------=------=-----=
+
+
+  //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+  // Add-on main instance class.
+  //
+  class CAddon
+  {
+  public:
+    CAddon()
+    {
+      if (m_createdAddon != nullptr)
+        throw std::logic_error("kodi::addon::CAddon class creation called independent from add-on interface!");
+
+      m_instance->toAddon.Destroy = ADDONBASE_Destroy;
+      m_instance->toAddon.Stop = ADDONBASE_Stop;
+      m_instance->toAddon.GetStatus = ADDONBASE_GetStatus;
+      m_instance->toAddon.HasSettings = ADDONBASE_HasSettings;
+      m_instance->toAddon.GetSettings = ADDONBASE_GetSettings;
+      m_instance->toAddon.SetSetting = ADDONBASE_SetSetting;
+      m_instance->toAddon.FreeSettings = ADDONBASE_FreeSettings;
+      m_instance->toAddon.CreateInstance = ADDONBASE_CreateInstance;
+      m_instance->toAddon.DestroyInstance = ADDONBASE_DestroyInstance;
+    }
+    
+    virtual ADDON_STATUS Create() { return ADDON_STATUS_OK; }
+    virtual void Stop() { }
+    virtual ADDON_STATUS GetStatus() { return ADDON_STATUS_OK; }
+
+    virtual bool HasSettings() { return false; }
+    virtual bool GetSettings(std::vector<CAddonSetting>& settings) { return false; }
+    virtual ADDON_STATUS SetSetting(std::string& settingName, const void *settingValue) { return ADDON_STATUS_UNKNOWN; }
+    virtual void FreeSettings() { }
+    
+    virtual ADDON_STATUS CreateInstance(int instanceType, std::string instanceID, KODI_HANDLE instance, KODI_HANDLE& addonInstance) { return ADDON_STATUS_UNKNOWN; }
+    
+    static sFuncTable_Addon* m_instance;
+    static CAddon* m_createdAddon;
+
+  private:
+    static inline void ADDONBASE_Destroy() { delete CAddon::m_createdAddon; }
+
+    static inline void ADDONBASE_Stop() { CAddon::m_createdAddon->Stop(); }
+
+    static inline ADDON_STATUS ADDONBASE_GetStatus() { return CAddon::m_createdAddon->GetStatus(); }
+
+    static inline bool ADDONBASE_HasSettings() { return CAddon::m_createdAddon->HasSettings(); }
+
+    static inline unsigned int ADDONBASE_GetSettings(ADDON_StructSetting ***sSet)
+    {
+      std::vector<CAddonSetting> settings;
+      if (CAddon::m_createdAddon->GetSettings(settings))
+      {
+        *sSet = nullptr;
+        if (settings.empty())
+          return 0;
+
+        *sSet = (ADDON_StructSetting**)malloc(settings.size()*sizeof(ADDON_StructSetting*));
+        for(unsigned int i = 0;i < settings.size(); ++i)
+        {
+          (*sSet)[i] = nullptr;
+          (*sSet)[i] = (ADDON_StructSetting*)malloc(sizeof(ADDON_StructSetting));
+          (*sSet)[i]->id = nullptr;
+          (*sSet)[i]->label = nullptr;
+
+          if (!settings[i].Id.empty() && !settings[i].Label.empty())
+          {
+            (*sSet)[i]->id = strdup(settings[i].Id.c_str());
+            (*sSet)[i]->label = strdup(settings[i].Label.c_str());
+            (*sSet)[i]->type = settings[i].Type;
+            (*sSet)[i]->current = settings[i].Current;
+            (*sSet)[i]->entry_elements = 0;
+            (*sSet)[i]->entry = nullptr;
+            if (settings[i].Type == CAddonSetting::SPIN && !settings[i].Entries.empty())
+            {
+              (*sSet)[i]->entry = (char**)malloc(settings[i].Entries.size()*sizeof(char**));
+              for (unsigned int j = 0; j < settings[i].Entries.size(); ++j)
+              {
+                if (!settings[i].Entries[j].empty())
+                {
+                  (*sSet)[i]->entry[j] = strdup(settings[i].Entries[j].c_str());
+                  (*sSet)[i]->entry_elements++;
+                }
+              }
+            }
+          }
+        }
+
+        return settings.size();
+      }
+      return 0;
+    }
+
+    static inline ADDON_STATUS ADDONBASE_SetSetting(const char *settingName, const void *settingValue)
+    {
+      std::string name = settingName;
+      ADDON_STATUS ret = CAddon::m_createdAddon->SetSetting(name, settingValue);
+      std::strcpy((char*)settingName, name.c_str());
+      return ret;
+    }
+
+    static inline void ADDONBASE_FreeSettings() { CAddon::m_createdAddon->FreeSettings(); }
+
+    static inline ADDON_STATUS ADDONBASE_CreateInstance(int instanceType, const char* instanceID, KODI_HANDLE instance, KODI_HANDLE* addonInstance)
+    {
+      ADDON_STATUS status = CAddon::m_createdAddon->CreateInstance(instanceType, instanceID, instance, *addonInstance);
+      if (*addonInstance == nullptr)
+        throw std::logic_error("kodi::addon::CAddon CreateInstance returns a empty instance pointer!");
+      if (static_cast<::kodi::addon::IAddonInstance*>(*addonInstance)->m_type != instanceType)
+        throw std::logic_error("kodi::addon::CAddon CreateInstance with difference on given and returned instance type!");
+      return status;
+    }
+
+    static inline void ADDONBASE_DestroyInstance(int instanceType, KODI_HANDLE instance)
+    {
+      if (instance != CAddon::m_createdAddon)
+      {
+        if (static_cast<::kodi::addon::IAddonInstance*>(instance)->m_type == instanceType)
+          delete static_cast<::kodi::addon::IAddonInstance*>(instance);
+        else
+          throw std::logic_error("kodi::addon::CAddon DestroyInstance called with difference on given and present instance type!");
+      }
+    }
+  };
+  //
+  //=-----=------=------=------=------=------=------=------=------=------=-----=
+
+} /* namespace addon */
+} /* namespace kodi */
+} /* extern "C" */
+#endif /* __cplusplus */
+
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+// Add-on creation macro
+//
+// Used to define the needed static values one time on add-on
+//
+#define ADDONCREATOR(AddonClass) \
+  extern "C" __declspec(dllexport) ADDON_STATUS ADDON_Create(void* instance) \
+  { \
+    kodi::addon::CAddon::m_instance = static_cast<sFuncTable_Addon*>(instance); \
+    kodi::addon::CAddon::m_createdAddon = new AddonClass; \
+    return kodi::addon::CAddon::m_createdAddon->Create(); \
+  } \
+  sFuncTable_Addon* kodi::addon::CAddon::m_instance = nullptr; \
+  kodi::addon::CAddon* kodi::addon::CAddon::m_createdAddon = nullptr;
+//
+//=------=------=------=------=------=------=------=------=------=------=------=

@@ -23,6 +23,7 @@
 #include "DllAddon.h"
 #include "AddonManager.h"
 #include "addons/interfaces/AddonInterfaces.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/xbmc_addon_types.h"
 #include "utils/URIUtils.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"
@@ -67,6 +68,7 @@ namespace ADDON
     virtual bool LoadSettings();
     static uint32_t GetChildCount() { static uint32_t childCounter = 0; return childCounter++; }
     CAddonInterfaces* m_pHelpers;
+    sFuncTable_Addon m_interface;
     bool m_bIsChild;
     std::string m_parentLib;
 

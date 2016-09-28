@@ -38,9 +38,9 @@ CAddonDll::CAddonDll(AddonProps props)
 {
   m_initialized = false;
   m_pDll        = NULL;
-  m_pHelpers    = NULL;
   m_needsavedsettings = false;
   m_parentLib.clear();
+  memset(&m_interface, 0, sizeof(m_interface));
 }
 
 CAddonDll::CAddonDll(const CAddonDll &rhs)
@@ -49,9 +49,9 @@ CAddonDll::CAddonDll(const CAddonDll &rhs)
 {
   m_initialized       = rhs.m_initialized;
   m_pDll              = rhs.m_pDll;
-  m_pHelpers          = rhs.m_pHelpers;
   m_needsavedsettings = rhs.m_needsavedsettings;
   m_parentLib = rhs.m_parentLib;
+  memset(&m_interface, 0, sizeof(m_interface));
 }
 
 CAddonDll::~CAddonDll()
@@ -180,13 +180,14 @@ ADDON_STATUS CAddonDll::Create()
 
   /* Allocate the helper function class to allow crosstalk over
      helper libraries */
-  m_pHelpers = new CAddonInterfaces(this);
+  memset(&m_interface, 0, sizeof(m_interface));
+  m_interface.toKodi.kodiInstance = this;
 
   /* Call Create to make connections, initializing data or whatever is
      needed to become the AddOn running */
   try
   {
-    status = m_pDll->Create(m_pHelpers->GetCallbacks());
+    status = m_pDll->Create(&m_interface);
     if (status == ADDON_STATUS_OK)
     {
       m_initialized = true;
@@ -236,8 +237,9 @@ void CAddonDll::Stop()
       {
         strcpy(str_id, "###GetSavedSettings");
         sprintf (str_value, "%i", i);
-        ADDON_STATUS status = m_pDll->SetSetting((const char*)&str_id, (void*)&str_value);
-
+        ADDON_STATUS status = ADDON_STATUS_UNKNOWN;
+        if (m_interface.toAddon.SetSetting)
+          status = m_interface.toAddon.SetSetting((const char*)&str_id, (void*)&str_value);
         if (status == ADDON_STATUS_UNKNOWN)
           break;
 
@@ -245,15 +247,15 @@ void CAddonDll::Stop()
       }
       CAddon::SaveSettings();
     }
-    if (m_pDll)
+    if (m_interface.toAddon.Stop)
     {
-      m_pDll->Stop();
+      m_interface.toAddon.Stop();
       CLog::Log(LOGINFO, "ADDON: Dll Stopped - %s", Name().c_str());
     }
   }
   catch (std::exception &e)
   {
-    HandleException(e, "m_pDll->Stop");
+    HandleException(e, "m_interface.toAddon.Stop");
   }
 }
 
@@ -261,10 +263,12 @@ void CAddonDll::Destroy()
 {
   /* Unload library file */
   try
-  {
+  {      
     if (m_pDll)
     {
-      m_pDll->Destroy();
+      if (m_interface.toAddon.Destroy)
+        m_interface.toAddon.Destroy();
+
       m_pDll->Unload();
     }
   }
@@ -272,8 +276,7 @@ void CAddonDll::Destroy()
   {
     HandleException(e, "m_pDll->Unload");
   }
-  delete m_pHelpers;
-  m_pHelpers = NULL;
+
   if (m_pDll)
   {
     if (m_bIsChild)
@@ -294,11 +297,12 @@ ADDON_STATUS CAddonDll::GetStatus()
 {
   try
   {
-    return m_pDll->GetStatus();
+    if (m_interface.toAddon.GetStatus)
+      return m_interface.toAddon.GetStatus();
   }
   catch (std::exception &e)
   {
-    HandleException(e, "m_pDll->GetStatus()");
+    HandleException(e, "m_interface.toAddon.GetStatus()");
   }
   return ADDON_STATUS_UNKNOWN;
 }
@@ -316,13 +320,16 @@ bool CAddonDll::LoadSettings()
   unsigned entries = 0;
   try
   {
-    entries = m_pDll->GetSettings(&sSet);
-    DllUtils::StructToVec(entries, &sSet, &vSet);
-    m_pDll->FreeSettings();
+    if (m_interface.toAddon.GetSettings)
+    {
+      entries = m_interface.toAddon.GetSettings(&sSet);
+      DllUtils::StructToVec(entries, &sSet, &vSet);
+      m_interface.toAddon.FreeSettings();
+    }
   }
   catch (std::exception &e)
   {
-    HandleException(e, "m_pDll->GetSettings()");
+    HandleException(e, "m_interface.toAddon.GetSettings()");
     return false;
   }
 
@@ -433,18 +440,18 @@ ADDON_STATUS CAddonDll::TransferSettings()
                  type == "addon"      || type == "labelenum" ||
                  type == "fileenum" )
         {
-          status = m_pDll->SetSetting(id, (const char*) GetSetting(id).c_str());
+          status = m_interface.toAddon.SetSetting(id, (const char*) GetSetting(id).c_str());
         }
         else if (type == "enum"      || type =="integer" ||
                  type == "labelenum" || type == "rangeofnum")
         {
           int tmp = atoi(GetSetting(id).c_str());
-          status = m_pDll->SetSetting(id, (int*) &tmp);
+          status = m_interface.toAddon.SetSetting(id, (int*) &tmp);
         }
         else if (type == "bool")
         {
           bool tmp = (GetSetting(id) == "true") ? true : false;
-          status = m_pDll->SetSetting(id, (bool*) &tmp);
+          status = m_interface.toAddon.SetSetting(id, (bool*) &tmp);
         }
         else if (type == "rangeofnum" || type == "slider" ||
                  type == "number")
@@ -455,18 +462,18 @@ ADDON_STATUS CAddonDll::TransferSettings()
           if (option && strcmpi(option,"int") == 0)
           {
             tmpi = (int)floor(tmpf);
-            status = m_pDll->SetSetting(id, (int*) &tmpi);
+            status = m_interface.toAddon.SetSetting(id, (int*) &tmpi);
           }
           else
           {
-            status = m_pDll->SetSetting(id, (float*) &tmpf);
+            status = m_interface.toAddon.SetSetting(id, (float*) &tmpf);
           }
         }
         else
         {
           /* Log unknowns as an error, but go ahead and transfer the string */
           CLog::Log(LOGERROR, "Unknown setting type '%s' for %s", type.c_str(), Name().c_str());
-          status = m_pDll->SetSetting(id, (const char*) GetSetting(id).c_str());
+          status = m_interface.toAddon.SetSetting(id, (const char*) GetSetting(id).c_str());
         }
 
         if (status == ADDON_STATUS_NEED_RESTART)
@@ -491,11 +498,12 @@ ADDON_STATUS CAddonDll::CreateInstance(int instanceType, const char* instanceID,
 {
   try
   {
-    return m_pDll->CreateInstance(instanceType, instanceID, instance, addonInstance);
+    if (m_interface.toAddon.CreateInstance)
+      return m_interface.toAddon.CreateInstance(instanceType, instanceID, instance, addonInstance);
   }
   catch (std::exception &e)
   {
-    HandleException(e, "m_pDll->CreateInstance()");
+    HandleException(e, "m_interface.toAddon.CreateInstance()");
   }
   return ADDON_STATUS_UNKNOWN;
 }
@@ -504,11 +512,12 @@ void CAddonDll::DestroyInstance(int instanceType, void* instance)
 {
   try
   {
-    return m_pDll->DestroyInstance(instanceType, instance);
+    if (m_interface.toAddon.DestroyInstance)
+      return m_interface.toAddon.DestroyInstance(instanceType, instance);
   }
   catch (std::exception &e)
   {
-    HandleException(e, "m_pDll->DestroyInstance()");
+    HandleException(e, "m_interface.toAddon.DestroyInstance()");
   }
 }
 

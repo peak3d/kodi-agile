@@ -21,6 +21,8 @@
 #ifndef __PERIPHERAL_TYPES_H__
 #define __PERIPHERAL_TYPES_H__
 
+#include "xbmc_addon_types.h"
+
 #ifdef TARGET_WINDOWS
   #include <windows.h>
 #else

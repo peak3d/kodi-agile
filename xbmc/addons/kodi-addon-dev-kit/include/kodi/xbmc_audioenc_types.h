@@ -20,6 +20,8 @@
  *
  */
 
+#include "xbmc_addon_types.h"
+
 #ifdef TARGET_WINDOWS
 #include <windows.h>
 #else

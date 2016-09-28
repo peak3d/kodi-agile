@@ -19,6 +19,8 @@
  *
  */
 
+#include "xbmc_addon_types.h"
+
 #ifdef TARGET_WINDOWS
 #include <windows.h>
 #else
@@ -67,20 +69,25 @@ typedef struct sAddonInstance_ScreenSaver
   sKodiToAddonFuncTable_ScreenSaver toAddon;
 } sAddonInstance_ScreenSaver;
 
+
 #ifdef __cplusplus
 namespace kodi {
 namespace addon {
+//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 namespace screensaver {
 
-  class CAddon
+  class CAddon : public kodi::addon::IAddonInstance
   {
   public:
     CAddon(void* instance)
-      : m_instance(static_cast<sAddonInstance_ScreenSaver*>(instance))
+      : IAddonInstance(ADDON_INSTANCE_SCREENSAVER),
+        m_instance(static_cast<sAddonInstance_ScreenSaver*>(instance))
     {
       m_instance->toAddon.Start = ADDON_Start;
       m_instance->toAddon.Render = ADDON_Render;
     }
+    virtual ~CAddon() { }
 
     inline void* Device() { return m_instance->props.device; }
     inline int X() { return m_instance->props.x; }
