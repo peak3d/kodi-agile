@@ -4810,7 +4810,6 @@
 		EC720A8D155091BB00FFD782 /* ilog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ilog.cpp; path = commons/ilog.cpp; sourceTree = "<group>"; };
 		EC720A8E155091BB00FFD782 /* ilog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ilog.h; path = commons/ilog.h; sourceTree = "<group>"; };
 		EDE8C70C1C7F615800A86ECC /* NOTE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = NOTE; path = "kodi-addon-dev-kit/include/NOTE"; sourceTree = "<group>"; };
-		EDE8C70D1C7F618500A86ECC /* kodi_adsp_dll.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kodi_adsp_dll.h; path = "kodi-addon-dev-kit/include/kodi/kodi_adsp_dll.h"; sourceTree = "<group>"; };
 		EDE8C70E1C7F618500A86ECC /* kodi_adsp_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kodi_adsp_types.h; path = "kodi-addon-dev-kit/include/kodi/kodi_adsp_types.h"; sourceTree = "<group>"; };
 		EDE8C7101C7F618500A86ECC /* kodi_audiodec_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kodi_audiodec_types.h; path = "kodi-addon-dev-kit/include/kodi/kodi_audiodec_types.h"; sourceTree = "<group>"; };
 		EDE8C7111C7F618500A86ECC /* kodi_audioengine_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kodi_audioengine_types.h; path = "kodi-addon-dev-kit/include/kodi/kodi_audioengine_types.h"; sourceTree = "<group>"; };
@@ -9101,7 +9100,6 @@
 		EDE8C70B1C7F610000A86ECC /* kodi */ = {
 			isa = PBXGroup;
 			children = (
-				EDE8C70D1C7F618500A86ECC /* kodi_adsp_dll.h */,
 				EDE8C70E1C7F618500A86ECC /* kodi_adsp_types.h */,
 				EDE8C7101C7F618500A86ECC /* kodi_audiodec_types.h */,
 				EDE8C7111C7F618500A86ECC /* kodi_audioengine_types.h */,

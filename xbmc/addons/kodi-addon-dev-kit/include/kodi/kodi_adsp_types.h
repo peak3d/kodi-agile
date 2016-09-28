@@ -69,7 +69,7 @@
 
 
 /*!
- * @file kodi_adsp_dll.h
+ * @file kodi_adsp_types.h
  * @section sec1 Basic audio dsp addon interface description
  * @author Team Kodi
  * @date 10. May 2014
