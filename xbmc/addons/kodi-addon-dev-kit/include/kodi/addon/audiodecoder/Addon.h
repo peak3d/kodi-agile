@@ -19,7 +19,7 @@
  *
  */
 
-#include "xbmc_addon_types.h"
+#include "../AddonBase.h"
 #include <stdint.h>
 #include <string>
 

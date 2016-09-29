@@ -24,7 +24,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "kodi_adsp_types.h"
+#include "addon/adsp/Addon.h"
 #include "libXBMC_addon.h"
 
 typedef void* ADSPHANDLE;

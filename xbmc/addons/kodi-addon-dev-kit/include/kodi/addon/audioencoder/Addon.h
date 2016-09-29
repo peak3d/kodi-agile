@@ -20,7 +20,7 @@
  *
  */
 
-#include "xbmc_addon_types.h"
+#include "../AddonBase.h"
 
 #ifdef TARGET_WINDOWS
 #include <windows.h>

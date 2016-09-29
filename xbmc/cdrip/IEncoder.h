@@ -21,7 +21,7 @@
 
 #include <string>
 #include <stdint.h>
-#include "addons/kodi-addon-dev-kit/include/kodi/xbmc_audioenc_types.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/addon/audioencoder/Addon.h"
 
 class IEncoder
 {

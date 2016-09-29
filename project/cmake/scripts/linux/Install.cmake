@@ -145,11 +145,14 @@ install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/kod
               ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/libKODI_guilib.h
               ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/libXBMC_addon.h
               ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/libXBMC_codec.h
-              ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_addon_types.h
               ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_codec_types.h
               ${CORE_SOURCE_DIR}/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxPacket.h
               ${CORE_SOURCE_DIR}/xbmc/filesystem/IFileTypes.h
         DESTINATION ${includedir}/${APP_NAME_LC}
+        COMPONENT kodi-addon-dev)
+
+install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/addon/AddonBase.h
+        DESTINATION ${includedir}/${APP_NAME_LC}/addon
         COMPONENT kodi-addon-dev)
 
 # Install kodi-addon-dev add-on bindings
@@ -169,11 +172,23 @@ install(FILES ${CMAKE_BINARY_DIR}/${CORE_BUILD_DIR}/scripts/${APP_NAME}Config.cm
         DESTINATION ${datarootdir}/${APP_NAME_LC}/cmake
         COMPONENT kodi-addon-dev)
 
+# Install kodi-audio-dsp-dev
+install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/addon/adsp/Addon.h
+        DESTINATION ${includedir}/${APP_NAME_LC}/addon/adsp
+        COMPONENT kodi-audio-dsp-dev)
+
+# Install kodi-audio-enc-dev
+install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/addon/audioencoder/Addon.h
+        DESTINATION ${includedir}/${APP_NAME_LC}/addon/audioencoder
+        COMPONENT kodi-audio-enc-dev)
+
+# Install kodi-audio-dec-dev
+install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/addon/audiodecoder/Addon.h
+        DESTINATION ${includedir}/${APP_NAME_LC}/addon/audiodecoder
+        COMPONENT kodi-audio-dec-dev)
+
 # Install kodi-audio-dev
 install(FILES ${CORE_SOURCE_DIR}/xbmc/cores/AudioEngine/Utils/AEChannelData.h
-              ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_adsp_types.h
-              ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_audiodec_types.h
-              ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_audioenc_types.h
               ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_audioengine_types.h
         DESTINATION ${includedir}/${APP_NAME_LC}
         COMPONENT kodi-audio-dev)
@@ -266,29 +281,29 @@ if(ENABLE_EVENTCLIENTS)
 endif()
 
 # Install kodi-inputstream-dev
-install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_inputstream_types.h
-        DESTINATION ${includedir}/${APP_NAME_LC}
+install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/addon/inputstream/Addon.h
+        DESTINATION ${includedir}/${APP_NAME_LC}/addon/inputstream
         COMPONENT kodi-inputstream-dev)
 
 # Install kodi-pvr-dev
 install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_epg_types.h
-              ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h
-        DESTINATION ${includedir}/${APP_NAME_LC}
+              ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/addon/pvr/Addon.h
+        DESTINATION ${includedir}/${APP_NAME_LC}/addon/kodi
         COMPONENT kodi-pvr-dev)
 
 # Install kodi-screensaver-dev
-install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_scr_types.h
-        DESTINATION ${includedir}/${APP_NAME_LC}
+install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/addon/screensaver/Addon.h
+        DESTINATION ${includedir}/${APP_NAME_LC}/addon/screensaver
         COMPONENT kodi-screensaver-dev)
 
 # Install kodi-visualization-dev
-install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_vis_types.h
-        DESTINATION ${includedir}/${APP_NAME_LC}
+install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/addon/visualization/Addon.h
+        DESTINATION ${includedir}/${APP_NAME_LC}/addon/visualization
         COMPONENT kodi-visualization-dev)
 
 # Install kodi-peripheral-dev
-install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_peripheral_types.h
-        DESTINATION ${includedir}/${APP_NAME_LC}
+install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/addon/peripheral/Addon.h
+        DESTINATION ${includedir}/${APP_NAME_LC}/addon/peripheral
         COMPONENT kodi-peripheral-dev)
 
 # Install XBT skin files

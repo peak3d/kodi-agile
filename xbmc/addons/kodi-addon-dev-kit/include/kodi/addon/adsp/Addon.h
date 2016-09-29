@@ -38,7 +38,7 @@
 #include <cstddef>
 #include <string>
 
-#include "xbmc_addon_types.h"
+#include "../AddonBase.h"
 
 #undef ATTRIBUTE_PACKED
 #undef PRAGMA_PACK_BEGIN
@@ -69,7 +69,7 @@
 
 
 /*!
- * @file kodi_adsp_types.h
+ * @file Addon.h
  * @section sec1 Basic audio dsp addon interface description
  * @author Team Kodi
  * @date 10. May 2014

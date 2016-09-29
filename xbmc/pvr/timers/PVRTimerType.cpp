@@ -18,7 +18,7 @@
  *
  */
 
-#include "addons/kodi-addon-dev-kit/include/kodi/xbmc_pvr_types.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/addon/pvr/Addon.h"
 #include "guilib/LocalizeStrings.h"
 #include "pvr/timers/PVRTimerType.h"
 #include "pvr/addons/PVRClients.h"

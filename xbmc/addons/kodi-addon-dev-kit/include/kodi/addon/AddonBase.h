@@ -1,4 +1,4 @@
-#pragma once
+  #pragma once
 
 /*
  *      Copyright (C) 2005-2015 Team Kodi
@@ -283,13 +283,13 @@ namespace addon {
   //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   // Add-on main instance class.
   //
-  class CAddon
+  class CAddonBase
   {
   public:
-    CAddon()
+    CAddonBase()
     {
       if (m_createdAddon != nullptr)
-        throw std::logic_error("kodi::addon::CAddon class creation called independent from add-on interface!");
+        throw std::logic_error("kodi::addon::CAddonBase class creation called independent from add-on interface!");
 
       m_instance->toAddon.Destroy = ADDONBASE_Destroy;
       m_instance->toAddon.Stop = ADDONBASE_Stop;
@@ -313,21 +313,25 @@ namespace addon {
     virtual ADDON_STATUS CreateInstance(int instanceType, std::string instanceID, KODI_HANDLE instance, KODI_HANDLE& addonInstance) { return ADDON_STATUS_UNKNOWN; }
     
     static sFuncTable_Addon* m_instance;
-    static CAddon* m_createdAddon;
+    static CAddonBase* m_createdAddon;
 
   private:
-    static inline void ADDONBASE_Destroy() { delete CAddon::m_createdAddon; }
+    static inline void ADDONBASE_Destroy()
+    {
+      delete CAddonBase::m_createdAddon;
+      CAddonBase::m_createdAddon = nullptr;
+    }
 
-    static inline void ADDONBASE_Stop() { CAddon::m_createdAddon->Stop(); }
+    static inline void ADDONBASE_Stop() { CAddonBase::m_createdAddon->Stop(); }
 
-    static inline ADDON_STATUS ADDONBASE_GetStatus() { return CAddon::m_createdAddon->GetStatus(); }
+    static inline ADDON_STATUS ADDONBASE_GetStatus() { return CAddonBase::m_createdAddon->GetStatus(); }
 
-    static inline bool ADDONBASE_HasSettings() { return CAddon::m_createdAddon->HasSettings(); }
+    static inline bool ADDONBASE_HasSettings() { return CAddonBase::m_createdAddon->HasSettings(); }
 
     static inline unsigned int ADDONBASE_GetSettings(ADDON_StructSetting ***sSet)
     {
       std::vector<CAddonSetting> settings;
-      if (CAddon::m_createdAddon->GetSettings(settings))
+      if (CAddonBase::m_createdAddon->GetSettings(settings))
       {
         *sSet = nullptr;
         if (settings.empty())
@@ -372,7 +376,7 @@ namespace addon {
     static inline ADDON_STATUS ADDONBASE_SetSetting(const char *settingName, const void *settingValue)
     {
       std::string name = settingName;
-      ADDON_STATUS ret = CAddon::m_createdAddon->SetSetting(name, settingValue);
+      ADDON_STATUS ret = CAddonBase::m_createdAddon->SetSetting(name, settingValue);
       std::strcpy((char*)settingName, name.c_str());
       return ret;
     }
@@ -401,22 +405,22 @@ namespace addon {
 
     static inline ADDON_STATUS ADDONBASE_CreateInstance(int instanceType, const char* instanceID, KODI_HANDLE instance, KODI_HANDLE* addonInstance)
     {
-      ADDON_STATUS status = CAddon::m_createdAddon->CreateInstance(instanceType, instanceID, instance, *addonInstance);
+      ADDON_STATUS status = CAddonBase::m_createdAddon->CreateInstance(instanceType, instanceID, instance, *addonInstance);
       if (*addonInstance == nullptr)
-        throw std::logic_error("kodi::addon::CAddon CreateInstance returns a empty instance pointer!");
+        throw std::logic_error("kodi::addon::CAddonBase CreateInstance returns a empty instance pointer!");
       if (static_cast<::kodi::addon::IAddonInstance*>(*addonInstance)->m_type != instanceType)
-        throw std::logic_error("kodi::addon::CAddon CreateInstance with difference on given and returned instance type!");
+        throw std::logic_error("kodi::addon::CAddonBase CreateInstance with difference on given and returned instance type!");
       return status;
     }
 
     static inline void ADDONBASE_DestroyInstance(int instanceType, KODI_HANDLE instance)
     {
-      if (instance != CAddon::m_createdAddon)
+      if (instance != CAddonBase::m_createdAddon)
       {
         if (static_cast<::kodi::addon::IAddonInstance*>(instance)->m_type == instanceType)
           delete static_cast<::kodi::addon::IAddonInstance*>(instance);
         else
-          throw std::logic_error("kodi::addon::CAddon DestroyInstance called with difference on given and present instance type!");
+          throw std::logic_error("kodi::addon::CAddonBase DestroyInstance called with difference on given and present instance type!");
       }
     }
   };
@@ -436,11 +440,11 @@ namespace addon {
 #define ADDONCREATOR(AddonClass) \
   extern "C" __declspec(dllexport) ADDON_STATUS ADDON_Create(void* instance) \
   { \
-    kodi::addon::CAddon::m_instance = static_cast<sFuncTable_Addon*>(instance); \
-    kodi::addon::CAddon::m_createdAddon = new AddonClass; \
-    return kodi::addon::CAddon::m_createdAddon->Create(); \
+    kodi::addon::CAddonBase::m_instance = static_cast<sFuncTable_Addon*>(instance); \
+    kodi::addon::CAddonBase::m_createdAddon = new AddonClass; \
+    return kodi::addon::CAddonBase::m_createdAddon->Create(); \
   } \
-  sFuncTable_Addon* kodi::addon::CAddon::m_instance = nullptr; \
-  kodi::addon::CAddon* kodi::addon::CAddon::m_createdAddon = nullptr;
+  sFuncTable_Addon* kodi::addon::CAddonBase::m_instance = nullptr; \
+  kodi::addon::CAddonBase* kodi::addon::CAddonBase::m_createdAddon = nullptr;
 //
 //=------=------=------=------=------=------=------=------=------=------=------=

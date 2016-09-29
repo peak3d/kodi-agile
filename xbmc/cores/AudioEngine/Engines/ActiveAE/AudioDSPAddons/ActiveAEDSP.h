@@ -337,7 +337,7 @@ namespace ActiveAE
      * @return True if the dsp addon has any menu hooks, false otherwise.
      * @note The main usage for this method is to have bigger modifiable addon setting dialogs which make the usage of
      * standard addon settings dialog as option to it
-     * see kodi_adsp_types.h for available types
+     * see addon/adsp/Addon.h for available types
      */
     bool HaveMenuHooks(AE_DSP_MENUHOOK_CAT cat, int iAddonId = -1);
 
@@ -349,7 +349,7 @@ namespace ActiveAE
      * @return True if the hooks were added successfully (if any), false otherwise.
      * @note The main usage for this method is to have bigger modifiable addon setting dialogs, the basic addon settings dialog
      * can't be opened with it (is only in the menu list from ProcessMenuHooks)
-     * see kodi_adsp_types.h for available types
+     * see addon/adsp/Addon.h for available types
      */
     bool GetMenuHooks(int iDSPAddonID, AE_DSP_MENUHOOK_CAT cat, AE_DSP_MENUHOOKS &hooks);
   //@}

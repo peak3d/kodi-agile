@@ -19,7 +19,7 @@
  */
 
 #include "Translators.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/xbmc_addon_types.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/addon/AddonBase.h"
 
 extern "C" {
 namespace kodi {

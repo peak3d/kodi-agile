@@ -23,7 +23,7 @@
   Common data structures shared between Kodi and Kodi's visualisations
  */
 
-#include "xbmc_addon_types.h"
+#include "../AddonBase.h"
 
 #include <cstddef>
 #include <string>
