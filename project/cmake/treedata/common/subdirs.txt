@@ -1,6 +1,7 @@
 xbmc                                            xbmc
 xbmc/addons                                     addons
 xbmc/addons/interfaces                          addonsBinaryInterfaces
+xbmc/addons/interfaces/kodi                     addonInterface_kodi
 xbmc/addons/interfaces/Addon                    addonInterface_Addon
 xbmc/addons/interfaces/AudioDSP                 addonInterface_AudioDSP
 xbmc/addons/interfaces/AudioEngine              addonInterface_AudioEngine

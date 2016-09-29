@@ -49,7 +49,6 @@ CAddonCallbacksAddon::CAddonCallbacksAddon(CAddon* addon)
     m_callbacks(new CB_AddOnLib)
 {
   /* write XBMC addon-on specific add-on function addresses to the callback table */
-  m_callbacks->QueueNotification  = QueueNotification;
   m_callbacks->WakeOnLan          = WakeOnLan;
   m_callbacks->GetSetting         = GetAddonSetting;
   m_callbacks->TranslateSpecialProtocol = TranslateSpecialProtocol;
@@ -91,45 +90,6 @@ CAddonCallbacksAddon::~CAddonCallbacksAddon()
 {
   /* delete the callback table */
   delete m_callbacks;
-}
-
-void CAddonCallbacksAddon::QueueNotification(void *addonData, const queue_msg_t type, const char *strMessage)
-{
-  CAddonInterfaces* addon = (CAddonInterfaces*) addonData;
-  if (addon == NULL || strMessage == NULL)
-  {
-    CLog::Log(LOGERROR, "CAddonCallbacksAddon - %s - called with a null pointer", __FUNCTION__);
-    return;
-  }
-
-  CAddonCallbacksAddon* addonHelper = static_cast<CAddonCallbacksAddon*>(addon->AddOnLib_GetHelper());
-
-  try
-  {
-    switch (type)
-    {
-      case QUEUE_WARNING:
-        CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Warning, addonHelper->m_addon->Name(), strMessage, 3000, true);
-        CLog::Log(LOGDEBUG, "CAddonCallbacksAddon - %s - %s - Warning Message: '%s'", __FUNCTION__, addonHelper->m_addon->Name().c_str(), strMessage);
-        break;
-
-      case QUEUE_ERROR:
-        CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Error, addonHelper->m_addon->Name(), strMessage, 3000, true);
-        CLog::Log(LOGDEBUG, "CAddonCallbacksAddon - %s - %s - Error Message : '%s'", __FUNCTION__, addonHelper->m_addon->Name().c_str(), strMessage);
-        break;
-
-      case QUEUE_INFO:
-      default:
-        CGUIDialogKaiToast::QueueNotification(CGUIDialogKaiToast::Info, addonHelper->m_addon->Name(), strMessage, 3000, false);
-        CLog::Log(LOGDEBUG, "CAddonCallbacksAddon - %s - %s - Info Message : '%s'", __FUNCTION__, addonHelper->m_addon->Name().c_str(), strMessage);
-        break;
-    }
-  }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CAddonCallbacksAddon - %s - exception '%s' caught in call in add-on '%s'. please contact the developer of this addon: %s",
-        __FUNCTION__, e.what(), addonHelper->m_addon->Name().c_str(), addonHelper->m_addon->Author().c_str());
-  }
 }
 
 bool CAddonCallbacksAddon::WakeOnLan(const char *mac)

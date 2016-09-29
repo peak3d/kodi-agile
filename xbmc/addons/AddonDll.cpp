@@ -29,6 +29,11 @@
 #include "dialogs/GUIDialogOK.h"
 #include "utils/XMLUtils.h"
 
+/*
+ * Standard addon interface function includes
+ */
+#include "addons/interfaces/kodi/General.h"
+
 namespace ADDON
 {
 
@@ -180,9 +185,8 @@ ADDON_STATUS CAddonDll::Create()
 
   /* Allocate the helper function class to allow crosstalk over
      helper libraries */
-  memset(&m_interface, 0, sizeof(m_interface));
-  m_interface.toKodi.kodiInstance = this;
-  m_interface.toKodi.Log = addon_log_msg;
+  if (!InitInterfaceFunctions())
+    return ADDON_STATUS_PERMANENT_FAILURE;
 
   /* Call Create to make connections, initializing data or whatever is
      needed to become the AddOn running */
@@ -271,6 +275,8 @@ void CAddonDll::Destroy()
         m_interface.toAddon.Destroy();
 
       m_pDll->Unload();
+
+      DeInitInterfaceFunctions();
     }
   }
   catch (std::exception &e)
@@ -514,7 +520,7 @@ void CAddonDll::DestroyInstance(int instanceType, void* instance)
   try
   {
     if (m_interface.toAddon.DestroyInstance)
-      return m_interface.toAddon.DestroyInstance(instanceType, instance);
+      m_interface.toAddon.DestroyInstance(instanceType, instance);
   }
   catch (std::exception &e)
   {
@@ -527,6 +533,21 @@ void CAddonDll::HandleException(std::exception &e, const char* context)
   m_initialized = false;
   m_pDll->Unload();
   CLog::Log(LOGERROR, "ADDON: Dll %s, throws an exception '%s' during %s. Contact developer '%s' with bug reports", Name().c_str(), e.what(), context, Author().c_str());
+}
+
+bool CAddonDll::InitInterfaceFunctions()
+{
+  memset(&m_interface, 0, sizeof(m_interface));
+  m_interface.toKodi.kodiInstance = this;
+  m_interface.toKodi.Log = addon_log_msg;
+  kodi::ADDON_General::Init(&m_interface);
+
+  return true;
+}
+
+void CAddonDll::DeInitInterfaceFunctions()
+{
+  kodi::ADDON_General::DeInit(&m_interface);
 }
 
 void CAddonDll::addon_log_msg(void* kodiInstance, const int addonLogLevel, const char* strMessage)

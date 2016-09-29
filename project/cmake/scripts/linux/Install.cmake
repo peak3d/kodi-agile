@@ -138,7 +138,8 @@ install(PROGRAMS ${CMAKE_BINARY_DIR}/${CORE_BUILD_DIR}/texturepacker/TexturePack
         COMPONENT kodi-tools-texturepacker)
 
 # Install kodi-addon-dev headers
-install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_vfs_types.h
+install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/General.h
+              ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_vfs_types.h
               ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_vfs_utils.hpp
               ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/libKODI_adsp.h
               ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/libKODI_audioengine.h

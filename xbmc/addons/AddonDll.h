@@ -84,6 +84,9 @@ namespace ADDON
     virtual ADDON_STATUS TransferSettings();
     TiXmlElement MakeSetting(kodi::addon::CAddonSetting& setting) const;
 
+    bool InitInterfaceFunctions();
+    void DeInitInterfaceFunctions();
+
     static void AddOnStatusCallback(void *userData, const ADDON_STATUS status, const char* msg);
     static bool AddOnGetSetting(void *userData, const char *settingName, void *settingValue);
     static void AddOnOpenSettings(const char *url, bool bReload);

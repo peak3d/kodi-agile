@@ -164,10 +164,13 @@ typedef enum eAudioChannel
   AUDIO_CH_MAX
 } eAudioChannel;
 
+struct sAddonToKodiFuncTable_kodi;
+
 typedef struct sAddonToKodiFuncTable_Addon
 {
   void* kodiInstance;
   void (*Log)(void *addonData, const int loglevel, const char *msg);
+  sAddonToKodiFuncTable_kodi* kodi;
 } sAddonToKodiFuncTable_Addon;
 
 typedef struct sKodiToAddonFuncTable_Addon

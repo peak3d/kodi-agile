@@ -85,23 +85,12 @@ typedef struct AddonCB
   KODIPeripheralLib_UnRegisterMe    PeripheralLib_UnRegisterMe;
 } AddonCB;
 
-namespace ADDON
-{
-  typedef enum queue_msg
-  {
-    QUEUE_INFO,
-    QUEUE_WARNING,
-    QUEUE_ERROR
-  } queue_msg_t;
-}
-
 namespace KodiAPI
 {
 namespace AddOn
 {
 typedef struct CB_AddOn
 {
-  void (*QueueNotification)(void *addonData, const ADDON::queue_msg_t type, const char *msg);
   bool (*WakeOnLan)(const char* mac);
   bool (*GetSetting)(void *addonData, const char *settingName, void *settingValue);
   char* (*TranslateSpecialProtocol)(const char *strSource);
@@ -189,21 +178,6 @@ namespace ADDON
     char *TranslateSpecialProtocol(const char *source)
     {
       return m_Callbacks->TranslateSpecialProtocol(source);
-    }
-
-    /*!
-     * @brief Queue a notification in the GUI.
-     * @param type The message type.
-     * @param format The format of the message to pass to display in XBMC.
-     */
-    void QueueNotification(const queue_msg_t type, const char *format, ... )
-    {
-      char buffer[16384];
-      va_list args;
-      va_start (args, format);
-      vsprintf (buffer, format, args);
-      va_end (args);
-      m_Callbacks->QueueNotification(m_Handle->addonData, type, buffer);
     }
 
     /*!
