@@ -182,6 +182,7 @@ ADDON_STATUS CAddonDll::Create()
      helper libraries */
   memset(&m_interface, 0, sizeof(m_interface));
   m_interface.toKodi.kodiInstance = this;
+  m_interface.toKodi.Log = addon_log_msg;
 
   /* Call Create to make connections, initializing data or whatever is
      needed to become the AddOn running */
@@ -526,6 +527,46 @@ void CAddonDll::HandleException(std::exception &e, const char* context)
   m_initialized = false;
   m_pDll->Unload();
   CLog::Log(LOGERROR, "ADDON: Dll %s, throws an exception '%s' during %s. Contact developer '%s' with bug reports", Name().c_str(), e.what(), context, Author().c_str());
+}
+
+void CAddonDll::addon_log_msg(void* kodiInstance, const int addonLogLevel, const char* strMessage)
+{
+  CAddonDll* addon = static_cast<CAddonDll*>(kodiInstance);
+  if (addon == nullptr)
+  {
+    CLog::Log(LOGERROR, "addon_log_msg(...) called with empty kodi instance pointer");
+    return;
+  }
+
+  int logLevel = LOGNONE;
+  switch (addonLogLevel)
+  {
+    case LOG_FATAL:
+      logLevel = LOGFATAL;
+      break;
+    case LOG_SEVERE:
+      logLevel = LOGSEVERE;
+      break;
+    case LOG_ERROR:
+      logLevel = LOGERROR;
+      break;
+    case LOG_WARNING:
+      logLevel = LOGWARNING;
+      break;
+    case LOG_NOTICE:
+      logLevel = LOGNOTICE;
+      break;
+    case LOG_INFO:
+      logLevel = LOGINFO;
+      break;
+    case LOG_DEBUG:
+      logLevel = LOGDEBUG;
+      break;
+    default:
+      break;
+  }
+
+  CLog::Log(logLevel, "AddOnLog: %s: %s", addon->Name().c_str(), strMessage);
 }
 
 }; /* namespace ADDON */

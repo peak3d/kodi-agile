@@ -43,19 +43,6 @@ typedef intptr_t      ssize_t;
 #endif // !_SSIZE_T_DEFINED
 #endif
 
-#ifdef LOG_DEBUG
-#undef LOG_DEBUG
-#endif
-#ifdef LOG_INFO
-#undef LOG_INFO
-#endif
-#ifdef LOG_NOTICE
-#undef LOG_NOTICE
-#endif
-#ifdef LOG_ERROR
-#undef LOG_ERROR
-#endif
-
 /* current addon API version */
 #define KODI_ADDON_API_VERSION "1.0.0"
 
@@ -100,14 +87,6 @@ typedef struct AddonCB
 
 namespace ADDON
 {
-  typedef enum addon_log
-  {
-    LOG_DEBUG,
-    LOG_INFO,
-    LOG_NOTICE,
-    LOG_ERROR
-  } addon_log_t;
-
   typedef enum queue_msg
   {
     QUEUE_INFO,
@@ -122,7 +101,6 @@ namespace AddOn
 {
 typedef struct CB_AddOn
 {
-  void (*Log)(void *addonData, const ADDON::addon_log_t loglevel, const char *msg);
   void (*QueueNotification)(void *addonData, const ADDON::queue_msg_t type, const char *msg);
   bool (*WakeOnLan)(const char* mac);
   bool (*GetSetting)(void *addonData, const char *settingName, void *settingValue);
@@ -190,21 +168,6 @@ namespace ADDON
         fprintf(stderr, "libXBMC_addon-ERROR: AddOnLib_RegisterMe can't get callback table from Kodi !!!\n");
     
       return m_Callbacks != nullptr;
-    }
-
-    /*!
-     * @brief Add a message to XBMC's log.
-     * @param loglevel The log level of the message.
-     * @param format The format of the message to pass to XBMC.
-     */
-    void Log(const addon_log_t loglevel, const char *format, ... )
-    {
-      char buffer[16384];
-      va_list args;
-      va_start (args, format);
-      vsprintf (buffer, format, args);
-      va_end (args);
-      m_Callbacks->Log(m_Handle->addonData, loglevel, buffer);
     }
 
     /*!

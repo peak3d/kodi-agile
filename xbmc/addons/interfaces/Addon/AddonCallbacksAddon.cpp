@@ -49,7 +49,6 @@ CAddonCallbacksAddon::CAddonCallbacksAddon(CAddon* addon)
     m_callbacks(new CB_AddOnLib)
 {
   /* write XBMC addon-on specific add-on function addresses to the callback table */
-  m_callbacks->Log                = AddOnLog;
   m_callbacks->QueueNotification  = QueueNotification;
   m_callbacks->WakeOnLan          = WakeOnLan;
   m_callbacks->GetSetting         = GetAddonSetting;
@@ -92,47 +91,6 @@ CAddonCallbacksAddon::~CAddonCallbacksAddon()
 {
   /* delete the callback table */
   delete m_callbacks;
-}
-
-void CAddonCallbacksAddon::AddOnLog(void *addonData, const addon_log_t addonLogLevel, const char *strMessage)
-{
-  CAddonInterfaces* addon = (CAddonInterfaces*) addonData;
-  if (addon == NULL || strMessage == NULL)
-  {
-    CLog::Log(LOGERROR, "CAddonCallbacksAddon - %s - called with a null pointer", __FUNCTION__);
-    return;
-  }
-
-  CAddonCallbacksAddon* addonHelper = static_cast<CAddonCallbacksAddon*>(addon->AddOnLib_GetHelper());
-
-  try
-  {
-    int xbmcLogLevel = LOGNONE;
-    switch (addonLogLevel)
-    {
-      case LOG_ERROR:
-        xbmcLogLevel = LOGERROR;
-        break;
-      case LOG_INFO:
-        xbmcLogLevel = LOGINFO;
-        break;
-      case LOG_NOTICE:
-        xbmcLogLevel = LOGNOTICE;
-        break;
-      case LOG_DEBUG:
-      default:
-        xbmcLogLevel = LOGDEBUG;
-        break;
-    }
-
-    std::string strXbmcMessage = StringUtils::Format("AddOnLog: %s: %s", addonHelper->m_addon->Name().c_str(), strMessage);
-    CLog::Log(xbmcLogLevel, "%s", strXbmcMessage.c_str());
-  }
-  catch (std::exception &e)
-  {
-    CLog::Log(LOGERROR, "CAddonCallbacksAddon - %s - exception '%s' caught in call in add-on '%s'. please contact the developer of this addon: %s",
-        __FUNCTION__, e.what(), addonHelper->m_addon->Name().c_str(), addonHelper->m_addon->Author().c_str());
-  }
 }
 
 void CAddonCallbacksAddon::QueueNotification(void *addonData, const queue_msg_t type, const char *strMessage)

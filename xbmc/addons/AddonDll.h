@@ -62,6 +62,9 @@ namespace ADDON
     ADDON_STATUS CreateInstance(int instanceType, const char* instanceID, void* instance, void** addonInstance);
     void DestroyInstance(int instanceType, void* instance);
 
+    // addon to kodi callbacks
+    static void addon_log_msg(void* kodiInstance, const int addonLogLevel, const char* strMessage);
+
   protected:
     void HandleException(std::exception &e, const char* context);
     bool Initialized() { return m_initialized; }

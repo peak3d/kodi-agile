@@ -20,6 +20,7 @@
  *
  */
 
+#include <stdarg.h>     /* va_list, va_start, va_arg, va_end */
 #include <cstring>
 #include <stdexcept>
 #include <string>
@@ -54,7 +55,7 @@ typedef enum ADDON_INSTANCE_TYPE
   ADDON_INSTANCE_VISUALIZATION = 8,
 } ADDON_INSTANCE_TYPE;
 
-enum ADDON_STATUS
+typedef enum ADDON_STATUS
 {
   ADDON_STATUS_OK,
   ADDON_STATUS_LOST_CONNECTION,
@@ -64,9 +65,9 @@ enum ADDON_STATUS
   ADDON_STATUS_NEED_SAVEDSETTINGS,
   ADDON_STATUS_PERMANENT_FAILURE,   /**< permanent failure, like failing to resolve methods */
   ADDON_STATUS_NOT_IMPLEMENTED
-};
+} ADDON_STATUS;
 
-typedef struct
+typedef struct ADDON_StructSetting
 {
   int           type;
   char*         id;
@@ -166,6 +167,7 @@ typedef enum eAudioChannel
 typedef struct sAddonToKodiFuncTable_Addon
 {
   void* kodiInstance;
+  void (*Log)(void *addonData, const int loglevel, const char *msg);
 } sAddonToKodiFuncTable_Addon;
 
 typedef struct sKodiToAddonFuncTable_Addon
@@ -191,6 +193,7 @@ typedef struct sFuncTable_Addon
 #ifdef __cplusplus
 namespace kodi {
 namespace addon {
+  
   //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   //
   class IAddonInstance
@@ -448,3 +451,124 @@ namespace addon {
   kodi::addon::CAddonBase* kodi::addon::CAddonBase::m_createdAddon = nullptr;
 //
 //=------=------=------=------=------=------=------=------=------=------=------=
+
+
+//==============================================================================
+// \ingroup 
+/// @brief Log file
+///
+/// At some point during your foray into Kodi, you will likely come up against
+/// a problem that isn't made 100% clear from errors in the GUI. This is where
+/// the log file comes into play. Kodi writes all sorts of useful stuff to its
+/// log, which is why it should be included with every bug/problem report.
+/// Don't be afraid of its contents! Often a quick glance through the log will
+/// turn up a simple typo or missing file which you can easily fix on your own.
+///
+/// Each event is logged to one line of the Kodi log file which is formatted as
+/// follows...
+///
+/// ~~~~~~~~~~~~~
+/// [TIMESTAMP] T:[THREADID] M:[FREEMEM] [LEVEL]: [MESSAGE]
+/// ~~~~~~~~~~~~~
+///
+/// | Identification name   | Description                                      |
+/// |-----------------------|--------------------------------------------------|
+/// | TIMESTAMP             | The wall time at which the event occurred.
+/// | THREADID              | The thread identification number of the thread in which the event occurred.
+/// | FREEMEM               | The amount of memory (in bytes) free at the time of the event.
+/// | LEVEL                 | The severity of the event.
+/// | MESSAGE               | A brief description and/or important information about the event.
+///
+typedef enum AddonLog
+{
+  /// @brief Log level "Debug"
+  ///
+  /// In  depth  informatio n about  the  status  of  Kodi.  This  information
+  /// can  pretty  much only be  deciphered  by a developer or  long time Kodi
+  /// power user.
+  ///
+  LOG_DEBUG = 0,
+
+  /// @brief Log level "Info"
+  ///
+  /// Something  has happened. It's not  a problem, we just  thought you might
+  /// want to know. Fairly excessive output that most people won't care about.
+  ///
+  LOG_INFO = 1,
+
+  /// @brief Log level "Notice"
+  ///
+  /// Similar  to  INFO but  the average  Joe might  want to  know about these
+  /// events. This level and above are logged by default.
+  ///
+  LOG_NOTICE = 2,
+
+  /// @brief Log level "Warning"
+  ///
+  /// Something potentially bad has happened. If Kodi did something you didn't
+  /// expect, this is probably why. Watch for errors to follow.
+  ///
+  LOG_WARNING = 3,
+
+  /// @brief Log level "Error"
+  ///
+  /// This event is bad.  Something has failed.  You  likely noticed  problems
+  /// with the application be it skin artifacts, failure of playback a crash,
+  /// etc.
+  ///
+  LOG_ERROR = 4,
+
+  /// @brief Log level "Severe"
+  ///
+  LOG_SEVERE = 5,
+
+  /// @brief Log level "Fatal"
+  ///
+  /// We're screwed. Kodi's add-on is about to crash.
+  ///
+  LOG_FATAL = 6
+} AddonLog;
+//------------------------------------------------------------------------------
+
+#ifdef __cplusplus
+namespace kodi {
+//==============================================================================
+// \ingroup
+/// @brief Add a message to [KODI's log](http://kodi.wiki/view/Log_file/Advanced#Log_levels).
+///
+/// @param[in] loglevel     The log level of the message
+///  |  enum code:  | Description:          |
+///  |-------------:|-----------------------|
+///  |  LOG_DEBUG   | In depth information about the status of Kodi. This information can pretty much only be deciphered by a developer or long time Kodi power user.
+///  |  LOG_INFO    | Something has happened. It's not a problem, we just thought you might want to know. Fairly excessive output that most people won't care about.
+///  |  LOG_NOTICE  | Similar to INFO but the average Joe might want to know about these events. This level and above are logged by default.
+///  |  LOG_WARNING | Something potentially bad has happened. If Kodi did something you didn't expect, this is probably why. Watch for errors to follow.
+///  |  LOG_ERROR   | This event is bad. Something has failed. You likely noticed problems with the application be it skin artifacts, failure of playback a crash, etc.
+///  |  LOG_FATAL   | We're screwed. Kodi is about to crash.
+/// @param[in] format       The format of the message to pass to KODI.
+/// @param[in] ...          Added string values
+///
+///
+/// ----------------------------------------------------------------------------
+///
+/// **Example:**
+/// ~~~~~~~~~~~~~{.cpp}
+/// #include <kodi/addon/AddonBase.h>
+///
+/// ...
+/// kodi::Log(LOG_FATAL, "Oh my goddess, I'm so fatal ;)");
+/// ...
+/// ~~~~~~~~~~~~~
+///
+inline void Log(const AddonLog loglevel, const char* format, ...)
+{
+  char buffer[16384];
+  va_list args;
+  va_start(args, format);
+  vsprintf(buffer, format, args);
+  va_end(args);
+  ::kodi::addon::CAddonBase::m_instance->toKodi.Log(::kodi::addon::CAddonBase::m_instance->toKodi.kodiInstance, loglevel, buffer);
+}
+//------------------------------------------------------------------------------
+} /* namespace kodi */
+#endif /* __cplusplus */
