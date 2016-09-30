@@ -66,10 +66,7 @@ bool Interface_Network::wake_on_lan(void* kodiInstance, const char* mac)
   {
     return g_application.getNetwork().WakeOnLan(mac);
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 
   return false;
 }
@@ -97,10 +94,7 @@ char* Interface_Network::get_ip_address(void* kodiInstance)
       buffer = strdup(titleIP.c_str());
     return buffer;
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 
   return nullptr;
 }
@@ -123,10 +117,7 @@ char* Interface_Network::dns_lookup(void* kodiInstance, const char* url, bool* r
       buffer = strdup(string.c_str());
     return buffer;
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 
   return nullptr;
 }
@@ -148,10 +139,7 @@ char* Interface_Network::url_encode(void* kodiInstance, const char* url)
       buffer = strdup(string.c_str());
     return buffer;
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 
   return nullptr;
 }

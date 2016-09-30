@@ -21,12 +21,31 @@
 
 #include "addon/AddonBase.h"
 
-/*
- * #include <kodi/General.h>
- * -------------------------
- * 
- * Addon header file to bring general interface functions to call inside Kodi.
- */
+//==============================================================================
+///
+/// \addtogroup cpp_kodi 
+/// @brief **General functions on Kodi**
+///
+/// It has the header \ref General.h "#include <kodi/General.h>" be included
+/// to enjoy it.
+///
+///
+/// ------------------------------------------------------------------------
+///
+/// **Example:**
+/// ~~~~~~~~~~~~~{.cpp}
+///
+/// ~~~~~~~~~~~~~
+///
+//------------------------------------------------------------------------------
+  
+//==============================================================================
+///
+/// \defgroup cpp_kodi_Defs Definitions, structures and enumerators
+/// \ingroup cpp_kodi
+/// @brief **Library definition values**
+///
+//------------------------------------------------------------------------------
 
 extern "C"
 {
@@ -79,9 +98,8 @@ typedef struct sAddonToKodiFuncTable_kodi
   char* (*translate_path)(void* kodiInstance, const char* path);
 } sAddonToKodiFuncTable_kodi;
 
-
 //==============================================================================
-// \ingroup
+/// \ingroup cpp_kodi_Defs
 /// @brief For kodi::QueueNotification() used message types
 ///
 typedef enum QueueMsg
@@ -95,9 +113,8 @@ typedef enum QueueMsg
 } QueueMsg;
 //------------------------------------------------------------------------------
 
-
 //==============================================================================
-// \ingroup
+/// \ingroup cpp_kodi_Defs
 /// @enum dvd_state State values about optical drive
 ///
 typedef enum DVDState
@@ -115,9 +132,8 @@ typedef enum DVDState
 } DVDState;
 //------------------------------------------------------------------------------
 
-
 //============================================================================
-// \ingroup
+/// \ingroup cpp_kodi_Defs
 /// @brief For kodi::Version used structure
 ///
 typedef struct KodiVersion
@@ -137,9 +153,8 @@ typedef struct KodiVersion
 } KodiVersion;
 //----------------------------------------------------------------------------
 
-  
 //==============================================================================
-// \ingroup
+/// \ingroup cpp_kodi_Defs
 /// @brief Format codes to get string from them.
 ///
 typedef enum LangFormats
@@ -152,10 +167,9 @@ typedef enum LangFormats
   LANG_FMT_ENGLISH_NAME
 } LangFormats;
 //------------------------------------------------------------------------------
-
   
 //==============================================================================
-// \ingroup
+/// \ingroup cpp_kodi_Defs
 /// @brief Kodi server identificators
 ///
 typedef enum EServers
@@ -184,7 +198,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  //// \ingroup cpp_kodi cpp_kodi
   /// @brief Get a string settings value for this add-on.
   ///
   /// \warning For this function and others below is no access on Kodi about
@@ -304,7 +318,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Numeric input elements allow a user to enter a number. The "label" 
   /// attribute must contain an id from the language file that indicates which
   /// text to display for the input field.
@@ -381,7 +395,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Get a boolean settings value for this add-on.
   ///
   /// @param[in] settingName    The name of the setting to get.
@@ -428,7 +442,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Get a float settings value for this add-on.
   ///
   /// @param[in] settingName  The name of the setting to get.
@@ -471,7 +485,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Opens this Add-Ons settings dialog.
   ///
   ///
@@ -497,7 +511,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Writes the C string pointed by format in the GUI. If format includes
   /// format specifiers (subsequences beginning with %), the additional arguments
   /// following format are formatted and inserted in the resulting string replacing
@@ -591,7 +605,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Queue a notification in the GUI.
   ///
   /// @param[in] type          The message type.
@@ -631,7 +645,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Queue a notification in the GUI.
   ///
   /// @param[in] caption       Header Name
@@ -662,7 +676,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Queue a notification in the GUI.
   ///
   /// @param[in] aImageFile    The image file to show on message
@@ -698,7 +712,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Get the MD5 digest of the given text
   ///
   /// @param[in]  text  text to compute the MD5 for
@@ -733,7 +747,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Translate a string with an unknown encoding to UTF8.
   ///
   /// @param[in]  stringSrc       The string to translate.
@@ -781,7 +795,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Returns an addon's localized 'unicode string'.
   ///
   /// @param[in] labelId    for string you want to localize.
@@ -832,7 +846,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Returns the active language as a string.
   ///
   /// @param[in] format Used format of the returned language string
@@ -877,7 +891,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Get the DVD menu language.
   ///
   /// @return The DVD menu langauge, or empty if unknown
@@ -902,7 +916,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Start or stop a server.
   ///
   /// @param[in] typ Used format of the returned language string
@@ -946,7 +960,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Suspend Audio engine
   ///
   ///
@@ -972,7 +986,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Resume Audio engine
   ///
   ///
@@ -998,7 +1012,7 @@ namespace kodi
   
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Get the current global Kodi audio volume
   ///
   /// @param[in] percentage [opt] if set to false becomes amplication level returned
@@ -1029,7 +1043,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Set the current global Kodi audio volume
   ///
   /// @param[in] value the volume to use
@@ -1067,7 +1081,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Ask if Kodi audio is muted
   ///
   /// @return true if audio is muted
@@ -1095,7 +1109,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Toggle the audio volume between on and off
   ///
   ///
@@ -1121,7 +1135,7 @@ namespace kodi
   
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Set Kodi's mute
   ///
   /// @param[in] mute with set to true becomes it muted otherwise audio is present
@@ -1155,7 +1169,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Enables/Disables nav sounds
   ///
   /// @param[in] yesNo          enable (True) or disable (False) nav sounds
@@ -1184,7 +1198,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Returns the dvd state as an integer
   ///
   /// @return The current state of drive
@@ -1201,7 +1215,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Send eject signal to optical drive
   ///
   /// @return true if successfull done
@@ -1230,7 +1244,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Get current Kodi informations and versions, returned data from the following
   /// <b><tt>kodi_version_t version; kodi::KodiVersion(version);</tt></b>
   /// is e.g.:
@@ -1327,7 +1341,7 @@ namespace kodi
   
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Tell Kodi to stop work, go to exit and stop his work.
   /// \warning Kodi is really quited!
   ///
@@ -1354,7 +1368,7 @@ namespace kodi
   
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Shutdown the htpc
   ///
   ///
@@ -1380,7 +1394,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Restart the htpc
   ///
   ///
@@ -1406,7 +1420,7 @@ namespace kodi
   
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Execute a python script
   ///
   /// @param[in] script filename to execute
@@ -1435,7 +1449,7 @@ namespace kodi
   
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Execute a built in Kodi function
   ///
   /// @param[in] function builtin function to execute
@@ -1469,7 +1483,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Execute an JSONRPC command
   ///
   /// @param[in] jsonrpccommand jsonrpc command to execute
@@ -1512,7 +1526,7 @@ namespace kodi
   
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Returns your regions setting as a string for the specified id
   ///
   /// @param[in] id id of setting to return
@@ -1561,7 +1575,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Returns the amount of free memory in MB as an integer
   ///
   /// @return free memory
@@ -1590,7 +1604,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Returns the elapsed idle time in seconds as an integer
   ///
   /// @return idle time
@@ -1618,7 +1632,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Returns the value of an addon property as a string
   ///
   /// @param[in] id id of the property that the module needs to access
@@ -1670,7 +1684,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Returns the translated path
   ///
   /// @param[in] path  string or unicode - Path to format
@@ -1725,7 +1739,7 @@ namespace kodi
 
   //============================================================================
   ///
-  // \ingroup
+  /// \ingroup cpp_kodi
   /// @brief Translate an add-on status return code into a human-readable string
   ///
   /// @param[in] status The return code

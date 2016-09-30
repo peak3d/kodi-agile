@@ -21,12 +21,21 @@
 
 #include "addon/AddonBase.h"
 
-/*
- * #include <kodi/Network.h>
- * -------------------------
- * 
- * Addon header file to bring network interface functions to call inside Kodi.
- */
+//==============================================================================
+///
+/// \defgroup cpp_kodi_network  Interface - kodi::network
+/// \ingroup cpp
+/// @{
+/// @brief **Network functions**
+///
+/// The network module offers functions that allow you to control it.
+///
+/// These are pure static functions them no other initialization need.
+///
+/// It has the header \ref Network.h "#include <kodi/Network.h>" be included
+/// to enjoy it.
+///
+//------------------------------------------------------------------------------
 
 extern "C"
 {
@@ -41,27 +50,13 @@ extern "C"
   
 } /* extern "C" */
 
-//============================================================================
-///
-/// \defgroup CPP_kodi_network Network
-/// \ingroup CPP_kodi
-/// @{
-/// @brief <b>Network functions</b>
-///
-/// The network module offers functions that allow you to control it.
-///
-/// These are pure static functions them no other initialization need.
-///
-/// It has the header \ref Network.h "#include <kodi/Network.h>" be included
-/// to enjoy it.
-///
 namespace kodi
 {
 namespace network
 {
   //============================================================================
   ///
-  /// \ingroup CPP_kodi_network
+  /// \ingroup cpp_kodi_network
   /// @brief Send WakeOnLan magic packet.
   ///
   /// @param[in] mac Network address of the host to wake.
@@ -76,7 +71,7 @@ namespace network
 
   //============================================================================
   ///
-  /// \ingroup CPP_kodi_network
+  /// \ingroup cpp_kodi_network
   /// @brief To the current own ip address as a string.
   ///
   /// @return Own system ip.
@@ -109,7 +104,7 @@ namespace network
 
   //============================================================================
   ///
-  /// \ingroup CPP_kodi_network
+  /// \ingroup cpp_kodi_network
   /// @brief URL encodes the given string
   ///
   /// This function converts the given input string to a URL encoded string and
@@ -149,7 +144,7 @@ namespace network
 
   //============================================================================
   ///
-  /// \ingroup CPP_kodi_network
+  /// \ingroup cpp_kodi_network
   /// @brief Lookup URL in DNS cache
   ///
   /// This test will get DNS record for a domain. The DNS lookup is done directly

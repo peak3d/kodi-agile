@@ -232,10 +232,7 @@ bool Interface_General::get_setting(
     }
     CLog::Log(LOGERROR, "Interface_General - %s - can't find setting '%s' in '%s'", __FUNCTION__, settingName, addon->Name().c_str());
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 
   return false;
 }
@@ -254,10 +251,7 @@ void Interface_General::open_settings_dialog(void* kodiInstance)
     // show settings dialog
     CGUIDialogAddonSettings::ShowAndGetInput(ADDON::AddonPtr(addon));
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
 
 void Interface_General::queue_notification(
@@ -293,10 +287,7 @@ void Interface_General::queue_notification(
         break;
     }
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
 
 void Interface_General::queue_notification_from_type(
@@ -333,10 +324,7 @@ void Interface_General::queue_notification_from_type(
     }
     CGUIDialogKaiToast::QueueNotification(usedType, aCaption, aDescription, displayTime, withSound, messageTime);
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
 
 void Interface_General::queue_notification_with_image(
@@ -359,10 +347,7 @@ void Interface_General::queue_notification_with_image(
   {
     CGUIDialogKaiToast::QueueNotification(aImageFile, aCaption, aDescription, displayTime, withSound, messageTime);
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
 
 void Interface_General::get_md5(
@@ -382,10 +367,7 @@ void Interface_General::get_md5(
     std::string md5Int = XBMC::XBMC_MD5::GetMD5(std::string(text));
     strncpy(&md5, md5Int.c_str(), 40);
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
       
 char* Interface_General::unknown_to_utf8(
@@ -408,10 +390,7 @@ char* Interface_General::unknown_to_utf8(
     char* buffer = strdup(string.c_str());
     return buffer;
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 
   return nullptr;
 }
@@ -441,10 +420,7 @@ char* Interface_General::get_localized_string(
     char* buffer = strdup(string.c_str());
     return buffer;
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 
   return nullptr;
 }
@@ -503,10 +479,7 @@ void Interface_General::get_language(void* kodiInstance, char& language, unsigne
     strncpy(&language, str.c_str(), iMaxStringSize);
     iMaxStringSize = str.length();
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
 
 void Interface_General::get_dvd_menu_language(void* kodiInstance, char& language, unsigned int& iMaxStringSize)
@@ -524,10 +497,7 @@ void Interface_General::get_dvd_menu_language(void* kodiInstance, char& language
     strncpy(&language, str.c_str(), iMaxStringSize);
     iMaxStringSize = str.length();
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
 
 bool Interface_General::start_server(void* kodiInstance, int typ, bool bStart, bool bWait)
@@ -558,10 +528,7 @@ bool Interface_General::start_server(void* kodiInstance, int typ, bool bStart, b
     }
     return g_application.StartServer(iTyp, bStart, bWait);
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
   
   return false;
 }
@@ -579,10 +546,7 @@ void Interface_General::audio_suspend(void* kodiInstance)
   { 
     CAEFactory::Suspend();
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
   
 void Interface_General::audio_resume(void* kodiInstance)
@@ -598,10 +562,7 @@ void Interface_General::audio_resume(void* kodiInstance)
   { 
     CAEFactory::Resume();
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
   
 float Interface_General::get_volume(void* kodiInstance, bool percentage)
@@ -617,10 +578,7 @@ float Interface_General::get_volume(void* kodiInstance, bool percentage)
   { 
     return g_application.GetVolume(percentage);
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 
   return 0.0f;
 }
@@ -641,10 +599,7 @@ void Interface_General::set_volume(
   {
     g_application.SetVolume(value, isPercentage);
   }                                     
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 } 
 
 bool Interface_General::is_muted(void* kodiInstance)
@@ -660,10 +615,7 @@ bool Interface_General::is_muted(void* kodiInstance)
   { 
     return g_application.IsMutedInternal();
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
   
   return false;
 } 
@@ -681,10 +633,7 @@ void Interface_General::toggle_mute(void* kodiInstance)
   { 
     g_application.ToggleMute();         
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 } 
   
 void Interface_General::enable_nav_sounds(void* kodiInstance, bool yesNo)
@@ -700,10 +649,7 @@ void Interface_General::enable_nav_sounds(void* kodiInstance, bool yesNo)
   { 
     g_audioManager.Enable(yesNo);
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 } 
   
 long Interface_General::get_optical_state(void* kodiInstance)
@@ -719,10 +665,7 @@ long Interface_General::get_optical_state(void* kodiInstance)
   { 
     return g_mediaManager.GetDriveStatus();
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
   
   return 0;
 }
@@ -740,10 +683,7 @@ bool Interface_General::eject_optical_drive(void* kodiInstance)
   { 
     return CBuiltins::GetInstance().Execute("EjectTray") == 0 ? true : false;
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 
   return false;
 }
@@ -791,10 +731,7 @@ void Interface_General::kodi_version(
     else
       tag = strdup("prealpha");
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
 
 void Interface_General::kodi_quit(void* kodiInstance)
@@ -810,10 +747,7 @@ void Interface_General::kodi_quit(void* kodiInstance)
   { 
     CApplicationMessenger::GetInstance().PostMsg(TMSG_QUIT);
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
       
 void Interface_General::htpc_shutdown(void* kodiInstance)
@@ -829,10 +763,7 @@ void Interface_General::htpc_shutdown(void* kodiInstance)
   { 
     CApplicationMessenger::GetInstance().PostMsg(TMSG_SHUTDOWN);
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
       
 void Interface_General::htpc_restart(void* kodiInstance)
@@ -848,10 +779,7 @@ void Interface_General::htpc_restart(void* kodiInstance)
   { 
     CApplicationMessenger::GetInstance().PostMsg(TMSG_RESTART);
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
       
 void Interface_General::execute_script(void* kodiInstance, const char* script)
@@ -867,10 +795,7 @@ void Interface_General::execute_script(void* kodiInstance, const char* script)
   { 
     CApplicationMessenger::GetInstance().PostMsg(TMSG_EXECUTE_SCRIPT, -1, -1, nullptr, script);
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
       
 void Interface_General::execute_builtin(void* kodiInstance, const char* function, bool wait)
@@ -889,10 +814,7 @@ void Interface_General::execute_builtin(void* kodiInstance, const char* function
     else
       CApplicationMessenger::GetInstance().PostMsg(TMSG_EXECUTE_BUILT_IN, -1, -1, nullptr, function);
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
     
 char* Interface_General::execute_jsonrpc(void* kodiInstance, const char* jsonrpccommand)
@@ -912,10 +834,7 @@ char* Interface_General::execute_jsonrpc(void* kodiInstance, const char* jsonrpc
     char* buffer = strdup(string.c_str());
     return buffer;
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 
   return nullptr;
 }
@@ -981,10 +900,7 @@ char* Interface_General::get_region(void* kodiInstance, const char* id)
     char* buffer = strdup(result.c_str());
     return buffer;
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
     
   return nullptr;
 }
@@ -1005,10 +921,7 @@ long Interface_General::get_free_mem(void* kodiInstance)
     GlobalMemoryStatusEx(&stat);
     return (long)(stat.ullAvailPhys  / ( 1024 * 1024 ));
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 
   return -1;
 }
@@ -1026,10 +939,7 @@ int Interface_General::get_global_idle_time(void* kodiInstance)
   {
     return g_application.GlobalIdleTime();
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 
   return -1;
 }
@@ -1082,10 +992,7 @@ char* Interface_General::get_addon_info(void* kodiInstance, const char* id)
     char* buffer = strdup(str.c_str());
     return buffer;
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 
   return nullptr;
 }
@@ -1105,10 +1012,7 @@ char* Interface_General::translate_path(void* kodiInstance, const char* path)
     char* buffer = strdup(string.c_str());
     return buffer;
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 
   return nullptr;
 }

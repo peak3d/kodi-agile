@@ -91,8 +91,8 @@ bool CAudioDecoder::Init(const CFileItem& file, unsigned int filecache)
 
   int channels;
   int sampleRate;
-  eAudioDataFormat format;
-  const eAudioChannel* channel = nullptr;
+  AudioDataFormat format;
+  const AudioChannel* channel = nullptr;
 
   try
   {

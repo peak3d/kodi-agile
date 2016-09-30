@@ -21,6 +21,15 @@
 
 #include "addon/AddonBase.h"
 
+//==============================================================================
+/// \defgroup cpp_kodi_vfs Interface - kodi::vfs
+/// \ingroup cpp
+/// @brief **Virtual file Server access on Kodi.**
+///
+/// Offers classes, functions and offers access to the Virtual File Server (VFS)
+/// which you can use to manipulate files and folders.
+//------------------------------------------------------------------------------
+
 extern "C"
 {
 

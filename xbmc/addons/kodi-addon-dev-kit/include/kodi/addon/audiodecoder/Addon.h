@@ -43,8 +43,8 @@ typedef struct sKodiToAddonFuncTable_AudioDecoder
                         unsigned int filecache,
                         int* channels, int* samplerate,
                         int* bitspersample, int64_t* totaltime,
-                        int* bitrate, eAudioDataFormat* format,
-                        const eAudioChannel** info);
+                        int* bitrate, AudioDataFormat* format,
+                        const AudioChannel** info);
   int  (__cdecl* ReadPCM) (void* addonInstance, uint8_t* buffer, int size, 
                            int* actualsize);
   int64_t  (__cdecl* Seek) (void* addonInstance, int64_t time);
@@ -103,8 +103,8 @@ namespace audiodecoder {
     virtual bool Init(std::string file, unsigned int filecache,
                       int& channels, int& samplerate,
                       int& bitspersample, int64_t& totaltime,
-                      int& bitrate, eAudioDataFormat& format,
-                      std::vector<eAudioChannel>& channellist) { return false; }
+                      int& bitrate, AudioDataFormat& format,
+                      std::vector<AudioChannel>& channellist) { return false; }
     //--------------------------------------------------------------------------
 
     //==========================================================================
@@ -157,8 +157,8 @@ namespace audiodecoder {
     inline static bool ADDON_Init(void* addonInstance, const char* file, unsigned int filecache,
                                   int* channels, int* samplerate,
                                   int* bitspersample, int64_t* totaltime,
-                                  int* bitrate, eAudioDataFormat* format,
-                                  const eAudioChannel** info)
+                                  int* bitrate, AudioDataFormat* format,
+                                  const AudioChannel** info)
     {
       static_cast<CAddon*>(addonInstance)->m_channelList.clear();
       bool ret = static_cast<CAddon*>(addonInstance)->Init(file, filecache, *channels,
@@ -202,7 +202,7 @@ namespace audiodecoder {
       return static_cast<CAddon*>(addonInstance)->TrackCount(file);
     }
 
-    std::vector<eAudioChannel> m_channelList;
+    std::vector<AudioChannel> m_channelList;
     sAddonInstance_AudioDecoder* m_instance;
   };
 
