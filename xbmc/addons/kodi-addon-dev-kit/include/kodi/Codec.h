@@ -20,6 +20,8 @@
  *
  */
 
+#include "addon/AddonBase.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -49,7 +51,28 @@ typedef struct
 #define XBMC_INVALID_CODEC_ID   0
 #define XBMC_INVALID_CODEC      { XBMC_CODEC_TYPE_UNKNOWN, XBMC_INVALID_CODEC_ID }
 
+typedef struct sAddonToKodiFuncTable_kodi_codec
+{
+  xbmc_codec_t (*get_codec_by_name)(void* kodiInstance, const char* strCodecName);
+} sAddonToKodiFuncTable_kodi_codec;
+
+namespace kodi
+{
+namespace codec
+{
+
+  /*!
+   * @brief Get the codec id used by XBMC
+   * @param strCodecName The name of the codec
+   * @return The codec_id, or a codec_id with 0 values when not supported
+   */
+  inline xbmc_codec_t GetCodecByName(const char* strCodecName)
+  {
+    return ::kodi::addon::CAddonBase::m_instance->toKodi.kodi_codec->get_codec_by_name(::kodi::addon::CAddonBase::m_instance->toKodi.kodiInstance, strCodecName);
+  }
+
+} /* namespace codec */
+} /* namespace kodi */
 #ifdef __cplusplus
 };
 #endif
-

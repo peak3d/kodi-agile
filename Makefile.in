@@ -28,7 +28,6 @@ DIRECTORY_ARCHIVES=$(VideoPlayer_ARCHIVES) \
                    xbmc/addons/interfaces/addon-interfaces.a \
                    xbmc/addons/interfaces/Addon/addon-callbacks-addon.a \
                    xbmc/addons/interfaces/AudioEngine/addon-callbacks-audioengine.a \
-                   xbmc/addons/interfaces/Codec/addon-callbacks-codec.a \
                    xbmc/addons/interfaces/GUI/addon-callbacks-gui.a \
                    xbmc/contrib/kissfft/kissfft.a \
                    xbmc/cores/AudioEngine/audioengine.a \

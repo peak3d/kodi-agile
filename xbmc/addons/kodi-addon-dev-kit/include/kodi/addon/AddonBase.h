@@ -95,6 +95,7 @@ typedef ADDON_HANDLE_STRUCT *ADDON_HANDLE;
 struct sAddonToKodiFuncTable_kodi;
 struct sAddonToKodiFuncTable_kodi_network;
 struct sAddonToKodiFuncTable_kodi_audio;
+struct sAddonToKodiFuncTable_kodi_codec;
 struct sAddonToKodiFuncTable_kodi_vfs;
 
 typedef struct sAddonToKodiFuncTable_Addon
@@ -105,6 +106,7 @@ typedef struct sAddonToKodiFuncTable_Addon
   sAddonToKodiFuncTable_kodi* kodi;
   sAddonToKodiFuncTable_kodi_network* kodi_network;
   sAddonToKodiFuncTable_kodi_audio* kodi_audio;
+  sAddonToKodiFuncTable_kodi_codec* kodi_codec;
   sAddonToKodiFuncTable_kodi_vfs* kodi_vfs;
 } sAddonToKodiFuncTable_Addon;
 

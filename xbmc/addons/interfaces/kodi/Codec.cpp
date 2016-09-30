@@ -19,22 +19,17 @@
  *
  */
 
-#include "addons/Addon.h"
+#include "Codec.h"
 
-#include <utility>
-
-#include "AddonCallbacksCodec.h"
 #include "utils/StringUtils.h"
 
 extern "C" {
 #include "libavcodec/avcodec.h"
 }
 
-using namespace ADDON;
+#include <utility>
 
-namespace KodiAPI
-{
-namespace Codec
+namespace ADDON
 {
 
 class CCodecIds
@@ -98,25 +93,24 @@ private:
   std::map<std::string, xbmc_codec_t> m_lookup;
 };
 
-CAddonCallbacksCodec::CAddonCallbacksCodec(CAddon* addon)
-  : ADDON::IAddonInterface(addon, KODI_CODEC_API_VERSION),
-    m_callbacks(new CB_CodecLib)
+void Interface_Codec::Init(sFuncTable_Addon *funcTable)
 {
-  /* write XBMC addon-on specific add-on function addresses to the callback table */
-  m_callbacks->GetCodecByName   = GetCodecByName;
+  funcTable->toKodi.kodi_codec = (sAddonToKodiFuncTable_kodi_codec*)malloc(sizeof(sAddonToKodiFuncTable_kodi_codec));
+  funcTable->toKodi.kodi_codec->get_codec_by_name = get_codec_by_name;
 }
 
-CAddonCallbacksCodec::~CAddonCallbacksCodec()
+void Interface_Codec::DeInit(sFuncTable_Addon* funcTable)
 {
-  /* delete the callback table */
-  delete m_callbacks;
+  if (funcTable->toKodi.kodi_codec)
+  {
+    free(funcTable->toKodi.kodi_codec);
+    funcTable->toKodi.kodi_codec = nullptr;
+  }
 }
 
-xbmc_codec_t CAddonCallbacksCodec::GetCodecByName(const void* addonData, const char* strCodecName)
+xbmc_codec_t Interface_Codec::get_codec_by_name(void* kodiInstance, const char* strCodecName)
 {
-  (void)addonData;
   return CCodecIds::GetInstance().GetCodecByName(strCodecName);
 }
 
-} /* namespace Codec */
-} /* namespace KodiAPI */
+} /* namespace ADDON */

@@ -20,30 +20,17 @@
  *
  */
 
-#include "addons/interfaces/AddonInterfaces.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/libXBMC_codec.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/Codec.h"
 
-namespace KodiAPI
+namespace ADDON
 {
-namespace Codec
-{
+  
+  struct Interface_Codec
+  {
+    static void Init(sFuncTable_Addon* funcTable);
+    static void DeInit(sFuncTable_Addon* funcTable);
+    
+    static xbmc_codec_t get_codec_by_name(void* kodiInstance, const char* strCodecName);
+  };
 
-class CAddonCallbacksCodec : public ADDON::IAddonInterface
-{
-public:
-  CAddonCallbacksCodec(ADDON::CAddon* addon);
-  virtual ~CAddonCallbacksCodec();
-
-  /*!
-   * @return The callback table.
-   */
-  CB_CodecLib *GetCallbacks() { return m_callbacks; }
-
-  static xbmc_codec_t GetCodecByName(const void* addonData, const char* strCodecName);
-
-private:
-  CB_CodecLib*                           m_callbacks; /*!< callback addresses */
-};
-
-} /* namespace Codec */
-} /* namespace KodiAPI */
+} /* namespace ADDON */

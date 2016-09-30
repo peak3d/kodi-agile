@@ -57,11 +57,6 @@ namespace ADDON
     static void*        GUILib_RegisterMe              (void* addonData);
     static void         GUILib_UnRegisterMe            (void* addonData, void* cbTable);
     void*               GUILib_GetHelper()            { return m_helperGUI; }
-    /*\_________________________________________________________________________
-    \*/
-    static void*        CodecLib_RegisterMe            (void* addonData);
-    static void         CodecLib_UnRegisterMe          (void* addonData, void* cbTable);
-    void*               GetHelperCODEC()              { return m_helperCODEC; }
     /*
      * API level independent functions for Kodi
      */
@@ -73,7 +68,6 @@ namespace ADDON
 
     void*     m_helperAudioEngine;
     void*     m_helperGUI;
-    void*     m_helperCODEC;
   };
 
 } /* namespace ADDON */
