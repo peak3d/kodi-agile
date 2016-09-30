@@ -19,13 +19,38 @@
  *
  */
 
+#include "utils/log.h"
+#include "commons/Exception.h"
+
 #include <exception>
 
 namespace ADDON
 {
 
-class CAddonDll;
+  class CAddonDll;
 
-void LogException(CAddonDll* addon, const std::exception &e, const char *strFunctionName);
+  void LogException(CAddonDll* addon, const std::exception &e, const char *name);
 
 };
+
+#define HANDLE_ADDON_EXCEPTION(addon) \
+catch (std::exception &e) \
+{ \
+  ADDON::LogException(addon, e, __FUNCTION__); \
+} \
+catch (...) \
+{ \
+  CLog::Log(LOGERROR, "EXCEPTION: Unknown exception thrown from the call \"%s\"", __FUNCTION__); \
+}
+
+#define HANDLE_ADDON_EXCEPTION_WITH_RETURN(addon, ret) \
+catch (std::exception &e) \
+{ \
+  ADDON::LogException(addon, e, __FUNCTION__); \
+  return ret; \
+} \
+catch (...) \
+{ \
+  CLog::Log(LOGERROR, "EXCEPTION: Unknown exception thrown from the call \"%s\"", __FUNCTION__); \
+  return ret; \
+}

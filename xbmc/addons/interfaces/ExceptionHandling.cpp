@@ -18,13 +18,15 @@
  *
  */
 
+#include "ExceptionHandling.h"
+
 #include "addons/AddonDll.h"
 #include "addons/AddonManager.h"
 #include "utils/log.h"
 
 namespace ADDON
 {
-  
+
 void LogException(CAddonDll* addon, const std::exception &e, const char *strFunctionName)
 {
   CLog::Log(LOGERROR,

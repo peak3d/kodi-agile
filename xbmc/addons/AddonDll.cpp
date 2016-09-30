@@ -35,6 +35,7 @@
 #include "addons/interfaces/kodi/General.h"
 #include "addons/interfaces/kodi/Network.h"
 #include "addons/interfaces/kodi/SoundPlay.h"
+#include "addons/interfaces/kodi/VFS.h"
 
 namespace ADDON
 {
@@ -546,6 +547,7 @@ bool CAddonDll::InitInterfaceFunctions()
   Interface_General::Init(&m_interface);
   Interface_Network::Init(&m_interface);
   Interface_Audio::Init(&m_interface);
+  Interface_VFS::Init(&m_interface);
 
   return true;
 }
@@ -555,6 +557,7 @@ void CAddonDll::DeInitInterfaceFunctions()
   Interface_General::DeInit(&m_interface);
   Interface_Network::DeInit(&m_interface);
   Interface_Audio::DeInit(&m_interface);
+  Interface_VFS::DeInit(&m_interface);
 }
 
 void CAddonDll::addon_log_msg(void* kodiInstance, const int addonLogLevel, const char* strMessage)

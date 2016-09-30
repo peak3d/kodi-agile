@@ -1,10 +1,12 @@
 set(SOURCES General.cpp
             Network.cpp
-            SoundPlay.cpp)
+            SoundPlay.cpp
+            VFS.cpp)
 
 set(HEADERS General.h
             Network.h
-            SoundPlay.h)
+            SoundPlay.h
+            VFS.h)
 
 include_directories(${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include)
 
