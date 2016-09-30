@@ -27,7 +27,6 @@ DIRECTORY_ARCHIVES=$(VideoPlayer_ARCHIVES) \
                    xbmc/addons/addons.a \
                    xbmc/addons/interfaces/addon-interfaces.a \
                    xbmc/addons/interfaces/Addon/addon-callbacks-addon.a \
-                   xbmc/addons/interfaces/AudioDSP/addon-callbacks-audiodsp.a \
                    xbmc/addons/interfaces/AudioEngine/addon-callbacks-audioengine.a \
                    xbmc/addons/interfaces/Codec/addon-callbacks-codec.a \
                    xbmc/addons/interfaces/GUI/addon-callbacks-gui.a \

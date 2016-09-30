@@ -4810,7 +4810,6 @@
 		EDE8C70C1C7F615800A86ECC /* NOTE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = NOTE; path = "kodi-addon-dev-kit/include/NOTE"; sourceTree = "<group>"; };
 		EDE8C7111C7F618500A86ECC /* kodi_audioengine_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kodi_audioengine_types.h; path = "kodi-addon-dev-kit/include/kodi/kodi_audioengine_types.h"; sourceTree = "<group>"; };
 		EDE8C7121C7F618500A86ECC /* kodi_vfs_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = kodi_vfs_types.h; path = "kodi-addon-dev-kit/include/kodi/kodi_vfs_types.h"; sourceTree = "<group>"; };
-		EDE8C7131C7F618500A86ECC /* libKODI_adsp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libKODI_adsp.h; path = "kodi-addon-dev-kit/include/kodi/libKODI_adsp.h"; sourceTree = "<group>"; };
 		EDE8C7141C7F618500A86ECC /* libKODI_audioengine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libKODI_audioengine.h; path = "kodi-addon-dev-kit/include/kodi/libKODI_audioengine.h"; sourceTree = "<group>"; };
 		EDE8C7151C7F618500A86ECC /* libKODI_guilib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libKODI_guilib.h; path = "kodi-addon-dev-kit/include/kodi/libKODI_guilib.h"; sourceTree = "<group>"; };
 		EDE8C7161C7F618500A86ECC /* libXBMC_addon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libXBMC_addon.h; path = "kodi-addon-dev-kit/include/kodi/libXBMC_addon.h"; sourceTree = "<group>"; };
@@ -4827,8 +4826,6 @@
 		EDED2E901C878EB8000F5E80 /* AddonCallbacksAudioEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AddonCallbacksAudioEngine.h; path = addons/interfaces/AudioEngine/AddonCallbacksAudioEngine.h; sourceTree = "<group>"; };
 		EDED2E921C878EE0000F5E80 /* AddonCallbacksAddon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AddonCallbacksAddon.cpp; path = addons/interfaces/Addon/AddonCallbacksAddon.cpp; sourceTree = "<group>"; };
 		EDED2E931C878EE0000F5E80 /* AddonCallbacksAddon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AddonCallbacksAddon.h; path = addons/interfaces/Addon/AddonCallbacksAddon.h; sourceTree = "<group>"; };
-		EDED2E951C878EF8000F5E80 /* AddonCallbacksAudioDSP.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AddonCallbacksAudioDSP.cpp; path = addons/interfaces/AudioDSP/AddonCallbacksAudioDSP.cpp; sourceTree = "<group>"; };
-		EDED2E961C878EF8000F5E80 /* AddonCallbacksAudioDSP.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AddonCallbacksAudioDSP.h; path = addons/interfaces/AudioDSP/AddonCallbacksAudioDSP.h; sourceTree = "<group>"; };
 		EDED2E991C878F61000F5E80 /* AddonInterfaces.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AddonInterfaces.cpp; path = addons/interfaces/AddonInterfaces.cpp; sourceTree = "<group>"; };
 		EDED2E9A1C878F61000F5E80 /* AddonInterfaces.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AddonInterfaces.h; path = addons/interfaces/AddonInterfaces.h; sourceTree = "<group>"; };
 		EDED2E9C1C878F70000F5E80 /* IAddonInterface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IAddonInterface.h; path = addons/interfaces/IAddonInterface.h; sourceTree = "<group>"; };
@@ -9092,7 +9089,6 @@
 				EDE8C7111C7F618500A86ECC /* kodi_audioengine_types.h */,
 				EDE8C7121C7F618500A86ECC /* kodi_vfs_types.h */,
 				68AE5BA01C923E5300C4D527 /* kodi_vfs_utils.hpp */,
-				EDE8C7131C7F618500A86ECC /* libKODI_adsp.h */,
 				EDE8C7141C7F618500A86ECC /* libKODI_audioengine.h */,
 				EDE8C7151C7F618500A86ECC /* libKODI_guilib.h */,
 				EDE8C7161C7F618500A86ECC /* libXBMC_addon.h */,

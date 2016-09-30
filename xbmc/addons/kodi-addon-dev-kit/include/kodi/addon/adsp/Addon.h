@@ -79,8 +79,8 @@
  * @li The basic support on the addon is supplied with the
  * AE_DSP_ADDON_CAPABILITIES data which becomes asked over
  * GetCapabilities(...), further the addon must register his available
- * modes on startup with the RegisterMode(...) callback function (see
- * libKODI_adsp.h). If one of this two points is not set the addon becomes
+ * modes on startup with the RegisterMode(...) callback function.
+ * If one of this two points is not set the addon becomes
  * ignored for the chain step.
  *
  * @subsection sec1_2 Processing

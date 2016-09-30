@@ -8,7 +8,6 @@ BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_vfs_types.h
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/kodi_vfs_utils.hpp
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/libXBMC_addon.h
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/libKODI_audioengine.h
-BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/libKODI_adsp.h
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/libKODI_guilib.h
 BINDINGS+=xbmc/addons/kodi-addon-dev-kit/include/kodi/libXBMC_codec.h
 BINDINGS+=xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxPacket.h
