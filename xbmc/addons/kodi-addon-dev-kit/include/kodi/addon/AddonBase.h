@@ -36,7 +36,7 @@
 #define __declspec(X)
 #endif
 #endif
-
+  
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -169,7 +169,8 @@ struct sAddonToKodiFuncTable_kodi;
 typedef struct sAddonToKodiFuncTable_Addon
 {
   void* kodiInstance;
-  void (*Log)(void *addonData, const int loglevel, const char *msg);
+  void (*Log)(void* kodiInstance, const int loglevel, const char *msg);
+  void (*free_string)(void* kodiInstance, char* str);
   sAddonToKodiFuncTable_kodi* kodi;
 } sAddonToKodiFuncTable_Addon;
 

@@ -64,6 +64,7 @@ namespace ADDON
 
     // addon to kodi callbacks
     static void addon_log_msg(void* kodiInstance, const int addonLogLevel, const char* strMessage);
+    static void free_string(void* kodiInstance, char* str);
 
   protected:
     void HandleException(std::exception &e, const char* context);

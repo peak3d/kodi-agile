@@ -540,14 +540,15 @@ bool CAddonDll::InitInterfaceFunctions()
   memset(&m_interface, 0, sizeof(m_interface));
   m_interface.toKodi.kodiInstance = this;
   m_interface.toKodi.Log = addon_log_msg;
-  kodi::ADDON_General::Init(&m_interface);
+  m_interface.toKodi.free_string = free_string;
+  Interface_General::Init(&m_interface);
 
   return true;
 }
 
 void CAddonDll::DeInitInterfaceFunctions()
 {
-  kodi::ADDON_General::DeInit(&m_interface);
+  Interface_General::DeInit(&m_interface);
 }
 
 void CAddonDll::addon_log_msg(void* kodiInstance, const int addonLogLevel, const char* strMessage)
@@ -588,6 +589,26 @@ void CAddonDll::addon_log_msg(void* kodiInstance, const int addonLogLevel, const
   }
 
   CLog::Log(logLevel, "AddOnLog: %s: %s", addon->Name().c_str(), strMessage);
+}
+
+void CAddonDll::free_string(void* kodiInstance, char* str)
+{
+  CAddonDll* addon = static_cast<CAddonDll*>(kodiInstance);
+  if (addon == nullptr)
+  {
+    CLog::Log(LOGERROR, "free_string(...) called with empty kodi instance pointer");
+    return;
+  }
+
+  try
+  {
+    if (str)
+      free(str);
+  }
+  catch (std::exception &e)
+  {
+    addon->HandleException(e, __FUNCTION__);
+  }
 }
 
 }; /* namespace ADDON */
