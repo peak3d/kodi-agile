@@ -23,7 +23,6 @@
 
 #include "addons/Addon.h"
 
-#include "addons/interfaces/Addon/AddonCallbacksAddon.h"
 #include "addons/interfaces/AudioEngine/AddonCallbacksAudioEngine.h"
 #include "addons/interfaces/Codec/AddonCallbacksCodec.h"
 #include "addons/interfaces/GUI/AddonCallbacksGUI.h"
@@ -40,7 +39,6 @@ namespace ADDON
 CAddonInterfaces::CAddonInterfaces(CAddon* addon)
   : m_callbacks(new AddonCB),
     m_addon(addon),
-    m_helperAddOn(nullptr),
     m_helperAudioEngine(nullptr),
     m_helperGUI(nullptr),
     m_helperCODEC(nullptr)
@@ -48,8 +46,6 @@ CAddonInterfaces::CAddonInterfaces(CAddon* addon)
   m_callbacks->libBasePath                  = strdup(CSpecialProtocol::TranslatePath("special://xbmcbinaddons").c_str());
   m_callbacks->addonData                    = this;
 
-  m_callbacks->AddOnLib_RegisterMe          = CAddonInterfaces::AddOnLib_RegisterMe;
-  m_callbacks->AddOnLib_UnRegisterMe        = CAddonInterfaces::AddOnLib_UnRegisterMe;
   m_callbacks->AudioEngineLib_RegisterMe    = CAddonInterfaces::AudioEngineLib_RegisterMe;
   m_callbacks->AudioEngineLib_UnRegisterMe  = CAddonInterfaces::AudioEngineLib_UnRegisterMe;
   m_callbacks->GUILib_RegisterMe            = CAddonInterfaces::GUILib_RegisterMe;
@@ -60,42 +56,12 @@ CAddonInterfaces::CAddonInterfaces(CAddon* addon)
 
 CAddonInterfaces::~CAddonInterfaces()
 {
-  delete static_cast<KodiAPI::AddOn::CAddonCallbacksAddon*>(m_helperAddOn);
   delete static_cast<KodiAPI::AudioEngine::CAddonCallbacksAudioEngine*>(m_helperAudioEngine);
   delete static_cast<KodiAPI::GUI::CAddonCallbacksGUI*>(m_helperGUI);
   delete static_cast<KodiAPI::Codec::CAddonCallbacksCodec*>(m_helperCODEC);
 
   free((char*)m_callbacks->libBasePath);
   delete m_callbacks;
-}
-
-/*\_____________________________________________________________________________
-\*/
-
-void* CAddonInterfaces::AddOnLib_RegisterMe(void *addonData)
-{
-  CAddonInterfaces* addon = static_cast<CAddonInterfaces*>(addonData);
-  if (addon == nullptr)
-  {
-    CLog::Log(LOGERROR, "CAddonInterfaces - %s - called with a null pointer", __FUNCTION__);
-    return nullptr;
-  }
-
-  addon->m_helperAddOn = new KodiAPI::AddOn::CAddonCallbacksAddon(addon->m_addon);
-  return static_cast<KodiAPI::AddOn::CAddonCallbacksAddon*>(addon->m_helperAddOn)->GetCallbacks();
-}
-
-void CAddonInterfaces::AddOnLib_UnRegisterMe(void *addonData, void *cbTable)
-{
-  CAddonInterfaces* addon = static_cast<CAddonInterfaces*>(addonData);
-  if (addon == nullptr)
-  {
-    CLog::Log(LOGERROR, "CAddonInterfaces - %s - called with a null pointer", __FUNCTION__);
-    return;
-  }
-
-  delete static_cast<KodiAPI::AddOn::CAddonCallbacksAddon*>(addon->m_helperAddOn);
-  addon->m_helperAddOn = nullptr;
 }
 
 /*\_____________________________________________________________________________

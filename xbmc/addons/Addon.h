@@ -27,7 +27,6 @@
 #include <vector>
 
 class TiXmlElement;
-class CAddonCallbacksAddon;
 class CVariant;
 
 typedef struct cp_plugin_info_t cp_plugin_info_t;
