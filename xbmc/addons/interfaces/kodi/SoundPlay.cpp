@@ -78,10 +78,7 @@ void* Interface_Audio::soundplay_get_handle(void* kodiInstance, const char* file
 
     return sound;
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 
   return nullptr;
 }
@@ -99,10 +96,7 @@ void Interface_Audio::soundplay_release_handle(void* kodiInstance, void* sndHand
   {
     CAEFactory::FreeSound(static_cast<IAESound*>(sndHandle));
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
 
 void Interface_Audio::soundplay_play(void* kodiInstance, void* sndHandle)
@@ -118,10 +112,7 @@ void Interface_Audio::soundplay_play(void* kodiInstance, void* sndHandle)
   {
     static_cast<IAESound*>(sndHandle)->Play();
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
 
 void Interface_Audio::soundplay_stop(void* kodiInstance, void* sndHandle)
@@ -137,10 +128,7 @@ void Interface_Audio::soundplay_stop(void* kodiInstance, void* sndHandle)
   {
     static_cast<IAESound*>(sndHandle)->Stop();
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
 
 void Interface_Audio::soundplay_set_channel(void* kodiInstance, void* sndHandle, int channel)
@@ -156,10 +144,7 @@ void Interface_Audio::soundplay_set_channel(void* kodiInstance, void* sndHandle,
   {
     static_cast<IAESound*>(sndHandle)->SetChannel(GetKodiAudioChannel(channel));
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
 
 int Interface_Audio::soundplay_get_channel(void* kodiInstance, void* sndHandle)
@@ -175,10 +160,7 @@ int Interface_Audio::soundplay_get_channel(void* kodiInstance, void* sndHandle)
   {
     return GetAddonAudioChannel(static_cast<IAESound*>(sndHandle)->GetChannel());
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 
   return AUDIO_CH_NULL;
 }
@@ -196,10 +178,7 @@ void Interface_Audio::soundplay_set_volume(void* kodiInstance, void* sndHandle, 
   {
     static_cast<IAESound*>(sndHandle)->SetVolume(volume);
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 }
 
 float Interface_Audio::soundplay_get_volume(void* kodiInstance, void* sndHandle)
@@ -215,10 +194,7 @@ float Interface_Audio::soundplay_get_volume(void* kodiInstance, void* sndHandle)
   {
     return static_cast<IAESound*>(sndHandle)->GetVolume();
   }
-  catch (std::exception &e)
-  {
-    ADDON::LogException(addon, e, __FUNCTION__);
-  }
+  HANDLE_ADDON_EXCEPTION(addon);
 
   return 0.0f;
 }
