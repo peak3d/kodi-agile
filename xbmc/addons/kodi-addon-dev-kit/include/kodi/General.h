@@ -77,7 +77,6 @@ typedef struct sAddonToKodiFuncTable_kodi
   long (*get_free_mem)(void* kodiInstance);
   int  (*get_global_idle_time)(void* kodiInstance);
   char* (*translate_path)(void* kodiInstance, const char* path);
-  
 } sAddonToKodiFuncTable_kodi;
 
 

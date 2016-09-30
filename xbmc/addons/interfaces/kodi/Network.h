@@ -1,6 +1,6 @@
 #pragma once
 /*
- *      Copyright (C) 2016 Team KODI
+ *      Copyright (C) 2015-2016 Team KODI
  *      http://kodi.tv
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -19,15 +19,20 @@
  *
  */
 
-#include "cores/AudioEngine/Utils/AEUtil.h"
+struct sFuncTable_Addon;
 
-extern "C" {
-namespace ADDON {
+namespace ADDON
+{
 
-  int GetAddonAudioFormat(enum AEDataFormat format);
-  enum AEDataFormat GetKodiAudioFormat(int format);
-  int GetAddonAudioChannel(enum AEChannel channel);
-  enum AEChannel GetKodiAudioChannel(int channel);
+  struct Interface_Network
+  {
+    static void Init(sFuncTable_Addon* funcTable);
+    static void DeInit(sFuncTable_Addon* funcTable);
+
+    static bool wake_on_lan(void* kodiInstance, const char* mac);
+    static char* get_ip_address(void* kodiInstance);
+    static char* dns_lookup(void* kodiInstance, const char* url, bool* ret);
+    static char* url_encode(void* kodiInstance, const char* url);
+  };
 
 } /* namespace ADDON */
-} /* extern "C" */

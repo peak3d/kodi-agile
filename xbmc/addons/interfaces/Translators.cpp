@@ -22,8 +22,7 @@
 #include "addons/kodi-addon-dev-kit/include/kodi/addon/AddonBase.h"
 
 extern "C" {
-namespace kodi {
-namespace addon {
+namespace ADDON {
   
 int GetAddonAudioFormat(enum AEDataFormat format)
 {
@@ -291,6 +290,5 @@ enum AEChannel GetKodiAudioChannel(int channel)
   }
 };
 
-} /* namespace addon */
-} /* namespace kodi */
+} /* namespace ADDON */
 } /* extern "C" */

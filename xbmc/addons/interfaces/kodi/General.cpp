@@ -1113,4 +1113,4 @@ char* Interface_General::translate_path(void* kodiInstance, const char* path)
   return nullptr;
 }
 
-} /* namespace kodi */
+} /* namespace ADDON */

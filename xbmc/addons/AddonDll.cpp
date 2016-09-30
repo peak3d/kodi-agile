@@ -33,6 +33,8 @@
  * Standard addon interface function includes
  */
 #include "addons/interfaces/kodi/General.h"
+#include "addons/interfaces/kodi/Network.h"
+#include "addons/interfaces/kodi/SoundPlay.h"
 
 namespace ADDON
 {
@@ -542,6 +544,8 @@ bool CAddonDll::InitInterfaceFunctions()
   m_interface.toKodi.Log = addon_log_msg;
   m_interface.toKodi.free_string = free_string;
   Interface_General::Init(&m_interface);
+  Interface_Network::Init(&m_interface);
+  Interface_Audio::Init(&m_interface);
 
   return true;
 }
@@ -549,6 +553,8 @@ bool CAddonDll::InitInterfaceFunctions()
 void CAddonDll::DeInitInterfaceFunctions()
 {
   Interface_General::DeInit(&m_interface);
+  Interface_Network::DeInit(&m_interface);
+  Interface_Audio::DeInit(&m_interface);
 }
 
 void CAddonDll::addon_log_msg(void* kodiInstance, const int addonLogLevel, const char* strMessage)

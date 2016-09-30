@@ -109,14 +109,14 @@ bool CAudioDecoder::Init(const CFileItem& file, unsigned int filecache)
   }
   catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 
-  m_format.m_dataFormat = kodi::addon::GetKodiAudioFormat(format);
+  m_format.m_dataFormat = ADDON::GetKodiAudioFormat(format);
   m_format.m_sampleRate = sampleRate;
   if (channel)
   {
     AEChannel kodiChannel[AE_CH_MAX];
     memset(kodiChannel, AE_CH_NULL, sizeof(kodiChannel));
     for (unsigned int i = 0; i < AE_CH_MAX && i < AUDIO_CH_MAX && channel[i] != AUDIO_CH_NULL; ++i)
-      kodiChannel[i] = kodi::addon::GetKodiAudioChannel(channel[i]);
+      kodiChannel[i] = ADDON::GetKodiAudioChannel(channel[i]);
     m_format.m_channelLayout = CAEChannelInfo((const AEChannel*)&kodiChannel);
   }
   else

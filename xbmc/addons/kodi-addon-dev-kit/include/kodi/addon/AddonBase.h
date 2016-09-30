@@ -137,12 +137,13 @@ typedef enum eAudioDataFormat
 typedef enum eAudioChannel
 {
   AUDIO_CH_NULL = -1,
-  AUDIO_CH_RAW ,
 
-  AUDIO_CH_FL  , AUDIO_CH_FR , AUDIO_CH_FC , AUDIO_CH_LFE, AUDIO_CH_BL  , AUDIO_CH_BR  , AUDIO_CH_FLOC,
+  AUDIO_CH_FL = 0 , AUDIO_CH_FR , AUDIO_CH_FC , AUDIO_CH_LFE, AUDIO_CH_BL  , AUDIO_CH_BR  , AUDIO_CH_FLOC,
   AUDIO_CH_FROC, AUDIO_CH_BC , AUDIO_CH_SL , AUDIO_CH_SR , AUDIO_CH_TFL , AUDIO_CH_TFR , AUDIO_CH_TFC ,
   AUDIO_CH_TC  , AUDIO_CH_TBL, AUDIO_CH_TBR, AUDIO_CH_TBC, AUDIO_CH_BLOC, AUDIO_CH_BROC,
 
+  AUDIO_CH_RAW ,
+  
   /* p16v devices */
   AUDIO_CH_UNKNOWN1 , AUDIO_CH_UNKNOWN2 , AUDIO_CH_UNKNOWN3 , AUDIO_CH_UNKNOWN4 ,
   AUDIO_CH_UNKNOWN5 , AUDIO_CH_UNKNOWN6 , AUDIO_CH_UNKNOWN7 , AUDIO_CH_UNKNOWN8 ,
@@ -165,6 +166,8 @@ typedef enum eAudioChannel
 } eAudioChannel;
 
 struct sAddonToKodiFuncTable_kodi;
+struct sAddonToKodiFuncTable_kodi_network;
+struct sAddonToKodiFuncTable_kodi_audio;
 
 typedef struct sAddonToKodiFuncTable_Addon
 {
@@ -172,6 +175,8 @@ typedef struct sAddonToKodiFuncTable_Addon
   void (*Log)(void* kodiInstance, const int loglevel, const char *msg);
   void (*free_string)(void* kodiInstance, char* str);
   sAddonToKodiFuncTable_kodi* kodi;
+  sAddonToKodiFuncTable_kodi_network* kodi_network;
+  sAddonToKodiFuncTable_kodi_audio* kodi_audio;
 } sAddonToKodiFuncTable_Addon;
 
 typedef struct sKodiToAddonFuncTable_Addon
