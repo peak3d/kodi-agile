@@ -25,7 +25,6 @@
 ///
 /// \defgroup cpp_kodi_network  Interface - kodi::network
 /// \ingroup cpp
-/// @{
 /// @brief **Network functions**
 ///
 /// The network module offers functions that allow you to control it.
@@ -184,4 +183,3 @@ namespace network
 
 } /* namespace network */
 } /* namespace kodi */
-//@}

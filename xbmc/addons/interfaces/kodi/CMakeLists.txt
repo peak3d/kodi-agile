@@ -1,10 +1,12 @@
 set(SOURCES General.cpp
+            AudioEngine.cpp
             Codec.cpp
             Network.cpp
             SoundPlay.cpp
             VFS.cpp)
 
 set(HEADERS General.h
+            AudioEngine.h
             Codec.h
             Network.h
             SoundPlay.h

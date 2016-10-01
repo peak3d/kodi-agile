@@ -97,6 +97,7 @@ struct sAddonToKodiFuncTable_kodi_network;
 struct sAddonToKodiFuncTable_kodi_audio;
 struct sAddonToKodiFuncTable_kodi_codec;
 struct sAddonToKodiFuncTable_kodi_vfs;
+struct sAddonToKodiFuncTable_kodi_audioengine;
 
 typedef struct sAddonToKodiFuncTable_Addon
 {
@@ -108,6 +109,7 @@ typedef struct sAddonToKodiFuncTable_Addon
   sAddonToKodiFuncTable_kodi_audio* kodi_audio;
   sAddonToKodiFuncTable_kodi_codec* kodi_codec;
   sAddonToKodiFuncTable_kodi_vfs* kodi_vfs;
+  sAddonToKodiFuncTable_kodi_audioengine* kodi_audioengine;
 } sAddonToKodiFuncTable_Addon;
 
 typedef struct sKodiToAddonFuncTable_Addon

@@ -47,11 +47,6 @@ namespace ADDON
     AddonCB* GetCallbacks()        { return m_callbacks; }
     CAddon *GetAddon()             { return m_addon; }
     const CAddon *GetAddon() const { return m_addon; }
-    /*\_________________________________________________________________________
-    \*/
-    static void*        AudioEngineLib_RegisterMe      (void* addonData);
-    static void         AudioEngineLib_UnRegisterMe    (void* addonData, void* cbTable);
-    void*               AudioEngineLib_GetHelper()    { return m_helperAudioEngine; }
     /*\__________________________________________________________________________________________
     \*/
     static void*        GUILib_RegisterMe              (void* addonData);
@@ -66,7 +61,6 @@ namespace ADDON
     AddonCB*  m_callbacks;
     CAddon*   m_addon;
 
-    void*     m_helperAudioEngine;
     void*     m_helperGUI;
   };
 
