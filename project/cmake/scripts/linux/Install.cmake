@@ -139,7 +139,6 @@ install(PROGRAMS ${CMAKE_BINARY_DIR}/${CORE_BUILD_DIR}/texturepacker/TexturePack
 
 # Install kodi-addon-dev headers
 install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/General.h
-              ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/libXBMC_addon.h
               ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/Codec.h
               ${CORE_SOURCE_DIR}/xbmc/cores/VideoPlayer/DVDDemuxers/DVDDemuxPacket.h
               ${CORE_SOURCE_DIR}/xbmc/filesystem/IFileTypes.h

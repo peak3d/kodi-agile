@@ -4807,7 +4807,6 @@
 		EC720A8D155091BB00FFD782 /* ilog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ilog.cpp; path = commons/ilog.cpp; sourceTree = "<group>"; };
 		EC720A8E155091BB00FFD782 /* ilog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ilog.h; path = commons/ilog.h; sourceTree = "<group>"; };
 		EDE8C70C1C7F615800A86ECC /* NOTE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = NOTE; path = "kodi-addon-dev-kit/include/NOTE"; sourceTree = "<group>"; };
-		EDE8C7161C7F618500A86ECC /* libXBMC_addon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = libXBMC_addon.h; path = "kodi-addon-dev-kit/include/kodi/libXBMC_addon.h"; sourceTree = "<group>"; };
 		EDE8C71F1C7F618500A86ECC /* xbmc_epg_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = xbmc_epg_types.h; path = "kodi-addon-dev-kit/include/kodi/xbmc_epg_types.h"; sourceTree = "<group>"; };
 		EDED2E861C878DE8000F5E80 /* AddonCallbacksPVR.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AddonCallbacksPVR.cpp; path = addons/interfaces/PVR/AddonCallbacksPVR.cpp; sourceTree = "<group>"; };
 		EDED2E871C878DE8000F5E80 /* AddonCallbacksPVR.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AddonCallbacksPVR.h; path = addons/interfaces/PVR/AddonCallbacksPVR.h; sourceTree = "<group>"; };
@@ -9077,7 +9076,6 @@
 		EDE8C70B1C7F610000A86ECC /* kodi */ = {
 			isa = PBXGroup;
 			children = (
-				EDE8C7161C7F618500A86ECC /* libXBMC_addon.h */,
 				EDE8C71F1C7F618500A86ECC /* xbmc_epg_types.h */,
 			);
 			name = kodi;
