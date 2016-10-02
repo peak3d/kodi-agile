@@ -21,21 +21,9 @@
 
 #include "../AddonBase.h"
 
-#ifdef TARGET_WINDOWS
-#include <windows.h>
-#else
-#ifndef __cdecl
-#define __cdecl
-#endif
-#ifndef __declspec
-#define __declspec(X)
-#endif
-#endif
-
-#include <string>
-
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 typedef struct SCR_PROPS
@@ -69,25 +57,23 @@ typedef struct sAddonInstance_ScreenSaver
   sKodiToAddonFuncTable_ScreenSaver toAddon;
 } sAddonInstance_ScreenSaver;
 
-
 #ifdef __cplusplus
-namespace kodi {
-namespace addon {
-//-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+namespace kodi
+{
+namespace addon
+{
 
-namespace screensaver {
-
-  class CAddon : public kodi::addon::IAddonInstance
+  class CInstanceScreensaver : public IAddonInstance
   {
   public:
-    CAddon(void* instance)
+    CInstanceScreensaver(void* instance)
       : IAddonInstance(ADDON_INSTANCE_SCREENSAVER),
         m_instance(static_cast<sAddonInstance_ScreenSaver*>(instance))
     {
       m_instance->toAddon.Start = ADDON_Start;
       m_instance->toAddon.Render = ADDON_Render;
     }
-    virtual ~CAddon() { }
+    virtual ~CInstanceScreensaver() { }
 
     inline void* Device() { return m_instance->props.device; }
     inline int X() { return m_instance->props.x; }
@@ -105,18 +91,17 @@ namespace screensaver {
   private:
     inline static void ADDON_Start(void* addonInstance)
     {
-      static_cast<CAddon*>(addonInstance)->Start();
+      static_cast<CInstanceScreensaver*>(addonInstance)->Start();
     }
 
     inline static void ADDON_Render(void* addonInstance)
     {
-      static_cast<CAddon*>(addonInstance)->Render();
+      static_cast<CInstanceScreensaver*>(addonInstance)->Render();
     }
 
     sAddonInstance_ScreenSaver* m_instance;
   };
 
-} /* namespace screensaver */
 } /* namespace addon */
 } /* namespace kodi */
 } /* extern "C" */
