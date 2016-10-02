@@ -20,7 +20,7 @@
  */
 
 #include "AddonDll.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/addon/screensaver/Addon.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/screensaver/ScreenSaver.h"
 
 namespace ADDON
 {

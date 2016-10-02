@@ -21,7 +21,7 @@
 #include <cstdlib>
 
 #include "system.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/addon/pvr/Addon.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/pvr/PVRClient.h"
 #include "dbwrappers/dataset.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/log.h"

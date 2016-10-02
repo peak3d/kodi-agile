@@ -19,7 +19,7 @@
  *
  */
 
-#include "addons/kodi-addon-dev-kit/include/kodi/addon/peripheral/Addon.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/peripheral/Peripheral.h"
 
 #include <string>
 #include <utility>

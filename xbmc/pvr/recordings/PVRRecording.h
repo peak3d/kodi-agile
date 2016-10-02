@@ -40,7 +40,7 @@
 #include <vector>
 
 #include "XBDateTime.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/addon/pvr/Addon.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/pvr/PVRClient.h"
 #include "video/VideoInfoTag.h"
 
 class CVideoDatabase;

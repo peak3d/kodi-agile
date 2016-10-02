@@ -19,7 +19,7 @@
  */
 #pragma once
 
-#include "addons/kodi-addon-dev-kit/include/kodi/addon/peripheral/Addon.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/peripheral/Peripheral.h"
 #include "input/joysticks/DriverPrimitive.h"
 #include "input/joysticks/JoystickTypes.h"
 

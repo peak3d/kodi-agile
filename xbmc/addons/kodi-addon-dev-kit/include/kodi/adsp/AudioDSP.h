@@ -38,7 +38,7 @@
 #include <cstddef>
 #include <string>
 
-#include "../../AddonBase.h"
+#include "../AddonBase.h"
 
 #undef ATTRIBUTE_PACKED
 #undef PRAGMA_PACK_BEGIN

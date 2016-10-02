@@ -19,7 +19,7 @@
  *
  */
 
-#include "addons/kodi-addon-dev-kit/include/kodi/addon/pvr/Addon.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/pvr/PVRClient.h"
 #include "threads/CriticalSection.h"
 #include "utils/ISerializable.h"
 #include "utils/ISortable.h"

@@ -19,7 +19,7 @@
  *
  */
 
-#include "../../AddonBase.h"
+#include "../AddonBase.h"
 
 #ifdef TARGET_WINDOWS
 #include <windows.h>

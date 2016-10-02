@@ -19,7 +19,7 @@
  *
  */
 
-#include "addons/kodi-addon-dev-kit/include/kodi/addon/pvr/Addon.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/pvr/PVRClient.h"
 #include "pvr/addons/PVRClients.h"
 #include "threads/CriticalSection.h"
 #include "threads/SystemClock.h"

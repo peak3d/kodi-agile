@@ -23,7 +23,7 @@
 #include <memory>
 #include <vector>
 
-#include "addons/kodi-addon-dev-kit/include/kodi/addon/pvr/Addon.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/pvr/PVRClient.h"
 #include "PVRTimerInfoTag.h"
 #include "utils/Observer.h"
 #include "XBDateTime.h"

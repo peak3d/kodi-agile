@@ -20,7 +20,7 @@
  */
 
 #include "AddonDll.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/addon/audioencoder/Addon.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/audioencoder/AudioEncoder.h"
 #include "cdrip/IEncoder.h"
 
 namespace ADDON

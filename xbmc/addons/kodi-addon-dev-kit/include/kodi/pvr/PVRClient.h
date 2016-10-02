@@ -37,9 +37,9 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include "../../AddonBase.h"
-#include "../../xbmc_epg_types.h"
-#include "../../Codec.h"
+#include "../AddonBase.h"
+#include "EPGTypes.h"
+#include "../Codec.h"
 
 /*! @note Define "USE_DEMUX" at compile time if demuxing in the PVR add-on is used.
  *        Also XBMC's "DVDDemuxPacket.h" file must be in the include path of the add-on,

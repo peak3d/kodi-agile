@@ -25,7 +25,7 @@
 
 #include "addons/Addon.h"
 #include "addons/AddonDll.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/addon/adsp/Addon.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/adsp/AudioDSP.h"
 
 namespace ActiveAE
 {

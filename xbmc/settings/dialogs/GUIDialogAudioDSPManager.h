@@ -19,7 +19,7 @@
  *
  */
 
-#include "addons/kodi-addon-dev-kit/include/kodi/addon/adsp/Addon.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/adsp/AudioDSP.h"
 #include "cores/AudioEngine/Engines/ActiveAE/AudioDSPAddons/ActiveAEDSPMode.h"
 #include "dialogs/GUIDialogContextMenu.h"
 #include "guilib/GUIDialog.h"

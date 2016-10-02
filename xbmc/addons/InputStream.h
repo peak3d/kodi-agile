@@ -20,7 +20,7 @@
 
 #include "AddonDll.h"
 #include "FileItem.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/addon/inputstream/Addon.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/inputstream/InputStream.h"
 #include "threads/CriticalSection.h"
 
 #include <vector>

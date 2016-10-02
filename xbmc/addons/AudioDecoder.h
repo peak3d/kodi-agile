@@ -19,7 +19,7 @@
  */
 
 #include "AddonDll.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/addon/audiodecoder/Addon.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/audiodecoder/AudioDecoder.h"
 #include "cores/paplayer/ICodec.h"
 #include "music/tags/ImusicInfoTagLoader.h"
 #include "filesystem/MusicFileDirectory.h"

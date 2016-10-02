@@ -274,32 +274,6 @@ if(ENABLE_EVENTCLIENTS)
           COMPONENT kodi-eventclients-xbmc-send)
 endif()
 
-# Install kodi-inputstream-dev
-install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/addon/inputstream/Addon.h
-        DESTINATION ${includedir}/${APP_NAME_LC}/addon/inputstream
-        COMPONENT kodi-inputstream-dev)
-
-# Install kodi-pvr-dev
-install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/xbmc_epg_types.h
-              ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/addon/pvr/Addon.h
-        DESTINATION ${includedir}/${APP_NAME_LC}/addon/kodi
-        COMPONENT kodi-pvr-dev)
-
-# Install kodi-screensaver-dev
-install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/addon/screensaver/Addon.h
-        DESTINATION ${includedir}/${APP_NAME_LC}/addon/screensaver
-        COMPONENT kodi-screensaver-dev)
-
-# Install kodi-visualization-dev
-install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/addon/visualization/Addon.h
-        DESTINATION ${includedir}/${APP_NAME_LC}/addon/visualization
-        COMPONENT kodi-visualization-dev)
-
-# Install kodi-peripheral-dev
-install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/addon/peripheral/Addon.h
-        DESTINATION ${includedir}/${APP_NAME_LC}/addon/peripheral
-        COMPONENT kodi-peripheral-dev)
-
 # Install XBT skin files
 foreach(texture ${XBT_FILES})
   string(REPLACE "${CMAKE_BINARY_DIR}/" "" dir ${texture})

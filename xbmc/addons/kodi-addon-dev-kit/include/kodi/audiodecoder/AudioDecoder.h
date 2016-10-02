@@ -19,7 +19,7 @@
  *
  */
 
-#include "../../AddonBase.h"
+#include "../AddonBase.h"
 #include <stdint.h>
 #include <string>
 
