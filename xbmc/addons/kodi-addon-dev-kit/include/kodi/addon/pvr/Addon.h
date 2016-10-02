@@ -37,7 +37,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include "../AddonBase.h"
+#include "../../AddonBase.h"
 #include "../../xbmc_epg_types.h"
 #include "../../Codec.h"
 

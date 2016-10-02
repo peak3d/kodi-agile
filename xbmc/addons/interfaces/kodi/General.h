@@ -24,6 +24,8 @@ struct sFuncTable_Addon;
 
 namespace ADDON
 {
+extern "C"
+{
 
   struct Interface_General
   {
@@ -64,4 +66,5 @@ namespace ADDON
     static char* translate_path(void* kodiInstance, const char* path);
   };
 
+} /* extern "C" */
 } /* namespace ADDON */

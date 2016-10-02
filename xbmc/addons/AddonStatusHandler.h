@@ -21,7 +21,7 @@
 
 #include "threads/Thread.h"
 #include "IAddon.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/addon/AddonBase.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/AddonBase.h"
 #include "threads/CriticalSection.h"
 #include <string>
 

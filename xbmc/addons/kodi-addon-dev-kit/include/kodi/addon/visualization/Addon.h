@@ -23,7 +23,7 @@
   Common data structures shared between Kodi and Kodi's visualisations
  */
 
-#include "../AddonBase.h"
+#include "../../AddonBase.h"
 
 #include <cstddef>
 #include <string>

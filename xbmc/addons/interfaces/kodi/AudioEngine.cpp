@@ -67,6 +67,15 @@ void Interface_AudioEngine::Init(sFuncTable_Addon* funcTable)
   funcTable->toKodi.kodi_audioengine->AEStream_SetResampleRatio = AEStream_SetResampleRatio;
 }
 
+void Interface_AudioEngine::DeInit(sFuncTable_Addon* funcTable)
+{
+  if (funcTable->toKodi.kodi_audioengine)
+  {
+    free(funcTable->toKodi.kodi_audioengine);
+    funcTable->toKodi.kodi_audioengine = nullptr;
+  }
+}
+
 AEStreamHandle* Interface_AudioEngine::AudioEngine_MakeStream(AudioEngineFormat StreamFormat, unsigned int options)
 {
   AEAudioFormat format;

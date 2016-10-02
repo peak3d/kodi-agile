@@ -33,10 +33,12 @@
  * Standard addon interface function includes
  */
 #include "addons/interfaces/kodi/General.h"
+#include "addons/interfaces/kodi/AudioEngine.h"
 #include "addons/interfaces/kodi/Codec.h"
 #include "addons/interfaces/kodi/Network.h"
 #include "addons/interfaces/kodi/SoundPlay.h"
 #include "addons/interfaces/kodi/VFS.h"
+#include "addons/interfaces/kodi/gui/General.h"
 
 namespace ADDON
 {
@@ -546,10 +548,12 @@ bool CAddonDll::InitInterfaceFunctions()
   m_interface.toKodi.Log = addon_log_msg;
   m_interface.toKodi.free_string = free_string;
   Interface_General::Init(&m_interface);
+  Interface_AudioEngine::Init(&m_interface);
+  Interface_Codec::Init(&m_interface);
   Interface_Network::Init(&m_interface);
   Interface_Audio::Init(&m_interface);
   Interface_VFS::Init(&m_interface);
-  Interface_Codec::Init(&m_interface);
+  Interface_GUIGeneral::Init(&m_interface); //!< @note On this call also all other gui related parts becomes set
 
   return true;
 }
@@ -557,10 +561,12 @@ bool CAddonDll::InitInterfaceFunctions()
 void CAddonDll::DeInitInterfaceFunctions()
 {
   Interface_General::DeInit(&m_interface);
-  Interface_Network::DeInit(&m_interface);
   Interface_Audio::DeInit(&m_interface);
-  Interface_VFS::DeInit(&m_interface);
+  Interface_AudioEngine::DeInit(&m_interface);
   Interface_Codec::DeInit(&m_interface);
+  Interface_Network::DeInit(&m_interface);
+  Interface_VFS::DeInit(&m_interface);
+  Interface_GUIGeneral::DeInit(&m_interface); //!< @note On this call also all other gui related parts becomes set
 }
 
 void CAddonDll::addon_log_msg(void* kodiInstance, const int addonLogLevel, const char* strMessage)

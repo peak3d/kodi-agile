@@ -20,7 +20,7 @@
  *
  */
 
-#include "addon/AddonBase.h"
+#include "AddonBase.h"
 
 #ifdef __cplusplus
 extern "C" {

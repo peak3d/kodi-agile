@@ -1,5 +1,4 @@
-  #pragma once
-
+#pragma once
 /*
  *      Copyright (C) 2005-2015 Team Kodi
  *      http://kodi.tv
@@ -98,6 +97,7 @@ struct sAddonToKodiFuncTable_kodi_audio;
 struct sAddonToKodiFuncTable_kodi_codec;
 struct sAddonToKodiFuncTable_kodi_vfs;
 struct sAddonToKodiFuncTable_kodi_audioengine;
+struct sAddonToKodiFuncTable_kodi_gui;
 
 typedef struct sAddonToKodiFuncTable_Addon
 {
@@ -110,6 +110,7 @@ typedef struct sAddonToKodiFuncTable_Addon
   sAddonToKodiFuncTable_kodi_codec* kodi_codec;
   sAddonToKodiFuncTable_kodi_vfs* kodi_vfs;
   sAddonToKodiFuncTable_kodi_audioengine* kodi_audioengine;
+  sAddonToKodiFuncTable_kodi_gui* kodi_gui;
 } sAddonToKodiFuncTable_Addon;
 
 typedef struct sKodiToAddonFuncTable_Addon

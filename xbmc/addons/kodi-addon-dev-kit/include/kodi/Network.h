@@ -19,7 +19,7 @@
  *
  */
 
-#include "addon/AddonBase.h"
+#include "AddonBase.h"
 
 //==============================================================================
 ///
@@ -46,7 +46,7 @@ extern "C"
     char* (*dns_lookup)(void* kodiInstance, const char* url, bool* ret);
     char* (*url_encode)(void* kodiInstance, const char* url);
   } sAddonToKodiFuncTable_kodi_network;
-  
+
 } /* extern "C" */
 
 namespace kodi

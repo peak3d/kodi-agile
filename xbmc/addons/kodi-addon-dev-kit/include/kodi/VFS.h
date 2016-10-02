@@ -19,7 +19,7 @@
  *
  */
 
-#include "addon/AddonBase.h"
+#include "AddonBase.h"
 
 //==============================================================================
 /// \defgroup cpp_kodi_vfs Interface - kodi::vfs
@@ -75,7 +75,7 @@ typedef struct sAddonToKodiFuncTable_kodi_vfs
 /// \ingroup cpp_kodi_vfs_CFile
 /// @brief **Virtual file Server definition values**
 //------------------------------------------------------------------------------
-  
+
 //==============================================================================
 ///
 /// @brief Transfer structure for data from Kodi to addon about directory entries.
@@ -220,7 +220,7 @@ namespace vfs
     // @note Not for addon development itself needed, thats why below is
     // disabled for doxygen!
     //
-    // @ingroup cpp_kodi_vfs_CDirEntry 
+    // @ingroup cpp_kodi_vfs_CDirEntry
     // @brief Constructor to create own copy
     //
     // @param[in] dirEntry pointer to own class type
@@ -403,7 +403,7 @@ namespace vfs
     ///
     /// @ingroup cpp_kodi_vfs_CFile
     /// @brief Open the file with filename via Kodi's \ref cpp_kodi_vfs_CFile
-    /// "CFile" in write mode. Needs to be closed by calling Close() when 
+    /// "CFile" in write mode. Needs to be closed by calling Close() when
     /// done.
     ///
     /// @note Related folders becomes created if not present.
@@ -465,7 +465,7 @@ namespace vfs
       return ::kodi::addon::CAddonBase::m_instance->toKodi.kodi_vfs->curl_add_option(::kodi::addon::CAddonBase::m_instance->toKodi.kodiInstance, m_file, type, name.c_str(), value.c_str());
     }
     //--------------------------------------------------------------------------
-    
+
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_vfs_CFile
@@ -532,7 +532,7 @@ namespace vfs
     }
     //--------------------------------------------------------------------------
 
-    //==========================================================================  
+    //==========================================================================
     ///
     /// @ingroup cpp_kodi_vfs_CFile
     /// @brief Write to a file opened in write mode.

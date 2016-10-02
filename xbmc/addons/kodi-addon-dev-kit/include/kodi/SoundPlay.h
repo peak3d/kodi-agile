@@ -19,7 +19,7 @@
  *
  */
 
-#include "addon/AddonBase.h"
+#include "AddonBase.h"
 
 //==============================================================================
 ///
@@ -85,7 +85,7 @@ typedef struct sAddonToKodiFuncTable_kodi_audio
   void (*soundplay_set_volume)(void* kodiInstance, void* sndHandle, float volume);
   float (*soundplay_get_volume)(void* kodiInstance, void* sndHandle);
 } sAddonToKodiFuncTable_kodi_audio;
-  
+
 namespace kodi
 {
 

@@ -23,7 +23,7 @@
 /*!
  * Common data structures shared between KODI and KODI's binary add-ons
  */
-#include "addon/AddonBase.h"
+#include "AddonBase.h"
 
 #ifdef TARGET_WINDOWS
 #include <windows.h>
@@ -53,7 +53,7 @@
 #define ATTRIBUTE_PACKED
 #define PRAGMA_PACK 1
 #endif
-  
+
 //==============================================================================
 ///
 /// \defgroup cpp_kodi_audioengine  Interface - kodi::audioengine
@@ -89,7 +89,7 @@ extern "C"
     AUDIO_STREAM_PAUSED         = 1 << 1,
     /// autostart the stream when enough data is buffered
     AUDIO_STREAM_AUTOSTART      = 1 << 2,
-    /// if this option is set the ADSP-System is bypassed and the raw stream 
+    /// if this option is set the ADSP-System is bypassed and the raw stream
     /// will be passed through IAESink
     AUDIO_STREAM_BYPASS_ADSP    = 1 << 3
   } AudioEngineStreamOptions;
@@ -157,7 +157,7 @@ extern "C"
       {
         return false;
       }
-      
+
       for (unsigned int ch = 0; ch < AUDIO_CH_MAX; ch++)
       {
         if (fmt->m_channels[ch] != m_channels[ch])
@@ -174,9 +174,9 @@ extern "C"
 
   /* A stream handle pointer, which is only used internally by the addon stream handle */
   typedef void AEStreamHandle;
-  
-  /* 
-   * Function address structure, not need to visible on dev kit doxygen 
+
+  /*
+   * Function address structure, not need to visible on dev kit doxygen
    * documentation
    */
   typedef struct sAddonToKodiFuncTable_kodi_audioengine
@@ -529,7 +529,7 @@ namespace audioengine
     //==========================================================================
     /// @ingroup cpp_kodi_audioengine_CAddonAEStream
     /// @brief Returns the stream's sample rate, if the stream is using a dynamic
-    /// sample rate, this value will NOT reflect any changes made by calls to 
+    /// sample rate, this value will NOT reflect any changes made by calls to
     /// SetResampleRatio()
     ///
     /// @return The stream's sample rate (eg, 48000)

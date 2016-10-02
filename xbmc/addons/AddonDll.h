@@ -23,7 +23,7 @@
 #include "DllAddon.h"
 #include "AddonManager.h"
 #include "addons/interfaces/AddonInterfaces.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/addon/AddonBase.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/AddonBase.h"
 #include "utils/URIUtils.h"
 #include "filesystem/File.h"
 #include "filesystem/SpecialProtocol.h"

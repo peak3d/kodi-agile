@@ -19,11 +19,11 @@
  *
  */
 
-#include "addon/AddonBase.h"
+#include "AddonBase.h"
 
 //==============================================================================
 ///
-/// \addtogroup cpp_kodi 
+/// \addtogroup cpp_kodi
 /// @brief **General functions on Kodi**
 ///
 /// It has the header \ref General.h "#include <kodi/General.h>" be included
@@ -38,7 +38,7 @@
 /// ~~~~~~~~~~~~~
 ///
 //------------------------------------------------------------------------------
-  
+
 //==============================================================================
 ///
 /// \defgroup cpp_kodi_Defs Definitions, structures and enumerators
@@ -52,13 +52,13 @@ extern "C"
 
 /*
  * For interface between add-on and kodi.
- * 
+ *
  * In this structure becomes the addresses of functions inside Kodi stored who
  * then available for the add-on to call.
- * 
+ *
  * All function pointers there are used by the C++ interface functions below.
  * You find the set of them on xbmc/addons/interfaces/kodi/General.cpp
- * 
+ *
  * Note: For add-on development itself not needed, thats why with '*' here in
  * text.
  */
@@ -167,7 +167,7 @@ typedef enum LangFormats
   LANG_FMT_ENGLISH_NAME
 } LangFormats;
 //------------------------------------------------------------------------------
-  
+
 //==============================================================================
 /// \ingroup cpp_kodi_Defs
 /// @brief Kodi server identificators
@@ -211,7 +211,7 @@ namespace kodi
   ///
   /// @param[in] settingName    The name of the setting to get.
   /// @param[out] settingValue  The value.
-  /// @param[in] global         [opt] If set to true becomes Kodi itself asked 
+  /// @param[in] global         [opt] If set to true becomes Kodi itself asked
   ///                           about a setting <em>(default is <b><c>false</c></b>)</em>
   /// @return                   true if successfull done
   ///
@@ -319,7 +319,7 @@ namespace kodi
   //============================================================================
   ///
   /// \ingroup cpp_kodi
-  /// @brief Numeric input elements allow a user to enter a number. The "label" 
+  /// @brief Numeric input elements allow a user to enter a number. The "label"
   /// attribute must contain an id from the language file that indicates which
   /// text to display for the input field.
   ///
@@ -400,7 +400,7 @@ namespace kodi
   ///
   /// @param[in] settingName    The name of the setting to get.
   /// @param[out] settingValue  The value.
-  /// @param[in] global         [opt] If set to true becomes Kodi itself asked 
+  /// @param[in] global         [opt] If set to true becomes Kodi itself asked
   ///                           about a setting <em>(default is <b><c>false</c></b>)</em>
   /// @return                   true if successfull done
   ///
@@ -428,7 +428,7 @@ namespace kodi
   /// ~~~~~~~~~~~~~
   ///
   inline bool GetSettingBoolean(const std::string& settingName, bool& settingValue, bool global = false)
-  { 
+  {
     return ::kodi::addon::CAddonBase::m_instance->toKodi.kodi->get_setting
     (
       ::kodi::addon::CAddonBase::m_instance->toKodi.kodiInstance,
@@ -447,7 +447,7 @@ namespace kodi
   ///
   /// @param[in] settingName  The name of the setting to get.
   /// @param[in] settingValue The value.
-  /// @param[in] global       [opt] If set to true becomes Kodi itself asked 
+  /// @param[in] global       [opt] If set to true becomes Kodi itself asked
   ///                         about a setting <em>(default is <b><c>false</c></b>)</em>
   /// @return  true if successful done
   ///
@@ -471,7 +471,7 @@ namespace kodi
   /// ~~~~~~~~~~~~~
   ///
   inline bool GetSettingFloat(const std::string& settingName, float& settingValue, bool global = false)
-  { 
+  {
     return ::kodi::addon::CAddonBase::m_instance->toKodi.kodi->get_setting
     (
       ::kodi::addon::CAddonBase::m_instance->toKodi.kodiInstance,
@@ -778,7 +778,7 @@ namespace kodi
       ret,
       failOnBadChar
     );
-    if (retString != nullptr)         
+    if (retString != nullptr)
     {
       if (ret)
         utf8StringDst = retString;
@@ -799,14 +799,14 @@ namespace kodi
   /// @brief Returns an addon's localized 'unicode string'.
   ///
   /// @param[in] labelId    for string you want to localize.
-  /// @param[in] defaultStr [opt] The default message, also helps to identify 
+  /// @param[in] defaultStr [opt] The default message, also helps to identify
   ///                       the code that is used <em>(default is
   ///                       <b><c>empty</c></b>)</em>
   /// @return               The localized message, or default if the add-on
   ///                       helper fails to return a message
   ///
   /// @note Label id's \b 30000 to \b 30999 and \b 32000 to \b 32999 are related
-  /// to own add-on included strings inside 
+  /// to own add-on included strings inside
   /// <b>./resources/language/resource.language.??_??/strings.po</b>
   /// all others are from Kodi itself.
   ///
@@ -1008,8 +1008,8 @@ namespace kodi
     );
   }
   //----------------------------------------------------------------------------
-  
-  
+
+
   //============================================================================
   ///
   /// \ingroup cpp_kodi
@@ -1132,7 +1132,7 @@ namespace kodi
   }
   //----------------------------------------------------------------------------
 
-  
+
   //============================================================================
   ///
   /// \ingroup cpp_kodi
@@ -1338,7 +1338,7 @@ namespace kodi
   }
   //----------------------------------------------------------------------------
 
-  
+
   //============================================================================
   ///
   /// \ingroup cpp_kodi
@@ -1364,8 +1364,8 @@ namespace kodi
     );
   }
   //----------------------------------------------------------------------------
-  
-  
+
+
   //============================================================================
   ///
   /// \ingroup cpp_kodi
@@ -1416,8 +1416,8 @@ namespace kodi
     );
   }
   //----------------------------------------------------------------------------
-  
-  
+
+
   //============================================================================
   ///
   /// \ingroup cpp_kodi
@@ -1446,7 +1446,7 @@ namespace kodi
   }
   //----------------------------------------------------------------------------
 
-  
+
   //============================================================================
   ///
   /// \ingroup cpp_kodi
@@ -1523,7 +1523,7 @@ namespace kodi
 
   //----------------------------------------------------------------------------
 
-  
+
   //============================================================================
   ///
   /// \ingroup cpp_kodi

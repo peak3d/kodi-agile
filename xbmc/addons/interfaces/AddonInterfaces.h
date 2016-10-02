@@ -35,33 +35,10 @@ namespace MESSAGING
 
 namespace ADDON
 {
-
-  class CAddon;
-
   class CAddonInterfaces
   {
   public:
-    CAddonInterfaces(CAddon* addon);
-    ~CAddonInterfaces();
-
-    AddonCB* GetCallbacks()        { return m_callbacks; }
-    CAddon *GetAddon()             { return m_addon; }
-    const CAddon *GetAddon() const { return m_addon; }
-    /*\__________________________________________________________________________________________
-    \*/
-    static void*        GUILib_RegisterMe              (void* addonData);
-    static void         GUILib_UnRegisterMe            (void* addonData, void* cbTable);
-    void*               GUILib_GetHelper()            { return m_helperGUI; }
-    /*
-     * API level independent functions for Kodi
-     */
     static void OnApplicationMessage(KODI::MESSAGING::ThreadMessage* pMsg);
-
-  private:
-    AddonCB*  m_callbacks;
-    CAddon*   m_addon;
-
-    void*     m_helperGUI;
   };
 
 } /* namespace ADDON */

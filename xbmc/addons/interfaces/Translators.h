@@ -28,6 +28,8 @@ namespace ADDON {
   enum AEDataFormat GetKodiAudioFormat(int format);
   int GetAddonAudioChannel(enum AEChannel channel);
   enum AEChannel GetKodiAudioChannel(int channel);
+  int GetAddonGUIActionType(int kodiAction);
+  int GetKodiGUIActionType(int addonAction);
 
 } /* namespace ADDON */
 } /* extern "C" */

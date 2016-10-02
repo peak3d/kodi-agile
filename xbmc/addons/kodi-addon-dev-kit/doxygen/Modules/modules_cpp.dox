@@ -55,3 +55,8 @@
     \defgroup cpp_kodi_addon_visualization class CInstanceVisualization
     \ingroup cpp_kodi_addon_instances
     */
+/*!
+\defgroup cpp_kodi_gui Interface - kodi::gui
+\ingroup cpp
+\brief <b><em>Graphical functions for Windows and Dialogs to show</em></b>
+*/

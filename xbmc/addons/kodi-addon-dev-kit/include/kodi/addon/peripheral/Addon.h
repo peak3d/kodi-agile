@@ -21,7 +21,7 @@
 #ifndef __PERIPHERAL_TYPES_H__
 #define __PERIPHERAL_TYPES_H__
 
-#include "../AddonBase.h"
+#include "../../AddonBase.h"
 
 #ifdef TARGET_WINDOWS
   #include <windows.h>
