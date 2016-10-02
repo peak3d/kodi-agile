@@ -19,7 +19,6 @@
  */
 
 #include "Application.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/libKODI_guilib.h"
 #include "cores/VideoPlayer/DVDDemuxers/DVDDemuxUtils.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "epg/Epg.h"
