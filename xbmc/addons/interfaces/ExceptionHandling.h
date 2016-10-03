@@ -33,6 +33,7 @@ namespace ADDON
   {
     static void LogStdException(CAddonDll* addon, const std::exception &e, const char *name);
     static void LogErrException(CAddonDll* addon, int e, const char *name);
+    static void LogUnkException(CAddonDll* addon, const char *name);
     static void ShowExceptionErrorDialog(CAddonDll* addon);
   };
 
@@ -49,7 +50,7 @@ catch (std::exception &e) \
 } \
 catch (...) \
 { \
-  CLog::Log(LOGERROR, "EXCEPTION: Unknown exception thrown from the call \"%s\"", __FUNCTION__); \
+  ADDON::Exception::LogUnkException(addon, __FUNCTION__); \
 }
 
 #define HANDLE_ADDON_EXCEPTION_WITH_RETURN(addon, ret) \
@@ -65,6 +66,6 @@ catch (std::exception &e) \
 } \
 catch (...) \
 { \
-  CLog::Log(LOGERROR, "EXCEPTION: Unknown exception thrown from the call \"%s\"", __FUNCTION__); \
+  ADDON::Exception::LogUnkException(addon, __FUNCTION__); \
   return ret; \
 }

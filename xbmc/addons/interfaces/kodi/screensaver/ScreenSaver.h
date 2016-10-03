@@ -42,6 +42,7 @@ public:
 private:
   void ExceptionStdHandle(std::exception& ex, const char* function);
   void ExceptionErrHandle(int ex, const char* function);
+  void ExceptionUnkHandle(const char* function);
 
   sAddonInstance_ScreenSaver m_struct;
   void* m_addonInstance;

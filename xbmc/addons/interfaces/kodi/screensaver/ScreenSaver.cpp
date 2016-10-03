@@ -99,7 +99,8 @@ void CScreenSaver::Start()
       m_struct.toAddon.Start(m_addonInstance);
   }
   catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
-  catch (int ex) { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 }
 
 void CScreenSaver::Render()
@@ -111,7 +112,8 @@ void CScreenSaver::Render()
       m_struct.toAddon.Render(m_addonInstance);
   }
   catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
-  catch (int ex) { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 }
 
 void CScreenSaver::Destroy()
@@ -155,6 +157,14 @@ void CScreenSaver::ExceptionStdHandle(std::exception& ex, const char* function)
 void CScreenSaver::ExceptionErrHandle(int ex, const char* function)
 {
   Exception::LogErrException(this, ex, function);
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(ID());
+  Exception::ShowExceptionErrorDialog(this);
+}
+
+void CScreenSaver::ExceptionUnkHandle(const char* function)
+{
+  Exception::LogUnkException(this, function);
   Destroy();
   CAddonMgr::GetInstance().DisableAddon(ID());
   Exception::ShowExceptionErrorDialog(this);
