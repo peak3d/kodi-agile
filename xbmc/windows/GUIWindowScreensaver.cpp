@@ -127,6 +127,8 @@ bool CGUIWindowScreensaver::OnMessage(CGUIMessage& message)
 
   case GUI_MSG_WINDOW_INIT:
     {
+      bool ret = true;
+
       CGUIWindow::OnMessage(message);
       CSingleLock lock (m_critSection);
 
@@ -146,13 +148,12 @@ bool CGUIWindowScreensaver::OnMessage(CGUIMessage& message)
         return false;
 
       g_graphicsContext.CaptureStateBlock();
-      m_addon->CreateScreenSaver();
+      ret = m_addon->CreateScreenSaver();
 #endif
       // setup a z-buffer
 //      RESOLUTION res = g_graphicsContext.GetVideoResolution();
 //      g_graphicsContext.SetVideoResolution(res, TRUE);
-
-      return true;
+      return ret;
     }
   case GUI_MSG_CHECK_LOCK:
     if (!g_passwordManager.IsProfileLockUnlocked())
