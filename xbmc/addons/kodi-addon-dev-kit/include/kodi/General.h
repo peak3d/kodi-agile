@@ -1768,6 +1768,8 @@ namespace kodi
       case ADDON_STATUS_UNKNOWN:            return "Unknown";
       case ADDON_STATUS_NEED_SAVEDSETTINGS: return "Needs saved settings";
       case ADDON_STATUS_PERMANENT_FAILURE:  return "Permanent failure";
+      case ADDON_STATUS_NOT_IMPLEMENTED:    return "Not Implemented";
+      case ADDON_STATUS_INVALID_VERSION:    return "Invalid version";
       default:
         break;
     }

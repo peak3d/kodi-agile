@@ -30,10 +30,15 @@ namespace ADDON
   class CAddonDll;
 
   void LogException(CAddonDll* addon, const std::exception &e, const char *name);
+  void HandleErrException(CAddonDll* addon, int e, const char *name);
 
 };
 
 #define HANDLE_ADDON_EXCEPTION(addon) \
+catch (int e) \
+{ \
+  ADDON::HandleErrException(addon, e, __FUNCTION__); \
+} \
 catch (std::exception &e) \
 { \
   ADDON::LogException(addon, e, __FUNCTION__); \
@@ -44,6 +49,10 @@ catch (...) \
 }
 
 #define HANDLE_ADDON_EXCEPTION_WITH_RETURN(addon, ret) \
+catch (int e) \
+{ \
+  ADDON::HandleErrException(addon, e, __FUNCTION__); \
+} \
 catch (std::exception &e) \
 { \
   ADDON::LogException(addon, e, __FUNCTION__); \

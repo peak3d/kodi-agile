@@ -22,6 +22,7 @@
 
 #include "addons/AddonDll.h"
 #include "addons/AddonManager.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/General.h"
 #include "utils/log.h"
 
 namespace ADDON
@@ -34,6 +35,17 @@ void LogException(CAddonDll* addon, const std::exception &e, const char *strFunc
               TranslateType(addon->Type()).c_str(),
               e.what(),
               strFunctionName,
+              addon->Name().c_str(),
+              addon->Author().c_str());
+}
+
+void HandleErrException(CAddonDll* addon, int e, const char *name)
+{
+  CLog::Log(LOGERROR,
+            "Addon - %s - exception '%s' caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s",
+              TranslateType(addon->Type()).c_str(),
+              kodi::TranslateAddonStatus((ADDON_STATUS)e).c_str(),
+              name,
               addon->Name().c_str(),
               addon->Author().c_str());
 }
