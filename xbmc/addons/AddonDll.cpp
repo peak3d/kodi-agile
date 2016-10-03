@@ -291,6 +291,8 @@ void CAddonDll::Destroy()
     HandleException(e, "m_pDll->Unload");
   }
 
+  memset(&m_interface, 0, sizeof(m_interface));
+
   if (m_pDll)
   {
     if (m_bIsChild)

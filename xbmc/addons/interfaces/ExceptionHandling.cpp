@@ -23,6 +23,7 @@
 #include "addons/AddonDll.h"
 #include "addons/AddonManager.h"
 #include "addons/kodi-addon-dev-kit/include/kodi/General.h"
+#include "dialogs/GUIDialogOK.h"
 #include "utils/log.h"
 
 namespace ADDON
@@ -39,7 +40,7 @@ void LogException(CAddonDll* addon, const std::exception &e, const char *strFunc
               addon->Author().c_str());
 }
 
-void HandleErrException(CAddonDll* addon, int e, const char *name)
+void LogErrException(CAddonDll* addon, int e, const char *name)
 {
   CLog::Log(LOGERROR,
             "Addon - %s - exception '%s' caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s",
@@ -48,6 +49,12 @@ void HandleErrException(CAddonDll* addon, int e, const char *name)
               name,
               addon->Name().c_str(),
               addon->Author().c_str());
+}
+
+void ShowExceptionErrorDialog(CAddonDll* addon)
+{
+  std::string heading = StringUtils::Format("%s: %s", TranslateType(addon->Type(), true).c_str(), addon->Name().c_str());
+  CGUIDialogOK::ShowAndGetInput(CVariant{heading}, CVariant{g_localizeStrings.Get(24094)});
 }
 
 };

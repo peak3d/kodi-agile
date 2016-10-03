@@ -40,7 +40,8 @@ public:
   void Destroy();
 
 private:
-  void ExceptionHandle(std::exception& ex, const char* function);
+  void ExceptionStdHandle(std::exception& ex, const char* function);
+  void ExceptionErrHandle(int ex, const char* function);
 
   sAddonInstance_ScreenSaver m_struct;
   void* m_addonInstance;

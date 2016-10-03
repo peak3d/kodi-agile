@@ -14295,7 +14295,7 @@ msgctxt "#24083"
 msgid "Information libraries"
 msgstr ""
 
-#. Used to inform user about invalid add-on instance versiom
+#. Used to inform user about invalid add-on instance version
 #: xbmc/addons/AddonDll.cpp
 msgctxt "#24084"
 msgid "Not possible to open instance type '%s' with outdated version '%s' (Minimum '%s'). Please check for updates."
@@ -14350,7 +14350,11 @@ msgctxt "#24093"
 msgid "Checking %s..."
 msgstr ""
 
-#empty string with id 24094
+#. Used to inform user about add-on exception
+#: xbmc/addons/interfaces/ExceptionHandling.cpp
+msgctxt "#24094"
+msgid "Addon has caused an exception and becomes disabled!"
+msgstr ""
 
 #: xbmc/addons/GUIDialogAddonInfo.cpp
 msgctxt "#24095"

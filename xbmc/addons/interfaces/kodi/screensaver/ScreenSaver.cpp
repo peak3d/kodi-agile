@@ -20,6 +20,7 @@
 
 #include "ScreenSaver.h"
 #include "addons/interfaces/ExceptionHandling.h"
+#include "addons/kodi-addon-dev-kit/include/kodi/General.h"
 #include "guilib/GraphicContext.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "settings/Settings.h"
@@ -50,7 +51,9 @@ CScreenSaver::CScreenSaver(const char *addonID)
 
 bool CScreenSaver::IsInUse() const
 {
-  return CSettings::GetInstance().GetString(CSettings::SETTING_SCREENSAVER_MODE) == ID();
+  /* Check is active and selected in settings */
+  return CSettings::GetInstance().GetString(CSettings::SETTING_SCREENSAVER_MODE) == ID() &&
+         m_struct.toKodi.kodiInstance != nullptr;
 }
 
 bool CScreenSaver::CreateScreenSaver()
@@ -95,7 +98,8 @@ void CScreenSaver::Start()
     if (m_struct.toAddon.Start)
       m_struct.toAddon.Start(m_addonInstance);
   }
-  HANDLE_ADDON_EXCEPTION(this);
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex) { ExceptionErrHandle(ex, __FUNCTION__); }
 }
 
 void CScreenSaver::Render()
@@ -106,7 +110,8 @@ void CScreenSaver::Render()
     if (m_struct.toAddon.Render)
       m_struct.toAddon.Render(m_addonInstance);
   }
-  HANDLE_ADDON_EXCEPTION(this);
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex) { ExceptionErrHandle(ex, __FUNCTION__); }
 }
 
 void CScreenSaver::Destroy()
@@ -139,10 +144,20 @@ void CScreenSaver::Destroy()
   memset(&m_struct, 0, sizeof(m_struct));
 }
 
-void CScreenSaver::ExceptionHandle(std::exception& ex, const char* function)
+void CScreenSaver::ExceptionStdHandle(std::exception& ex, const char* function)
 {
-  ADDON::LogException(this, ex, function); // Handle exception
-  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call
+  LogException(this, ex, function);
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(ID());
+  ShowExceptionErrorDialog(this);
+}
+
+void CScreenSaver::ExceptionErrHandle(int ex, const char* function)
+{
+  LogErrException(this, ex, function);
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(ID());
+  ShowExceptionErrorDialog(this);
 }
 
 } /* namespace ADDON */
