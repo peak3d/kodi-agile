@@ -22,7 +22,7 @@
 
 #include "guilib/GUIWindow.h"
 #ifdef HAS_SCREENSAVER
-#include "addons/ScreenSaver.h"
+#include "addons/interfaces/kodi/screensaver/ScreenSaver.h"
 #endif
 
 #include "threads/CriticalSection.h"
