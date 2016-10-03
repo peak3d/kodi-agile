@@ -638,7 +638,7 @@ void CInputStream::SetVideoResolution(int width, int height)
 
 void CInputStream::ExceptionHandle(std::exception& ex, const char* function)
 {
-  ADDON::LogException(this, ex, function); // Handle exception and disable add-on
+  ADDON::Exception::LogStdException(this, ex, function); // Handle exception and disable add-on
   memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call  
 }
 

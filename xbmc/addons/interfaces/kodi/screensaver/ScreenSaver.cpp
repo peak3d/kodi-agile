@@ -146,18 +146,18 @@ void CScreenSaver::Destroy()
 
 void CScreenSaver::ExceptionStdHandle(std::exception& ex, const char* function)
 {
-  LogException(this, ex, function);
+  Exception::LogStdException(this, ex, function);
   Destroy();
   CAddonMgr::GetInstance().DisableAddon(ID());
-  ShowExceptionErrorDialog(this);
+  Exception::ShowExceptionErrorDialog(this);
 }
 
 void CScreenSaver::ExceptionErrHandle(int ex, const char* function)
 {
-  LogErrException(this, ex, function);
+  Exception::LogErrException(this, ex, function);
   Destroy();
   CAddonMgr::GetInstance().DisableAddon(ID());
-  ShowExceptionErrorDialog(this);
+  Exception::ShowExceptionErrorDialog(this);
 }
 
 } /* namespace ADDON */

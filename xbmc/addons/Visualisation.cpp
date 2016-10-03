@@ -157,7 +157,7 @@ void CVisualisation::AudioData(const float* pAudioData, int iAudioDataLength, fl
     }
     catch (std::exception ex)
     {
-      ADDON::LogException(this, ex, __FUNCTION__); // Handle exception
+      ADDON::Exception::LogStdException(this, ex, __FUNCTION__); // Handle exception
       memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
     }
   }
@@ -476,6 +476,6 @@ std::string CVisualisation::GetPresetName()
 
 void CVisualisation::ExceptionHandle(std::exception& ex, const char* function)
 {
-  ADDON::LogException(this, ex, function); // Handle exception
+  ADDON::Exception::LogStdException(this, ex, function); // Handle exception
   memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call  
 }

@@ -29,7 +29,7 @@
 namespace ADDON
 {
 
-void LogException(CAddonDll* addon, const std::exception &e, const char *strFunctionName)
+void Exception::LogStdException(CAddonDll* addon, const std::exception &e, const char *strFunctionName)
 {
   CLog::Log(LOGERROR,
             "Addon - %s - exception '%s' caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s",
@@ -40,7 +40,7 @@ void LogException(CAddonDll* addon, const std::exception &e, const char *strFunc
               addon->Author().c_str());
 }
 
-void LogErrException(CAddonDll* addon, int e, const char *name)
+void Exception::LogErrException(CAddonDll* addon, int e, const char *name)
 {
   CLog::Log(LOGERROR,
             "Addon - %s - exception '%s' caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s",
@@ -51,7 +51,7 @@ void LogErrException(CAddonDll* addon, int e, const char *name)
               addon->Author().c_str());
 }
 
-void ShowExceptionErrorDialog(CAddonDll* addon)
+void Exception::ShowExceptionErrorDialog(CAddonDll* addon)
 {
   std::string heading = StringUtils::Format("%s: %s", TranslateType(addon->Type(), true).c_str(), addon->Name().c_str());
   CGUIDialogOK::ShowAndGetInput(CVariant{heading}, CVariant{g_localizeStrings.Get(24094)});

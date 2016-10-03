@@ -29,20 +29,23 @@ namespace ADDON
 
   class CAddonDll;
 
-  void LogException(CAddonDll* addon, const std::exception &e, const char *name);
-  void LogErrException(CAddonDll* addon, int e, const char *name);
-  void ShowExceptionErrorDialog(CAddonDll* addon);
+  struct Exception
+  {
+    static void LogStdException(CAddonDll* addon, const std::exception &e, const char *name);
+    static void LogErrException(CAddonDll* addon, int e, const char *name);
+    static void ShowExceptionErrorDialog(CAddonDll* addon);
+  };
 
 };
 
 #define HANDLE_ADDON_EXCEPTION(addon) \
 catch (int e) \
 { \
-  ADDON::LogErrException(addon, e, __FUNCTION__); \
+  ADDON::Exception::LogErrException(addon, e, __FUNCTION__); \
 } \
 catch (std::exception &e) \
 { \
-  ADDON::LogException(addon, e, __FUNCTION__); \
+  ADDON::Exception::LogStdException(addon, e, __FUNCTION__); \
 } \
 catch (...) \
 { \
@@ -52,12 +55,12 @@ catch (...) \
 #define HANDLE_ADDON_EXCEPTION_WITH_RETURN(addon, ret) \
 catch (int e) \
 { \
-  ADDON::LogErrException(addon, e, __FUNCTION__); \
+  ADDON::Exception::LogErrException(addon, e, __FUNCTION__); \
   return ret; \
 } \
 catch (std::exception &e) \
 { \
-  ADDON::LogException(addon, e, __FUNCTION__); \
+  ADDON::Exception::LogStdException(addon, e, __FUNCTION__); \
   return ret; \
 } \
 catch (...) \

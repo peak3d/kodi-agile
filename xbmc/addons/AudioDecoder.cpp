@@ -217,7 +217,7 @@ int CAudioDecoder::GetTrackCount(const std::string& strPath)
 
 void CAudioDecoder::ExceptionHandle(std::exception& ex, const char* function)
 {
-  ADDON::LogException(this, ex, function); // Handle exception
+  ADDON::Exception::LogStdException(this, ex, function); // Handle exception
   memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call  
 }
 
