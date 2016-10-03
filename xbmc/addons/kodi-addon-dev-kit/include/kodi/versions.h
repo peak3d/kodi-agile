@@ -19,6 +19,23 @@
  *
  */
 
+/*
+ *------------------------------------------------------------------------------
+ * This header is only be used for Kodi itself and internally (not for add-on
+ * development) to identify the several instance types.
+ *
+ * With this reason is also no doxygen part with "///" here used.
+ * -----------------------------------------------------------------------------
+ */
+
+/*
+ * Versions of all add-on instances are defined below.
+ *
+ * This is added here and not in related header to prevent not
+ * needed includes during compile. Also have it here a better
+ * overview.
+ */
+
 #define INSTANCE_VERSION_ADSP                   "1.0.0"
 #define INSTANCE_MIN_VERSION_ADSP               "1.0.0"
 
@@ -43,6 +60,12 @@
 #define INSTANCE_VERSION_VISUALIZATION          "1.0.0"
 #define INSTANCE_MIN_VERSION_VISUALIZATION      "1.0.0"
 
+/*
+ * The currently used instance types for Kodi add-ons
+ *
+ * For add of new instance type take a new number on end. To change existing
+ * numbers can be make problems on already compiled add-ons.
+ */
 typedef enum ADDON_INSTANCE_TYPE
 {
   ADDON_INSTANCE_ADSP = 1,
@@ -61,6 +84,17 @@ namespace kodi {
 namespace addon {
 #endif
 
+/*
+ * This is used from Kodi to get the active versions of add-on instances.
+ * It is compiled in add-on and also in Kodi itself, with this can be Kodi
+ * compare the version from him with them on add-on.
+ *
+ * Call for inside Kodi: kodi::addon::GetInstanceVersions(...)
+ * Call to ask addon:    m_interface.toAddon.GetInstanceVersions(...)
+ *
+ * The Kodi side is done in AddonDll.cpp by CAddonDll::CreateInstance(...)
+ * call.
+ */
 inline void GetInstanceVersions(int instanceType, const char** version, const char** minVersion)
 {
   switch (instanceType)
@@ -101,6 +135,13 @@ inline void GetInstanceVersions(int instanceType, const char** version, const ch
   return;
 }
 
+/*
+ * Function used internally on add-on and in Kodi itself to get instance name
+ * about given type.
+ *
+ * @param[in] instanceType The with 'enum ADDON_INSTANCE_TYPE' type to ask
+ * @return Name of the asked instance type
+ */
 inline const char* GetInstanceName(int instanceType)
 {
   switch (instanceType)
