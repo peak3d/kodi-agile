@@ -68,7 +68,7 @@ bool CScreenSaver::CreateScreenSaver()
   if (CAddonDll::Create() != ADDON_STATUS_OK)
     return false;
 
-  m_struct.toKodi.kodiInstance = this;  
+  m_struct.toKodi.kodiInstance = this;
   // pass it the screen width, height and the name of the screensaver
 #ifdef HAS_DX
   m_struct.props.device = g_Windowing.Get3D11Context();
@@ -83,7 +83,7 @@ bool CScreenSaver::CreateScreenSaver()
   m_struct.props.name = strdup(Name().c_str());
   m_struct.props.presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
   m_struct.props.profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
-  
+
   return (CAddonDll::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), &m_struct, &m_addonInstance) == ADDON_STATUS_OK);
 }
 
@@ -95,7 +95,7 @@ void CScreenSaver::Start()
     if (m_struct.toAddon.Start)
       m_struct.toAddon.Start(m_addonInstance);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  HANDLE_ADDON_EXCEPTION(this);
 }
 
 void CScreenSaver::Render()
@@ -106,7 +106,7 @@ void CScreenSaver::Render()
     if (m_struct.toAddon.Render)
       m_struct.toAddon.Render(m_addonInstance);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  HANDLE_ADDON_EXCEPTION(this);
 }
 
 void CScreenSaver::Destroy()
@@ -127,7 +127,7 @@ void CScreenSaver::Destroy()
   CAddonDll::DestroyInstance(ADDON_INSTANCE_SCREENSAVER, m_addonInstance);
   m_addonInstance = nullptr;
 
-  // Release what was allocated in method CScreenSaver::CreateScreenSaver in 
+  // Release what was allocated in method CScreenSaver::CreateScreenSaver in
   // case of a binary add-on.
   if (m_struct.props.name)
     free((void *) m_struct.props.name);
@@ -142,7 +142,7 @@ void CScreenSaver::Destroy()
 void CScreenSaver::ExceptionHandle(std::exception& ex, const char* function)
 {
   ADDON::LogException(this, ex, function); // Handle exception
-  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call  
+  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call
 }
 
 } /* namespace ADDON */
