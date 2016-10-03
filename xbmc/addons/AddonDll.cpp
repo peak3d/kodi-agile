@@ -28,6 +28,7 @@
 #include "guilib/GUIWindowManager.h"
 #include "dialogs/GUIDialogOK.h"
 #include "utils/XMLUtils.h"
+#include "utils/Variant.h"
 
 /*
  * Standard addon interface function includes
@@ -214,7 +215,7 @@ ADDON_STATUS CAddonDll::Create()
     else
     { // Addon failed initialization
       CLog::Log(LOGERROR, "ADDON: Dll %s - Client returned bad status (%i) from Create and is not usable", Name().c_str(), status);
-      
+
       CGUIDialogOK* pDialog = (CGUIDialogOK*)g_windowManager.GetWindow(WINDOW_DIALOG_OK);
       if (pDialog)
       {
@@ -274,7 +275,7 @@ void CAddonDll::Destroy()
 {
   /* Unload library file */
   try
-  {      
+  {
     if (m_pDll)
     {
       if (m_interface.toAddon.Destroy)
@@ -509,6 +510,44 @@ ADDON_STATUS CAddonDll::TransferSettings()
 
 ADDON_STATUS CAddonDll::CreateInstance(int instanceType, const char* instanceID, void* instance, void** addonInstance)
 {
+  *addonInstance = nullptr;
+
+  /* check the API version */
+  const char* kodiVersion = "0.0.0";
+  const char* kodiMinVersion = "0.0.0";
+  kodi::addon::GetInstanceVersions(instanceType, &kodiVersion, &kodiMinVersion);
+
+  const char* addonVersion = "0.0.0";
+  const char* addonMinVersion = "0.0.0";
+  try
+  {
+    if (m_interface.toAddon.GetInstanceVersions)
+      m_interface.toAddon.GetInstanceVersions(instanceType, &addonVersion, &addonMinVersion);
+  }
+  catch (std::exception &e)
+  {
+    HandleException(e, "m_interface.toAddon.GetInstanceVersions()");
+    return ADDON_STATUS_UNKNOWN;
+  }
+
+  if (AddonVersion(addonVersion) < AddonVersion(kodiMinVersion) ||
+      AddonVersion(addonMinVersion) > AddonVersion(kodiVersion))
+  {
+    CLog::Log(LOGERROR, "Add-on '%s' is using an incompatible API version for instance type '%s'. Kodi minimum API version = '%s', add-on API version '%s'",
+                            Name().c_str(),
+                            kodi::addon::GetInstanceName(instanceType),
+                            kodiMinVersion,
+                            addonVersion);
+
+    std::string heading = StringUtils::Format("%s: %s", TranslateType(Type(), true).c_str(), Name().c_str());
+    std::string text = StringUtils::Format(g_localizeStrings.Get(24084).c_str(),
+                                              kodi::addon::GetInstanceName(instanceType),
+                                              addonVersion,
+                                              kodiMinVersion);
+    CGUIDialogOK::ShowAndGetInput(CVariant{heading}, CVariant{text});
+    return ADDON_STATUS_INVALID_VERSION;
+  }
+
   try
   {
     if (m_interface.toAddon.CreateInstance)
@@ -525,7 +564,7 @@ void CAddonDll::DestroyInstance(int instanceType, void* instance)
 {
   try
   {
-    if (m_interface.toAddon.DestroyInstance)
+    if (instance && m_interface.toAddon.DestroyInstance)
       m_interface.toAddon.DestroyInstance(instanceType, instance);
   }
   catch (std::exception &e)

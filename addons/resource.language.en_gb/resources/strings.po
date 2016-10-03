@@ -14295,7 +14295,11 @@ msgctxt "#24083"
 msgid "Information libraries"
 msgstr ""
 
-#empty string with id 24084
+#. Used to inform user about invalid add-on instance versiom
+#: xbmc/addons/AddonDll.cpp
+msgctxt "#24084"
+msgid "Not possible to open instance type '%s' with outdated version '%s' (Minimum '%s'). Please check for updates."
+msgstr ""
 
 #. Used as a text in the progress dialog when installing an add-on
 #: xbmc/addons/AddonInstaller.cpp

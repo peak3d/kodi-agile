@@ -166,27 +166,6 @@ install(FILES ${CMAKE_BINARY_DIR}/${CORE_BUILD_DIR}/scripts/${APP_NAME}Config.cm
         DESTINATION ${datarootdir}/${APP_NAME_LC}/cmake
         COMPONENT kodi-addon-dev)
 
-# Install kodi-audio-dsp-dev
-install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/addon/adsp/Addon.h
-        DESTINATION ${includedir}/${APP_NAME_LC}/addon/adsp
-        COMPONENT kodi-audio-dsp-dev)
-
-# Install kodi-audio-enc-dev
-install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/addon/audioencoder/Addon.h
-        DESTINATION ${includedir}/${APP_NAME_LC}/addon/audioencoder
-        COMPONENT kodi-audio-enc-dev)
-
-# Install kodi-audio-dec-dev
-install(FILES ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/addon/audiodecoder/Addon.h
-        DESTINATION ${includedir}/${APP_NAME_LC}/addon/audiodecoder
-        COMPONENT kodi-audio-dec-dev)
-
-# Install kodi-audio-dev
-install(FILES ${CORE_SOURCE_DIR}/xbmc/cores/AudioEngine/Utils/AEChannelData.h
-              ${CORE_SOURCE_DIR}/xbmc/addons/kodi-addon-dev-kit/include/kodi/audioengine/Engine.h
-        DESTINATION ${includedir}/${APP_NAME_LC}/audioengine
-        COMPONENT kodi-audio-dev)
-
 if(ENABLE_EVENTCLIENTS)
   # Install kodi-eventclients-common BT python files
   install(PROGRAMS ${CORE_SOURCE_DIR}/tools/EventClients/lib/python/bt/__init__.py

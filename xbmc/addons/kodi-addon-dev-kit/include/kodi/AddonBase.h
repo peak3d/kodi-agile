@@ -35,24 +35,14 @@
 #define __declspec(X)
 #endif
 #endif
-  
+
+#include "versions.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef void* KODI_HANDLE;
-
-typedef enum ADDON_INSTANCE_TYPE
-{
-  ADDON_INSTANCE_ADSP = 1,
-  ADDON_INSTANCE_AUDIODECODER = 2,
-  ADDON_INSTANCE_AUDIOENCODER = 3,
-  ADDON_INSTANCE_INPUTSTREAM = 4,
-  ADDON_INSTANCE_PERIPHERAL = 5,
-  ADDON_INSTANCE_PVR = 6,
-  ADDON_INSTANCE_SCREENSAVER = 7,
-  ADDON_INSTANCE_VISUALIZATION = 8,
-} ADDON_INSTANCE_TYPE;
 
 typedef enum ADDON_STATUS
 {
@@ -63,7 +53,8 @@ typedef enum ADDON_STATUS
   ADDON_STATUS_UNKNOWN,
   ADDON_STATUS_NEED_SAVEDSETTINGS,
   ADDON_STATUS_PERMANENT_FAILURE,   /**< permanent failure, like failing to resolve methods */
-  ADDON_STATUS_NOT_IMPLEMENTED
+  ADDON_STATUS_NOT_IMPLEMENTED,
+  ADDON_STATUS_INVALID_VERSION
 } ADDON_STATUS;
 
 typedef struct ADDON_StructSetting
@@ -122,6 +113,7 @@ typedef struct sKodiToAddonFuncTable_Addon
   unsigned int (__cdecl* GetSettings)(ADDON_StructSetting ***sSet);
   ADDON_STATUS (__cdecl* SetSetting)(const char *settingName, const void *settingValue);
   void (__cdecl* FreeSettings)(unsigned int elements, ADDON_StructSetting*** set);
+  void (__cdecl* GetInstanceVersions)(int instanceType, const char** version, const char** minVersion);
   ADDON_STATUS (__cdecl* CreateInstance)(int instanceType, const char* instanceID, void* instance, void** addonInstance);
   void (__cdecl* DestroyInstance)(int instanceType, void* instance);
 } sKodiToAddonFuncTable_Addon;
@@ -136,7 +128,7 @@ typedef struct sFuncTable_Addon
 #ifdef __cplusplus
 namespace kodi {
 namespace addon {
-  
+
   //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   //
   class IAddonInstance
@@ -194,7 +186,7 @@ namespace addon {
   //
   //=-----=------=------=------=------=------=------=------=------=------=-----=
 
-  
+
   //-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
   // Function used on Kodi itself to transfer back from add-on given data with
   // "ADDON_StructSetting***" to "std::vector<CAddonSetting>"
@@ -206,7 +198,7 @@ namespace addon {
   {
     if (elements == 0)
       return;
-      
+
     vecSet->clear();
     for(unsigned int i = 0; i < elements; i++)
     {
@@ -244,10 +236,11 @@ namespace addon {
       m_instance->toAddon.GetSettings = ADDONBASE_GetSettings;
       m_instance->toAddon.SetSetting = ADDONBASE_SetSetting;
       m_instance->toAddon.FreeSettings = ADDONBASE_FreeSettings;
+      m_instance->toAddon.GetInstanceVersions = GetInstanceVersions;
       m_instance->toAddon.CreateInstance = ADDONBASE_CreateInstance;
       m_instance->toAddon.DestroyInstance = ADDONBASE_DestroyInstance;
     }
-    
+
     virtual ADDON_STATUS Create() { return ADDON_STATUS_OK; }
     virtual void Stop() { }
     virtual ADDON_STATUS GetStatus() { return ADDON_STATUS_OK; }
@@ -255,9 +248,9 @@ namespace addon {
     virtual bool HasSettings() { return false; }
     virtual bool GetSettings(std::vector<CAddonSetting>& settings) { return false; }
     virtual ADDON_STATUS SetSetting(std::string& settingName, const void *settingValue) { return ADDON_STATUS_UNKNOWN; }
-    
+
     virtual ADDON_STATUS CreateInstance(int instanceType, std::string instanceID, KODI_HANDLE instance, KODI_HANDLE& addonInstance) { return ADDON_STATUS_UNKNOWN; }
-    
+
     static sFuncTable_Addon* m_instance;
     static CAddonBase* m_createdAddon;
 
@@ -407,14 +400,14 @@ typedef enum AudioDataFormat
 
   /// PCM unsigned 8-bit
   AUDIO_FMT_U8,
-  
+
   /// PCM signed 16-bit big-endian
   AUDIO_FMT_S16BE,
   /// PCM signed 16-bit little-endian
   AUDIO_FMT_S16LE,
   /// PCM signed 16-bit native-endian
   AUDIO_FMT_S16NE,
-  
+
   /// PCM signed 32-bit big-endian
   AUDIO_FMT_S32BE,
   /// PCM signed 32-bit little-endian
@@ -454,7 +447,7 @@ typedef enum AudioDataFormat
   AUDIO_FMT_S32NEP,
   /// PCM planar format signed 24-bit native-endian in 4 bytes
   AUDIO_FMT_S24NE4P,
-  /// PCM planar format 
+  /// PCM planar format
   AUDIO_FMT_S24NE4MSBP,
   /// PCM planar format signed 24-bit native-endian in 3 bytes
   AUDIO_FMT_S24NE3P,
@@ -522,7 +515,7 @@ typedef enum AudioChannel
   AUDIO_CH_DSP_MAX = 20,
   /// Raw audio stream
   AUDIO_CH_RAW = 20,
-  
+
   /* p16v devices */
   AUDIO_CH_UNKNOWN1 ,
   AUDIO_CH_UNKNOWN2 ,
@@ -550,7 +543,7 @@ typedef enum AudioChannel
   AUDIO_CH_UNKNOWN24,
   AUDIO_CH_UNKNOWN25,
   AUDIO_CH_UNKNOWN26,
-  AUDIO_CH_UNKNOWN27, 
+  AUDIO_CH_UNKNOWN27,
   AUDIO_CH_UNKNOWN28,
   AUDIO_CH_UNKNOWN29,
   AUDIO_CH_UNKNOWN30,
@@ -580,7 +573,7 @@ typedef enum AudioChannel
   AUDIO_CH_UNKNOWN54,
   AUDIO_CH_UNKNOWN55,
   AUDIO_CH_UNKNOWN56,
-  AUDIO_CH_UNKNOWN57, 
+  AUDIO_CH_UNKNOWN57,
   AUDIO_CH_UNKNOWN58,
   AUDIO_CH_UNKNOWN59,
   AUDIO_CH_UNKNOWN60,
