@@ -28,9 +28,15 @@ namespace ADDON
 {
 
   class CAddonDll;
+  typedef std::shared_ptr<CAddonDll> AddonDllPtr;
 
   struct Exception
   {
+    static void LogStdException(AddonDllPtr addon, const std::exception &e, const char *name);
+    static void LogErrException(AddonDllPtr addon, int e, const char *name);
+    static void LogUnkException(AddonDllPtr addon, const char *name);
+    static void ShowExceptionErrorDialog(AddonDllPtr addon);
+
     static void LogStdException(CAddonDll* addon, const std::exception &e, const char *name);
     static void LogErrException(CAddonDll* addon, int e, const char *name);
     static void LogUnkException(CAddonDll* addon, const char *name);

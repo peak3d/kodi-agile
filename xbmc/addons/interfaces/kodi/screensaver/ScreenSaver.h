@@ -25,23 +25,11 @@
 namespace ADDON
 {
 
-class CScreenSaver : public ADDON::CAddonDll
+class CScreenSaver
 {
 public:
-  explicit CScreenSaver(AddonProps props);
-  explicit CScreenSaver(const char *addonID);
+  explicit CScreenSaver(ADDON::AddonDllPtr addon);
   virtual ~CScreenSaver() {}
-
-  /*!
-   * @brief Child from ADDON::CAddonDll to check on global calls the add-on here
-   * is in use.
-   *
-   * If it is selected in settings and is running returns it true. But in case
-   * of Exception becomes is set to not running to allow disable of them.
-   *
-   * @return true if is in use
-   */
-  virtual bool IsInUse() const;
 
   /*!
    * @{
@@ -101,6 +89,9 @@ private:
 
   /*! The on add-on header defined interface function table */
   sAddonInstance_ScreenSaver m_struct;
+
+  /*! Used add-on class of the screensaver */
+  ADDON::AddonDllPtr m_addon;
 
   /*! The instance pointer from add-on itself, who becomes passed back on all
    *  calls to them and set by the CAddonDll::CreateInstance(...) call */

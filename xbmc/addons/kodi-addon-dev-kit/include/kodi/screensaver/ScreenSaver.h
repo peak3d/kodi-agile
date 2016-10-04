@@ -77,7 +77,7 @@ namespace addon
   //============================================================================
   ///
   /// \addtogroup cpp_kodi_addon_screensaver
-  /// @brief \cpp_class{ kodi::addon::CInstanceScreensaver }
+  /// @brief \python_func_with_rev{ kodi::addon::CInstanceScreensaver, added in v18 }
   /// **Screensaver add-on instance**
   ///
   /// A screensaver (or screen saver) is a Kodi addon that blanks the screen or

@@ -61,7 +61,45 @@ void Exception::LogUnkException(CAddonDll* addon, const char *name)
               addon->Author().c_str());
 }
 
+void Exception::LogStdException(AddonDllPtr addon, const std::exception &e, const char *strFunctionName)
+{
+  CLog::Log(LOGERROR,
+            "Addon - %s - exception '%s' caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s",
+              TranslateType(addon->Type()).c_str(),
+              e.what(),
+              strFunctionName,
+              addon->Name().c_str(),
+              addon->Author().c_str());
+}
+
+void Exception::LogErrException(AddonDllPtr addon, int e, const char *name)
+{
+  CLog::Log(LOGERROR,
+            "Addon - %s - exception '%s' caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s",
+              TranslateType(addon->Type()).c_str(),
+              kodi::TranslateAddonStatus((ADDON_STATUS)e).c_str(),
+              name,
+              addon->Name().c_str(),
+              addon->Author().c_str());
+}
+
+void Exception::LogUnkException(AddonDllPtr addon, const char *name)
+{
+  CLog::Log(LOGERROR,
+            "Addon - %s - unknown exception caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s",
+              TranslateType(addon->Type()).c_str(),
+              name,
+              addon->Name().c_str(),
+              addon->Author().c_str());
+}
+
 void Exception::ShowExceptionErrorDialog(CAddonDll* addon)
+{
+  std::string heading = StringUtils::Format("%s: %s", TranslateType(addon->Type(), true).c_str(), addon->Name().c_str());
+  CGUIDialogOK::ShowAndGetInput(CVariant{heading}, CVariant{g_localizeStrings.Get(24094)});
+}
+
+void Exception::ShowExceptionErrorDialog(AddonDllPtr addon)
 {
   std::string heading = StringUtils::Format("%s: %s", TranslateType(addon->Type(), true).c_str(), addon->Name().c_str());
   CGUIDialogOK::ShowAndGetInput(CVariant{heading}, CVariant{g_localizeStrings.Get(24094)});

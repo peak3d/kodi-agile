@@ -44,6 +44,7 @@ class CKey;
 
 namespace ADDON
 {
+  class CScreenSaver;
   class CSkinInfo;
   class IAddon;
   typedef std::shared_ptr<IAddon> AddonPtr;
@@ -383,7 +384,7 @@ public:
   ReplayGainSettings& GetReplayGainSettings() { return m_replayGainSettings; }
 
   void SetLoggingIn(bool switchingProfiles);
-  
+
   /*!
    \brief Register an action listener.
    \param listener The listener to register

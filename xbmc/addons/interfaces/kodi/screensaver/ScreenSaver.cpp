@@ -34,40 +34,29 @@
 namespace ADDON
 {
 
-CScreenSaver::CScreenSaver(AddonProps props)
-  : ADDON::CAddonDll(std::move(props)),
+CScreenSaver::CScreenSaver(ADDON::AddonDllPtr addon)
+  : m_addon(addon),
     m_addonInstance(nullptr)
 {
   memset(&m_struct, 0, sizeof(m_struct));
-}
-
-CScreenSaver::CScreenSaver(const char *addonID)
-  : ADDON::CAddonDll(AddonProps(addonID, ADDON_UNKNOWN)),
-    m_addonInstance(nullptr)
-{
-  memset(&m_struct, 0, sizeof(m_struct));
-}
-
-bool CScreenSaver::IsInUse() const
-{
-  /* Check is active and selected in settings */
-  return CSettings::GetInstance().GetString(CSettings::SETTING_SCREENSAVER_MODE) == ID() &&
-         m_struct.toKodi.kodiInstance != nullptr;
 }
 
 bool CScreenSaver::CreateScreenSaver()
 {
-  if (CScriptInvocationManager::GetInstance().HasLanguageInvoker(LibPath()))
+  if (!m_addon)
+    return false;
+
+  if (CScriptInvocationManager::GetInstance().HasLanguageInvoker(m_addon->LibPath()))
   {
     // Don't allow a previously-scheduled alarm to kill our new screensaver
     g_alarmClock.Stop(SCRIPT_ALARM, true);
 
-    if (!CScriptInvocationManager::GetInstance().Stop(LibPath()))
-      CScriptInvocationManager::GetInstance().ExecuteAsync(LibPath(), AddonPtr(new CScreenSaver(*this)));
+    if (!CScriptInvocationManager::GetInstance().Stop(m_addon->LibPath()))
+      CScriptInvocationManager::GetInstance().ExecuteAsync(m_addon->LibPath(), AddonPtr(new CAddonDll(*m_addon)));
     return true;
   }
 
-  if (CAddonDll::Create() != ADDON_STATUS_OK)
+  if (m_addon->Create() != ADDON_STATUS_OK)
     return false;
 
   m_struct.toKodi.kodiInstance = this;
@@ -82,11 +71,11 @@ bool CScreenSaver::CreateScreenSaver()
   m_struct.props.width = g_graphicsContext.GetWidth();
   m_struct.props.height = g_graphicsContext.GetHeight();
   m_struct.props.pixelRatio = g_graphicsContext.GetResInfo().fPixelRatio;
-  m_struct.props.name = strdup(Name().c_str());
-  m_struct.props.presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
-  m_struct.props.profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
+  m_struct.props.name = strdup(m_addon->Name().c_str());
+  m_struct.props.presets = strdup(CSpecialProtocol::TranslatePath(m_addon->Path()).c_str());
+  m_struct.props.profile = strdup(CSpecialProtocol::TranslatePath(m_addon->Profile()).c_str());
 
-  return (CAddonDll::CreateInstance(ADDON_INSTANCE_SCREENSAVER, ID().c_str(), &m_struct, &m_addonInstance) == ADDON_STATUS_OK);
+  return (m_addon->CreateInstance(ADDON_INSTANCE_SCREENSAVER, m_addon->ID().c_str(), &m_struct, &m_addonInstance) == ADDON_STATUS_OK);
 }
 
 void CScreenSaver::Start()
@@ -117,20 +106,23 @@ void CScreenSaver::Render()
 
 void CScreenSaver::Destroy()
 {
+  if (!m_addon)
+    return;
+
   // Check first screensaver is based upon python, if yes are the other parts
   // not used and return in 'if'
-  if (URIUtils::HasExtension(LibPath(), ".py"))
+  if (URIUtils::HasExtension(m_addon->LibPath(), ".py"))
   {
     /* FIXME: This is a hack but a proper fix is non-trivial. Basically this code
      * makes sure the addon gets terminated after we've moved out of the screensaver window.
      * If we don't do this, we may simply lockup.
      */
-    g_alarmClock.Start(SCRIPT_ALARM, SCRIPT_TIMEOUT, "StopScript(" + LibPath() + ")", true, false);
+    g_alarmClock.Start(SCRIPT_ALARM, SCRIPT_TIMEOUT, "StopScript(" + m_addon->LibPath() + ")", true, false);
     return;
   }
 
   // Destroy the from binary add-on opened instance of screensaver.
-  CAddonDll::DestroyInstance(ADDON_INSTANCE_SCREENSAVER, m_addonInstance);
+  m_addon->DestroyInstance(ADDON_INSTANCE_SCREENSAVER, m_addonInstance);
   m_addonInstance = nullptr;
 
   // Release what was allocated in method CScreenSaver::CreateScreenSaver in
@@ -143,30 +135,31 @@ void CScreenSaver::Destroy()
     free((void *) m_struct.props.profile);
 
   memset(&m_struct, 0, sizeof(m_struct));
+  m_addon->Destroy();
 }
 
 void CScreenSaver::ExceptionStdHandle(std::exception& ex, const char* function)
 {
-  Exception::LogStdException(this, ex, function);
+  Exception::LogStdException(m_addon, ex, function);
   Destroy();
-  CAddonMgr::GetInstance().DisableAddon(ID());
-  Exception::ShowExceptionErrorDialog(this);
+  CAddonMgr::GetInstance().DisableAddon(m_addon->ID());
+  Exception::ShowExceptionErrorDialog(m_addon);
 }
 
 void CScreenSaver::ExceptionErrHandle(int ex, const char* function)
 {
-  Exception::LogErrException(this, ex, function);
+  Exception::LogErrException(m_addon, ex, function);
   Destroy();
-  CAddonMgr::GetInstance().DisableAddon(ID());
-  Exception::ShowExceptionErrorDialog(this);
+  CAddonMgr::GetInstance().DisableAddon(m_addon->ID());
+  Exception::ShowExceptionErrorDialog(m_addon);
 }
 
 void CScreenSaver::ExceptionUnkHandle(const char* function)
 {
-  Exception::LogUnkException(this, function);
+  Exception::LogUnkException(m_addon, function);
   Destroy();
-  CAddonMgr::GetInstance().DisableAddon(ID());
-  Exception::ShowExceptionErrorDialog(this);
+  CAddonMgr::GetInstance().DisableAddon(m_addon->ID());
+  Exception::ShowExceptionErrorDialog(m_addon);
 }
 
 } /* namespace ADDON */

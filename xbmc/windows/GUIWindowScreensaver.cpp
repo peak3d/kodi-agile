@@ -51,35 +51,21 @@ void CGUIWindowScreensaver::Render()
   CSingleLock lock (m_critSection);
 
 #ifdef HAS_SCREENSAVER
-  if (m_addon)
+  if (m_screenSaver)
   {
     if (m_bInitialized)
     {
-      try
-      {
-        //some screensavers seem to be depending on xbmc clearing the screen
-        //       g_Windowing.Get3DDevice()->Clear( 0L, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, 0x00010001, 1.0f, 0L );
-        g_graphicsContext.CaptureStateBlock();
-        m_addon->Render();
-        g_graphicsContext.ApplyStateBlock();
-      }
-      catch (...)
-      {
-        CLog::Log(LOGERROR, "SCREENSAVER: - Exception in Render() - %s", m_addon->Name().c_str());
-      }
+      //some screensavers seem to be depending on xbmc clearing the screen
+      //       g_Windowing.Get3DDevice()->Clear( 0L, NULL, D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER, 0x00010001, 1.0f, 0L );
+      g_graphicsContext.CaptureStateBlock();
+      m_screenSaver->Render();
+      g_graphicsContext.ApplyStateBlock();
       return ;
     }
     else
     {
-      try
-      {
-        m_addon->Start();
-        m_bInitialized = true;
-      }
-      catch (...)
-      {
-        CLog::Log(LOGERROR, "SCREENSAVER: - Exception in Start() - %s", m_addon->Name().c_str());
-      }
+      m_screenSaver->Start();
+      m_bInitialized = true;
       return ;
     }
   }
@@ -108,12 +94,12 @@ bool CGUIWindowScreensaver::OnMessage(CGUIMessage& message)
     {
       CSingleLock lock (m_critSection);
 #ifdef HAS_SCREENSAVER
-      if (m_addon)
+      if (m_screenSaver)
       {
-        m_addon->Stop();
+//        m_screenSaver->Stop();
         g_graphicsContext.ApplyStateBlock();
-        m_addon->Destroy();
-        m_addon.reset();
+        m_screenSaver->Destroy();
+        m_screenSaver.reset();
       }
 #endif
       m_bInitialized = false;
@@ -133,22 +119,22 @@ bool CGUIWindowScreensaver::OnMessage(CGUIMessage& message)
       CSingleLock lock (m_critSection);
 
 #ifdef HAS_SCREENSAVER
-      assert(!m_addon);
+      assert(!m_screenSaver);
       m_bInitialized = false;
 
-      m_addon.reset();
+      m_screenSaver.reset();
       // Setup new screensaver instance
       AddonPtr addon;
       if (!CAddonMgr::GetInstance().GetAddon(CSettings::GetInstance().GetString(CSettings::SETTING_SCREENSAVER_MODE), addon, ADDON_SCREENSAVER))
         return false;
 
-      m_addon = std::dynamic_pointer_cast<CScreenSaver>(addon);
+      m_screenSaver.reset(new CScreenSaver(std::dynamic_pointer_cast<CAddonDll>(addon)));
 
-      if (!m_addon)
+      if (!m_screenSaver)
         return false;
 
       g_graphicsContext.CaptureStateBlock();
-      ret = m_addon->CreateScreenSaver();
+      ret = m_screenSaver->CreateScreenSaver();
 #endif
       // setup a z-buffer
 //      RESOLUTION res = g_graphicsContext.GetVideoResolution();
