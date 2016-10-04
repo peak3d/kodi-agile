@@ -80,12 +80,13 @@ namespace addon
   /// This interface allow the creating of a screensavers for Kodi, based upon
   /// **DirectX** or/and **OpenGL** rendering with `C++` code.
   ///
-  /// The interface is small and easy usable, it have one two function. One for
+  /// The interface is small and easy usable, it have two function. One for
   /// the creation with <b><c>Start()</c></b> and for the render time with
   /// <b><c>Render()</c></b>, this both are required and must be implemented.
   ///
-  /// Further are several other functions available where the child class can
-  /// ask about used device, display and few other parts.
+  /// Further are several \ref cpp_kodi_addon_screensaver_CB "other functions"
+  /// available where the child class can  ask about used device, display and
+  /// few other parts.
   ///
   ///
   /// --------------------------------------------------------------------------
@@ -146,6 +147,10 @@ namespace addon
   /// ADDONCREATOR(CMyAddon);
   /// ~~~~~~~~~~~~~
   ///
+  /// The **desctruction** of the here created example class `CMyScreenSaver`
+  /// becomes done from Kodi's header and never for add-on instances a delete on
+  /// add-on itself necessary.
+  ///
   //----------------------------------------------------------------------------
   class CInstanceScreensaver : public IAddonInstance
   {
@@ -159,7 +164,7 @@ namespace addon
     ///                                   given `instance` value.
     ///   @warning Use always only `instance` value from CreateInstance call
     ///
-    CInstanceScreensaver(void* instance)
+    CInstanceScreensaver(KODI_HANDLE instance)
       : IAddonInstance(ADDON_INSTANCE_SCREENSAVER),
         m_instance(static_cast<sAddonInstance_ScreenSaver*>(instance))
     {
