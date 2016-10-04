@@ -20,7 +20,6 @@
 
 #include "ScreenSaver.h"
 #include "addons/interfaces/ExceptionHandling.h"
-#include "addons/kodi-addon-dev-kit/include/kodi/General.h"
 #include "guilib/GraphicContext.h"
 #include "interfaces/generic/ScriptInvocationManager.h"
 #include "settings/Settings.h"

@@ -20,39 +20,39 @@
   \ingroup cpp_kodi_addon
   */
   /*!
-  \defgroup cpp_kodi_addon_instances Addon type instances 
+  \defgroup cpp_kodi_addon_instances Addon type instances
   \ingroup cpp_kodi_addon
   */
     /*!
-    \defgroup cpp_kodi_addon_audiodsp class CInstanceAudioDSP
+    \defgroup cpp_kodi_addon_audiodsp Audio DSP
     \ingroup cpp_kodi_addon_instances
     */
     /*!
-    \defgroup cpp_kodi_addon_audiodecoder class CInstanceAudioDecoder
+    \defgroup cpp_kodi_addon_audiodecoder Audio Decoder
     \ingroup cpp_kodi_addon_instances
     */
     /*!
-    \defgroup cpp_kodi_addon_audioencoder class CInstanceAudioEncoder
+    \defgroup cpp_kodi_addon_audioencoder Audio Encoder
     \ingroup cpp_kodi_addon_instances
     */
     /*!
-    \defgroup cpp_kodi_addon_inputstream class CInstanceInputstream
+    \defgroup cpp_kodi_addon_inputstream Inputstream
     \ingroup cpp_kodi_addon_instances
     */
     /*!
-    \defgroup cpp_kodi_addon_peripheral class CInstancePeripheral
+    \defgroup cpp_kodi_addon_peripheral Peripheral
     \ingroup cpp_kodi_addon_instances
     */
     /*!
-    \defgroup cpp_kodi_addon_pvr class CInstancePVR
+    \defgroup cpp_kodi_addon_pvr PVR
     \ingroup cpp_kodi_addon_instances
     */
     /*!
-    \defgroup cpp_kodi_addon_screensaver class CInstanceScreensaver
+    \defgroup cpp_kodi_addon_screensaver Screensaver
     \ingroup cpp_kodi_addon_instances
     */
     /*!
-    \defgroup cpp_kodi_addon_visualization class CInstanceVisualization
+    \defgroup cpp_kodi_addon_visualization Visualization
     \ingroup cpp_kodi_addon_instances
     */
 /*!
