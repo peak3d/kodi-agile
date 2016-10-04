@@ -26,6 +26,18 @@ extern "C"
 {
 #endif
 
+/*
+ * The four structures below are used from the headers to create the "C"
+ * interface to Kodi. It contains the needed data and for Kodi needed add-on
+ * function addresses for the call of them.
+ *
+ * The sAddonInstance_ScreenSaver structure becomes given to the class creation
+ * of CInstanceScreensaver(KODI_HANDLE instance) who structure is send from
+ * Kodi before.
+ *
+ * No need of doxygen documentation of the structures here, are only internally
+ * used.
+ */
 typedef struct SCR_PROPS
 {
   void *device;
