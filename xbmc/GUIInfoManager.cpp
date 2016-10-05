@@ -6629,11 +6629,26 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
     break;
   case VISUALISATION_NAME:
     {
+      /*
+       * First check visualization is used, if yes get add-on name from there
+       */
       CGUIMessage msg(GUI_MSG_GET_VISUALISATION, 0, 0);
       g_windowManager.SendMessage(msg);
       CVisualisation* viz = static_cast<CVisualisation*>(msg.GetPointer());
       if (viz)
+      {
         strLabel = viz->Name();
+      }
+      else
+      {
+        /*
+         * If not used and active do a load of add-on to get his name
+         */
+        AddonPtr addon;
+        strLabel = CSettings::GetInstance().GetString(CSettings::SETTING_MUSICPLAYER_VISUALISATION);
+        if (CAddonMgr::GetInstance().GetAddon(strLabel,addon) && addon)
+          strLabel = addon->Name();
+      }
     }
     break;
   case FANART_COLOR1:
