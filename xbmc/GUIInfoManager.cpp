@@ -6646,7 +6646,9 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
          */
         AddonPtr addon;
         strLabel = CSettings::GetInstance().GetString(CSettings::SETTING_MUSICPLAYER_VISUALISATION);
-        if (CAddonMgr::GetInstance().GetAddon(strLabel,addon) && addon)
+        if (strLabel.empty())
+          strLabel = g_localizeStrings.Get(231);
+        else if (CAddonMgr::GetInstance().GetAddon(strLabel,addon) && addon)
           strLabel = addon->Name();
       }
     }
