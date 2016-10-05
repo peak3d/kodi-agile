@@ -51,12 +51,13 @@ private:
 
 namespace ADDON
 {
-  class CVisualisation : public CAddonDll
-                       , public IAudioCallback
+  class CVisualisation : public IAudioCallback
                        , public IRenderingCallback
   {
   public:
-    explicit CVisualisation(AddonProps props);
+    explicit CVisualisation(ADDON::AddonDllPtr addon);
+
+    std::string Name() const;
 
     // Child functions related to IAudioCallback
     virtual void OnInitialize(int iChannels, int iSamplesPerSec, int iBitsPerSample) override;
@@ -115,6 +116,10 @@ namespace ADDON
     std::string m_AlbumThumb;
 
     sAddonInstance_Visualization m_struct;
+
+    /*! Used add-on class of the visualization */
+    ADDON::AddonDllPtr m_addon;
+
     void* m_addonInstance;
   };
 }

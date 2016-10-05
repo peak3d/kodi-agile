@@ -63,16 +63,23 @@ void CAudioBuffer::Set(const float* psBuffer, int iSize)
     m_pBuffer[i] = 0;
 }
 
-CVisualisation::CVisualisation(AddonProps props)
-  : CAddonDll(std::move(props)),
+CVisualisation::CVisualisation(ADDON::AddonDllPtr addon)
+  : m_addon(addon),
     m_addonInstance(nullptr)
 {
   memset(&m_struct, 0, sizeof(m_struct));
 }
 
+std::string CVisualisation::Name() const
+{
+  if (m_addon)
+    return m_addon->Name();
+  return "";
+}
+
 bool CVisualisation::Create(int x, int y, int w, int h, void *device)
 {
-  if (CAddonDll::Create() != ADDON_STATUS_OK)
+  if (m_addon == nullptr || m_addon->Create() != ADDON_STATUS_OK)
     return false;
 
 #ifdef HAS_DX
@@ -85,16 +92,16 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   m_struct.props.width = w;
   m_struct.props.height = h;
   m_struct.props.pixelRatio = g_graphicsContext.GetResInfo().fPixelRatio;
-  m_struct.props.name = strdup(Name().c_str());
-  m_struct.props.presets = strdup(CSpecialProtocol::TranslatePath(Path()).c_str());
-  m_struct.props.profile = strdup(CSpecialProtocol::TranslatePath(Profile()).c_str());
+  m_struct.props.name = strdup(m_addon->Name().c_str());
+  m_struct.props.presets = strdup(CSpecialProtocol::TranslatePath(m_addon->Path()).c_str());
+  m_struct.props.profile = strdup(CSpecialProtocol::TranslatePath(m_addon->Profile()).c_str());
   m_struct.props.submodule = nullptr;
 
   m_struct.toKodi.kodiInstance = this;
   m_struct.toKodi.TransferPreset = TransferPreset;
   m_struct.toKodi.TransferSubmodule = TransferSubmodule;
 
-  ADDON_STATUS status = CAddonDll::CreateInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), &m_struct, &m_addonInstance);
+  ADDON_STATUS status = m_addon->CreateInstance(ADDON_INSTANCE_VISUALIZATION, m_addon->ID().c_str(), &m_struct, &m_addonInstance);
   if (status != ADDON_STATUS_OK)
     return false;
 
@@ -125,7 +132,7 @@ void CVisualisation::Start(int iChannels, int iSamplesPerSec, int iBitsPerSample
 {
   // notify visz. that new song has been started
   // pass it the nr of audio channels, sample rate, bits/sample and offcourse the songname
-  if (Initialized())
+  if (m_addon->Initialized())
   {
     try
     {
@@ -143,7 +150,7 @@ void CVisualisation::AudioData(const float* pAudioData, int iAudioDataLength, fl
   // iAudioDataLength = length of audiodata array
   // pFreqData = fft-ed audio data
   // iFreqDataLength = length of pFreqData
-  if (Initialized())
+  if (m_addon->Initialized())
   {
     try
     {
@@ -152,7 +159,7 @@ void CVisualisation::AudioData(const float* pAudioData, int iAudioDataLength, fl
     }
     catch (std::exception ex)
     {
-      ADDON::Exception::LogStdException(this, ex, __FUNCTION__); // Handle exception
+      ADDON::Exception::LogStdException(m_addon, ex, __FUNCTION__); // Handle exception
       memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
     }
   }
@@ -161,7 +168,7 @@ void CVisualisation::AudioData(const float* pAudioData, int iAudioDataLength, fl
 void CVisualisation::Render()
 {
   // ask visz. to render itself
-  if (Initialized())
+  if (m_addon->Initialized())
   {
     try
     {
@@ -175,15 +182,15 @@ void CVisualisation::Render()
 void CVisualisation::Stop()
 {
   CAEFactory::UnregisterAudioCallback(this);
-  if (Initialized())
+  if (m_addon->Initialized())
   {
-    CAddonDll::Stop();
+    m_addon->Stop();
   }
 }
 
 void CVisualisation::GetInfo(VIS_INFO *info)
 {
-  if (Initialized())
+  if (m_addon->Initialized())
   {
     try
     {
@@ -196,7 +203,7 @@ void CVisualisation::GetInfo(VIS_INFO *info)
 
 bool CVisualisation::OnAction(VIS_ACTION action, void *param)
 {
-  if (!Initialized())
+  if (!m_addon->Initialized())
     return false;
 
   // see if vis wants to handle the input
@@ -328,7 +335,7 @@ void CVisualisation::ClearBuffers()
 bool CVisualisation::UpdateTrack()
 {
   bool handled = false;
-  if (Initialized())
+  if (m_addon->Initialized())
   {
     // get the current album art filename
     m_AlbumThumb = CSpecialProtocol::TranslatePath(g_infoManager.GetImage(MUSICPLAYER_COVER, WINDOW_INVALID));
@@ -434,7 +441,8 @@ bool CVisualisation::IsLocked()
 void CVisualisation::Destroy()
 {
   // Free what was allocated in method CVisualisation::Create
-  CAddonDll::DestroyInstance(ADDON_INSTANCE_VISUALIZATION, m_addonInstance);
+  if (m_addon)
+    m_addon->DestroyInstance(ADDON_INSTANCE_VISUALIZATION, m_addonInstance);
   m_addonInstance = nullptr;
 
   if (m_struct.props.name)
@@ -446,7 +454,8 @@ void CVisualisation::Destroy()
 
   memset(&m_struct, 0, sizeof(m_struct));
 
-  CAddonDll::Destroy();
+  if (m_addon)
+    m_addon->Destroy();
 }
 
 unsigned CVisualisation::GetPreset()
@@ -471,6 +480,6 @@ std::string CVisualisation::GetPresetName()
 
 void CVisualisation::ExceptionHandle(std::exception& ex, const char* function)
 {
-  ADDON::Exception::LogStdException(this, ex, function); // Handle exception
+  ADDON::Exception::LogStdException(m_addon, ex, function); // Handle exception
   memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call
 }

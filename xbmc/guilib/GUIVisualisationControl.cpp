@@ -103,7 +103,7 @@ void CGUIVisualisationControl::Process(unsigned int currentTime, CDirtyRegionLis
       AddonPtr addon;
       if (ADDON::CAddonSystemSettings::GetInstance().GetActive(ADDON_VIZ, addon))
       {
-        m_visualization = new CVisualisation(addon);
+        m_visualization.reset(new CVisualisation(std::dynamic_pointer_cast<CAddonDll>(addon)));
         if (m_visualization)
           if (!InitCallback(m_visualization.get()))
             m_visualization.reset();

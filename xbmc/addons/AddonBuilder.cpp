@@ -117,7 +117,7 @@ std::shared_ptr<IAddon> CAddonBuilder::Build()
       return CScraper::FromExtension(std::move(m_props), m_extPoint);
 #if defined(HAS_VISUALISATION)
     case ADDON_VIZ:
-      return std::make_shared<CVisualisation>(std::move(m_props));
+      return std::make_shared<CAddonDll>(std::move(m_props));
 #endif
     case ADDON_SCREENSAVER:
       return std::make_shared<CAddonDll>(std::move(m_props));
@@ -187,7 +187,7 @@ AddonPtr CAddonBuilder::FromProps(AddonProps addonProps)
       return AddonPtr(new CSkinInfo(std::move(addonProps)));
 #if defined(HAS_VISUALISATION)
     case ADDON_VIZ:
-      return AddonPtr(new CVisualisation(std::move(addonProps)));
+      return AddonPtr(new CAddonDll(std::move(addonProps)));
 #endif
     case ADDON_SCREENSAVER:
       return AddonPtr(new CAddonDll(std::move(addonProps)));

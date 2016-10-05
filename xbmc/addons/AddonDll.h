@@ -64,13 +64,14 @@ namespace ADDON
     ADDON_STATUS CreateInstance(int instanceType, const char* instanceID, void* instance, void** addonInstance);
     void DestroyInstance(int instanceType, void* instance);
 
+    bool Initialized() const { return m_initialized; }
+
     // addon to kodi callbacks
     static void addon_log_msg(void* kodiInstance, const int addonLogLevel, const char* strMessage);
     static void free_string(void* kodiInstance, char* str);
 
   protected:
     void HandleException(std::exception &e, const char* context);
-    bool Initialized() { return m_initialized; }
     virtual bool LoadSettings();
     static uint32_t GetChildCount() { static uint32_t childCounter = 0; return childCounter++; }
     CAddonInterfaces* m_pHelpers;
