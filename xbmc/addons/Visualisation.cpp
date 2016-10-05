@@ -70,11 +70,6 @@ CVisualisation::CVisualisation(AddonProps props)
   memset(&m_struct, 0, sizeof(m_struct));
 }
 
-bool CVisualisation::IsInUse() const
-{
-  return CSettings::GetInstance().GetString(CSettings::SETTING_MUSICPLAYER_VISUALISATION) == ID();
-}
-
 bool CVisualisation::Create(int x, int y, int w, int h, void *device)
 {
   if (CAddonDll::Create() != ADDON_STATUS_OK)

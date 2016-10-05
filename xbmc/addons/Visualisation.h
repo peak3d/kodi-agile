@@ -62,14 +62,11 @@ namespace ADDON
     virtual void OnInitialize(int iChannels, int iSamplesPerSec, int iBitsPerSample) override;
     virtual void OnAudioData(const float* pAudioData, int iAudioDataLength) override;
 
-    // Child functions related to CAddonDll
-    virtual bool IsInUse() const override;
-
     // Child functions related to IRenderingCallback
     virtual bool Create(int x, int y, int w, int h, void *device) override;
     virtual void Render() override;
     virtual void Stop() override; // also child of CAddonDll
-    
+
     void Start(int iChannels, int iSamplesPerSec, int iBitsPerSample, const std::string &strSongName) ;
     void AudioData(const float *pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength);
     void GetInfo(VIS_INFO *info);
@@ -88,7 +85,7 @@ namespace ADDON
     // Static function to transfer data from add-on to kodi
     static void TransferPreset(void* kodiInstance, const char* preset);
     static void TransferSubmodule(void* kodiInstance, const char* submodule);
-  
+
   private:
     void CreateBuffers();
     void ClearBuffers();
