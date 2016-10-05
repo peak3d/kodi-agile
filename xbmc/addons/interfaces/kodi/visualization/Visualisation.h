@@ -19,7 +19,7 @@
  *
  */
 
-#include "AddonDll.h"
+#include "addons/AddonDll.h"
 #include "addons/kodi-addon-dev-kit/include/kodi/visualization/Visualization.h"
 #include "cores/AudioEngine/Interfaces/IAudioCallback.h"
 #include "guilib/IRenderingCallback.h"

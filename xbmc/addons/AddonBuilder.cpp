@@ -32,7 +32,7 @@
 #include "addons/Service.h"
 #include "addons/Skin.h"
 #include "addons/UISoundsResource.h"
-#include "addons/Visualisation.h"
+#include "addons/interfaces/kodi/visualization/Visualisation.h"
 #include "addons/Webinterface.h"
 #include "cores/AudioEngine/Engines/ActiveAE/AudioDSPAddons/ActiveAEDSP.h"
 #include "games/controllers/Controller.h"

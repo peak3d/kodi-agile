@@ -215,7 +215,7 @@ bool CVisualisation::OnAction(VIS_ACTION action, void *param)
         std::string albumArtist(tag->GetAlbumArtistString());
         std::string genre(StringUtils::Join(tag->GetGenre(), g_advancedSettings.m_musicItemSeparator));
 
-        kodi::addon::visualization::VisTrack track;
+        kodi::addon::VisTrack track;
         track.title       = tag->GetTitle().c_str();
         track.artist      = artist.c_str();
         track.album       = tag->GetAlbum().c_str();
