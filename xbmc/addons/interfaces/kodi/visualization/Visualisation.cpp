@@ -22,10 +22,12 @@
 
 #include "Application.h"
 #include "GUIInfoManager.h"
+#include "GUIUserMessages.h"
 #include "addons/interfaces/ExceptionHandling.h"
 #include "cores/AudioEngine/AEFactory.h"
 #include "guiinfo/GUIInfoLabels.h"
 #include "guilib/GraphicContext.h"
+#include "guilib/GUIWindowManager.h"
 #include "guilib/WindowIDs.h"
 #include "music/tags/MusicInfoTag.h"
 #include "settings/AdvancedSettings.h"
@@ -112,7 +114,9 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   {
     m_struct.toAddon.Start(m_addonInstance, m_iChannels, m_iSamplesPerSec, m_iBitsPerSample, strFile.c_str());
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); return false; }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   m_hasPresets = GetPresets();
 
@@ -137,7 +141,9 @@ void CVisualisation::Start(int iChannels, int iSamplesPerSec, int iBitsPerSample
     if (m_struct.toAddon.Start)
       m_struct.toAddon.Start(m_addonInstance, iChannels, iSamplesPerSec, iBitsPerSample, strSongName.c_str());
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 }
 
 void CVisualisation::AudioData(const float* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
@@ -152,11 +158,9 @@ void CVisualisation::AudioData(const float* pAudioData, int iAudioDataLength, fl
     if (m_struct.toAddon.AudioData)
       m_struct.toAddon.AudioData(m_addonInstance, pAudioData, iAudioDataLength, pFreqData, iFreqDataLength);
   }
-  catch (std::exception ex)
-  {
-    ADDON::Exception::LogStdException(m_addon, ex, __FUNCTION__); // Handle exception
-    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 }
 
 void CVisualisation::Render()
@@ -167,7 +171,9 @@ void CVisualisation::Render()
     if (m_struct.toAddon.Render)
       m_struct.toAddon.Render(m_addonInstance);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 }
 
 void CVisualisation::Stop()
@@ -186,7 +192,9 @@ void CVisualisation::GetInfo(VIS_INFO *info)
     if (m_struct.toAddon.GetInfo)
       m_struct.toAddon.GetInfo(m_addonInstance, info);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 }
 
 bool CVisualisation::OnAction(VIS_ACTION action, void *param)
@@ -226,7 +234,9 @@ bool CVisualisation::OnAction(VIS_ACTION action, void *param)
       return m_struct.toAddon.OnAction(m_addonInstance, action, param);
     }
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return false;
 }
@@ -290,7 +300,9 @@ void CVisualisation::CreateBuffers()
     if (m_struct.toAddon.GetInfo)
       m_struct.toAddon.GetInfo(m_addonInstance, &info);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); return; }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   m_iNumBuffers = info.iSyncDelay + 1;
   m_bWantsFreq = (info.bWantsFreq != 0);
@@ -358,7 +370,9 @@ bool CVisualisation::GetPresets()
       m_struct.toAddon.GetPresets(m_addonInstance);
     // Note: m_presets becomes filled up with callback function TransferPreset
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); return false; }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return (!m_presets.empty());
 }
@@ -387,7 +401,9 @@ bool CVisualisation::GetSubModules()
       m_struct.toAddon.GetSubModules(m_addonInstance);
     // Note: m_submodules becomes filled up with callback function TransferSubmodule
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); return false; }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return (!m_submodules.empty());
 }
@@ -417,7 +433,9 @@ bool CVisualisation::IsLocked()
       if (m_struct.toAddon.IsLocked)
         return m_struct.toAddon.IsLocked(m_addonInstance);
     }
-    catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
   return false;
 }
@@ -449,7 +467,9 @@ unsigned CVisualisation::GetPreset()
     if (m_struct.toAddon.GetPreset)
       return m_struct.toAddon.GetPreset(m_addonInstance);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return 0;
 }
@@ -462,8 +482,32 @@ std::string CVisualisation::GetPresetName()
     return "";
 }
 
-void CVisualisation::ExceptionHandle(std::exception& ex, const char* function)
+void CVisualisation::ExceptionStdHandle(std::exception& ex, const char* function)
 {
-  ADDON::Exception::LogStdException(m_addon, ex, function); // Handle exception
-  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call
+  Exception::LogStdException(m_addon, ex, function);
+  CGUIMessage msg(GUI_MSG_VISUALISATION_UNLOADING, 0, 0);
+  g_windowManager.SendMessage(msg);
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(m_addon->ID());
+  Exception::ShowExceptionErrorDialog(m_addon);
+}
+
+void CVisualisation::ExceptionErrHandle(int ex, const char* function)
+{
+  Exception::LogErrException(m_addon, ex, function);
+  CGUIMessage msg(GUI_MSG_VISUALISATION_UNLOADING, 0, 0);
+  g_windowManager.SendMessage(msg);
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(m_addon->ID());
+  Exception::ShowExceptionErrorDialog(m_addon);
+}
+
+void CVisualisation::ExceptionUnkHandle(const char* function)
+{
+  Exception::LogUnkException(m_addon, function);
+  CGUIMessage msg(GUI_MSG_VISUALISATION_UNLOADING, 0, 0);
+  g_windowManager.SendMessage(msg);
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(m_addon->ID());
+  Exception::ShowExceptionErrorDialog(m_addon);
 }
