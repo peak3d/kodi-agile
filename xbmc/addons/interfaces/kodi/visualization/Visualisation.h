@@ -56,6 +56,7 @@ namespace ADDON
   {
   public:
     explicit CVisualisation(ADDON::AddonDllPtr addon);
+    virtual ~CVisualisation() { }
 
     std::string Name() const;
 

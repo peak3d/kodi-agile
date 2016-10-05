@@ -132,15 +132,12 @@ void CVisualisation::Start(int iChannels, int iSamplesPerSec, int iBitsPerSample
 {
   // notify visz. that new song has been started
   // pass it the nr of audio channels, sample rate, bits/sample and offcourse the songname
-  if (m_addon->Initialized())
+  try
   {
-    try
-    {
-      if (m_struct.toAddon.Start)
-        m_struct.toAddon.Start(m_addonInstance, iChannels, iSamplesPerSec, iBitsPerSample, strSongName.c_str());
-    }
-    catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+    if (m_struct.toAddon.Start)
+      m_struct.toAddon.Start(m_addonInstance, iChannels, iSamplesPerSec, iBitsPerSample, strSongName.c_str());
   }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 }
 
 void CVisualisation::AudioData(const float* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
@@ -150,33 +147,27 @@ void CVisualisation::AudioData(const float* pAudioData, int iAudioDataLength, fl
   // iAudioDataLength = length of audiodata array
   // pFreqData = fft-ed audio data
   // iFreqDataLength = length of pFreqData
-  if (m_addon->Initialized())
+  try
   {
-    try
-    {
-      if (m_struct.toAddon.AudioData)
-        m_struct.toAddon.AudioData(m_addonInstance, pAudioData, iAudioDataLength, pFreqData, iFreqDataLength);
-    }
-    catch (std::exception ex)
-    {
-      ADDON::Exception::LogStdException(m_addon, ex, __FUNCTION__); // Handle exception
-      memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
-    }
+    if (m_struct.toAddon.AudioData)
+      m_struct.toAddon.AudioData(m_addonInstance, pAudioData, iAudioDataLength, pFreqData, iFreqDataLength);
+  }
+  catch (std::exception ex)
+  {
+    ADDON::Exception::LogStdException(m_addon, ex, __FUNCTION__); // Handle exception
+    memset(&m_struct, 0, sizeof(m_struct)); // reset function table to prevent further exception call
   }
 }
 
 void CVisualisation::Render()
 {
   // ask visz. to render itself
-  if (m_addon->Initialized())
+  try
   {
-    try
-    {
-      if (m_struct.toAddon.Render)
-        m_struct.toAddon.Render(m_addonInstance);
-    }
-    catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+    if (m_struct.toAddon.Render)
+      m_struct.toAddon.Render(m_addonInstance);
   }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 }
 
 void CVisualisation::Stop()
@@ -190,22 +181,16 @@ void CVisualisation::Stop()
 
 void CVisualisation::GetInfo(VIS_INFO *info)
 {
-  if (m_addon->Initialized())
+  try
   {
-    try
-    {
-      if (m_struct.toAddon.GetInfo)
-        m_struct.toAddon.GetInfo(m_addonInstance, info);
-    }
-    catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+    if (m_struct.toAddon.GetInfo)
+      m_struct.toAddon.GetInfo(m_addonInstance, info);
   }
+  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
 }
 
 bool CVisualisation::OnAction(VIS_ACTION action, void *param)
 {
-  if (!m_addon->Initialized())
-    return false;
-
   // see if vis wants to handle the input
   // returns false if vis doesnt want the input
   // returns true if vis handled the input
@@ -335,27 +320,26 @@ void CVisualisation::ClearBuffers()
 bool CVisualisation::UpdateTrack()
 {
   bool handled = false;
-  if (m_addon->Initialized())
-  {
-    // get the current album art filename
-    m_AlbumThumb = CSpecialProtocol::TranslatePath(g_infoManager.GetImage(MUSICPLAYER_COVER, WINDOW_INVALID));
 
-    // get the current track tag
-    const CMusicInfoTag* tag = g_infoManager.GetCurrentSongTag();
+  // get the current album art filename
+  m_AlbumThumb = CSpecialProtocol::TranslatePath(g_infoManager.GetImage(MUSICPLAYER_COVER, WINDOW_INVALID));
 
-    if (m_AlbumThumb == "DefaultAlbumCover.png")
-      m_AlbumThumb = "";
-    else
-      CLog::Log(LOGDEBUG,"Updating visualisation albumart: %s", m_AlbumThumb.c_str());
+  // get the current track tag
+  const CMusicInfoTag* tag = g_infoManager.GetCurrentSongTag();
 
-    // inform the visualisation of the current album art
-    if (OnAction( VIS_ACTION_UPDATE_ALBUMART, (void*)( m_AlbumThumb.c_str() ) ) )
-      handled = true;
+  if (m_AlbumThumb == "DefaultAlbumCover.png")
+    m_AlbumThumb = "";
+  else
+    CLog::Log(LOGDEBUG,"Updating visualisation albumart: %s", m_AlbumThumb.c_str());
 
-    // inform the visualisation of the current track's tag information
-    if ( tag && OnAction( VIS_ACTION_UPDATE_TRACK, (void*)tag ) )
-      handled = true;
-  }
+  // inform the visualisation of the current album art
+  if (OnAction( VIS_ACTION_UPDATE_ALBUMART, (void*)( m_AlbumThumb.c_str() ) ) )
+    handled = true;
+
+  // inform the visualisation of the current track's tag information
+  if ( tag && OnAction( VIS_ACTION_UPDATE_TRACK, (void*)tag ) )
+    handled = true;
+
   return handled;
 }
 
