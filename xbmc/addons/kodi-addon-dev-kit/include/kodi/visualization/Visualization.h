@@ -54,7 +54,7 @@ typedef struct VIS_PROPS
 } VIS_PROPS;
 
 typedef enum VIS_ACTION
-{ 
+{
   VIS_ACTION_NONE = 0,
   VIS_ACTION_NEXT_PRESET,
   VIS_ACTION_PREV_PRESET,
@@ -98,7 +98,6 @@ typedef struct sAddonInstance_Visualization
 #ifdef __cplusplus
 namespace kodi {
 namespace addon {
-namespace visualization {
 
   class VisTrack
   {
@@ -131,11 +130,12 @@ namespace visualization {
     int reserved4;
   };
 
-  class CAddon
+  class CInstanceVisualization : public IAddonInstance
   {
   public:
-    CAddon(void* instance)
-      : m_instance(static_cast<sAddonInstance_Visualization*>(instance))
+    CInstanceVisualization(void* instance)
+      : IAddonInstance(ADDON_INSTANCE_VISUALIZATION),
+        m_instance(static_cast<sAddonInstance_Visualization*>(instance))
     {
        m_instance->toAddon.Start = ADDON_Start;
        m_instance->toAddon.AudioData = ADDON_AudioData;
@@ -148,6 +148,14 @@ namespace visualization {
        m_instance->toAddon.GetSubModules = ADDON_GetSubModules;
        m_instance->toAddon.IsLocked = ADDON_IsLocked;
     }
+
+    //==========================================================================
+    ///
+    /// @ingroup cpp_kodi_addon_visualization
+    /// @brief Destructor
+    ///
+    virtual ~CInstanceVisualization() { }
+    //--------------------------------------------------------------------------
 
     inline void* Device() { return m_instance->props.device; }
     inline int X() { return m_instance->props.x; }
@@ -175,42 +183,42 @@ namespace visualization {
   private:
     inline static void ADDON_Start(void* addonInstance, int iChannels, int iSamplesPerSec, int iBitsPerSample, const char* szSongName)
     {
-      static_cast<CAddon*>(addonInstance)->Start(iChannels, iSamplesPerSec, iBitsPerSample, szSongName);
+      static_cast<CInstanceVisualization*>(addonInstance)->Start(iChannels, iSamplesPerSec, iBitsPerSample, szSongName);
     }
 
     inline static void ADDON_AudioData(void* addonInstance, const float* pAudioData, int iAudioDataLength, float *pFreqData, int iFreqDataLength)
     {
-      static_cast<CAddon*>(addonInstance)->AudioData(pAudioData, iAudioDataLength, pFreqData, iFreqDataLength);
+      static_cast<CInstanceVisualization*>(addonInstance)->AudioData(pAudioData, iAudioDataLength, pFreqData, iFreqDataLength);
     }
 
     inline static void ADDON_Render(void* addonInstance)
     {
-      static_cast<CAddon*>(addonInstance)->Render();
+      static_cast<CInstanceVisualization*>(addonInstance)->Render();
     }
-    
+
     inline static void ADDON_GetInfo(void* addonInstance, VIS_INFO *info)
     {
-      static_cast<CAddon*>(addonInstance)->GetInfo(*info);
+      static_cast<CInstanceVisualization*>(addonInstance)->GetInfo(*info);
     }
-    
+
     inline static bool ADDON_OnAction(void* addonInstance, VIS_ACTION action, const void *param)
     {
-      return static_cast<CAddon*>(addonInstance)->OnAction(action, param);
+      return static_cast<CInstanceVisualization*>(addonInstance)->OnAction(action, param);
     }
 
     inline static int ADDON_HasPresets(void* addonInstance)
     {
-      return static_cast<CAddon*>(addonInstance)->HasPresets();
+      return static_cast<CInstanceVisualization*>(addonInstance)->HasPresets();
     }
 
     inline static unsigned int ADDON_GetPresets(void* addonInstance)
     {
-      CAddon* addon = static_cast<CAddon*>(addonInstance);
+      CInstanceVisualization* addon = static_cast<CInstanceVisualization*>(addonInstance);
       std::vector<std::string> presets;
       if (addon->GetPresets(presets))
       {
         for (auto it : presets)
-          addon->m_instance->toKodi.TransferPreset(addon->m_instance->toKodi.kodiInstance, it.c_str());          
+          addon->m_instance->toKodi.TransferPreset(addon->m_instance->toKodi.kodiInstance, it.c_str());
       }
 
       return presets.size();
@@ -218,17 +226,17 @@ namespace visualization {
 
     inline static unsigned int ADDON_GetPreset(void* addonInstance)
     {
-      return static_cast<CAddon*>(addonInstance)->GetPreset();
+      return static_cast<CInstanceVisualization*>(addonInstance)->GetPreset();
     }
 
     inline static unsigned int ADDON_GetSubModules(void* addonInstance)
     {
-      CAddon* addon = static_cast<CAddon*>(addonInstance);
+      CInstanceVisualization* addon = static_cast<CInstanceVisualization*>(addonInstance);
       std::vector<std::string> subModules;
       if (addon->GetSubModules(subModules))
       {
         for (auto it : subModules)
-          addon->m_instance->toKodi.TransferSubmodule(addon->m_instance->toKodi.kodiInstance, it.c_str());          
+          addon->m_instance->toKodi.TransferSubmodule(addon->m_instance->toKodi.kodiInstance, it.c_str());
       }
 
       return subModules.size();
@@ -236,13 +244,12 @@ namespace visualization {
 
     inline static bool ADDON_IsLocked(void* addonInstance)
     {
-      return static_cast<CAddon*>(addonInstance)->IsLocked();
+      return static_cast<CInstanceVisualization*>(addonInstance)->IsLocked();
     }
 
     sAddonInstance_Visualization* m_instance;
   };
 
-} /* namespace visualization */
 } /* namespace addon */
 } /* namespace kodi */
 } /* extern "C" */

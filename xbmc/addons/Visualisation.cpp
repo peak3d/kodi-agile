@@ -102,7 +102,7 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   ADDON_STATUS status = CAddonDll::CreateInstance(ADDON_INSTANCE_VISUALIZATION, ID().c_str(), &m_struct, &m_addonInstance);
   if (status != ADDON_STATUS_OK)
     return false;
-  
+
   // Start the visualisation
   std::string strFile = URIUtils::GetFileName(g_application.CurrentFile());
   CLog::Log(LOGDEBUG, "Visualisation::Start()");
@@ -219,7 +219,7 @@ bool CVisualisation::OnAction(VIS_ACTION action, void *param)
         std::string artist(tag->GetArtistString());
         std::string albumArtist(tag->GetAlbumArtistString());
         std::string genre(StringUtils::Join(tag->GetGenre(), g_advancedSettings.m_musicItemSeparator));
-        
+
         kodi::addon::visualization::VisTrack track;
         track.title       = tag->GetTitle().c_str();
         track.artist      = artist.c_str();
@@ -477,5 +477,5 @@ std::string CVisualisation::GetPresetName()
 void CVisualisation::ExceptionHandle(std::exception& ex, const char* function)
 {
   ADDON::Exception::LogStdException(this, ex, function); // Handle exception
-  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call  
+  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call
 }
