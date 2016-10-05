@@ -6619,15 +6619,11 @@ std::string CGUIInfoManager::GetLabel(int info, int contextWindow, std::string *
     {
       CGUIMessage msg(GUI_MSG_GET_VISUALISATION, 0, 0);
       g_windowManager.SendMessage(msg);
-      if (msg.GetPointer())
+      CVisualisation* viz = static_cast<CVisualisation*>(msg.GetPointer());
+      if (viz)
       {
-        CVisualisation* viz = NULL;
-        viz = (CVisualisation*)msg.GetPointer();
-        if (viz)
-        {
-          strLabel = viz->GetPresetName();
-          URIUtils::RemoveExtension(strLabel);
-        }
+        strLabel = viz->GetPresetName();
+        URIUtils::RemoveExtension(strLabel);
       }
     }
     break;
