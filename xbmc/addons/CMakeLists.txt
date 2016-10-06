@@ -8,7 +8,6 @@ set(SOURCES Addon.cpp
             AddonStatusHandler.cpp
             AddonSystemSettings.cpp
             AddonVersion.cpp
-            AudioDecoder.cpp
             AudioEncoder.cpp
             ContextMenuAddon.cpp
             ContextMenus.cpp
@@ -40,7 +39,6 @@ set(HEADERS Addon.h
             AddonStatusHandler.h
             AddonSystemSettings.h
             AddonVersion.h
-            AudioDecoder.h
             AudioEncoder.h
             ContextMenuAddon.h
             ContextMenus.h

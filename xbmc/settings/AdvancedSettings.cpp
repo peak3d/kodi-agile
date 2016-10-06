@@ -25,7 +25,7 @@
 #include <string>
 #include <vector>
 
-#include "addons/AudioDecoder.h"
+#include "addons/interfaces/kodi/audiodecoder/AudioDecoder.h"
 #include "addons/BinaryAddonCache.h"
 #include "addons/IAddon.h"
 #include "Application.h"

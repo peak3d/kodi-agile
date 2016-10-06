@@ -19,7 +19,7 @@
  */
 
 #include "addons/AddonBuilder.h"
-#include "addons/AudioDecoder.h"
+#include "addons/interfaces/kodi/audiodecoder/AudioDecoder.h"
 #include "addons/AudioEncoder.h"
 #include "addons/ContextMenuAddon.h"
 #include "addons/ImageResource.h"

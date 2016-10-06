@@ -18,7 +18,7 @@
  *
  */
 
-#include "AddonDll.h"
+#include "addons/AddonDll.h"
 #include "addons/kodi-addon-dev-kit/include/kodi/audiodecoder/AudioDecoder.h"
 #include "cores/paplayer/ICodec.h"
 #include "music/tags/ImusicInfoTagLoader.h"
@@ -57,7 +57,7 @@ namespace ADDON
 
     // Child functions related to CMusicFileDirectory
     virtual int GetTrackCount(const std::string& strPath) override;
-    
+
     // Child functions related to MUSIC_INFO::IMusicInfoTagLoader
     virtual bool Load(const std::string& strFileName,
               MUSIC_INFO::CMusicInfoTag& tag,

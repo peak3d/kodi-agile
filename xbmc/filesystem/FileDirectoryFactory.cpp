@@ -45,7 +45,7 @@
 #include "URL.h"
 #include "ServiceBroker.h"
 #include "addons/BinaryAddonCache.h"
-#include "addons/AudioDecoder.h"
+#include "addons/interfaces/kodi/audiodecoder/AudioDecoder.h"
 
 using namespace ADDON;
 using namespace XFILE;

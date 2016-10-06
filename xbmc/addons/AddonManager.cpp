@@ -30,7 +30,7 @@
 #include "addons/LanguageResource.h"
 #include "addons/UISoundsResource.h"
 #include "addons/Webinterface.h"
-#include "AudioDecoder.h"
+#include "addons/interfaces/kodi/audiodecoder/AudioDecoder.h"
 #include "AudioEncoder.h"
 #include "ContextMenuAddon.h"
 #include "ContextMenuManager.h"
