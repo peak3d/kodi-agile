@@ -37,7 +37,7 @@
 #include "cores/AudioEngine/Engines/ActiveAE/AudioDSPAddons/ActiveAEDSP.h"
 #include "games/controllers/Controller.h"
 #include "peripherals/addons/PeripheralAddon.h"
-#include "addons/PVRClient.h"
+#include "addons/interfaces/kodi/pvr/PVRClient.h"
 #include "utils/StringUtils.h"
 
 namespace ADDON

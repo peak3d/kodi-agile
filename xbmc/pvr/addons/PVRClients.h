@@ -26,7 +26,7 @@
 #include "pvr/channels/PVRChannel.h"
 #include "pvr/recordings/PVRRecording.h"
 
-#include "addons/PVRClient.h"
+#include "addons/interfaces/kodi/pvr/PVRClient.h"
 
 #include <deque>
 #include <vector>

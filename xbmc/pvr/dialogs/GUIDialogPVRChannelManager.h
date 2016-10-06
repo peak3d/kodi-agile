@@ -26,7 +26,7 @@
 #include "view/GUIViewControl.h"
 
 #include "pvr/channels/PVRChannelGroup.h"
-#include "addons/PVRClient.h"
+#include "addons/interfaces/kodi/pvr/PVRClient.h"
 
 namespace PVR
 {

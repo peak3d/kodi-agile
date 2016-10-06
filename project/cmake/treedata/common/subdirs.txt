@@ -6,6 +6,7 @@ xbmc/addons/interfaces/kodi/audiodecoder        addoninterface_kodi_audiodecoder
 xbmc/addons/interfaces/kodi/audioencoder        addoninterface_kodi_audioencoder
 xbmc/addons/interfaces/kodi/gui                 addonInterface_kodi_gui
 xbmc/addons/interfaces/kodi/inputstream         addoninterface_kodi_inputstream
+xbmc/addons/interfaces/kodi/pvr                 addoninterface_kodi_pvrclient
 xbmc/addons/interfaces/kodi/screensaver         addonInterface_kodi_screensaver
 xbmc/addons/interfaces/kodi/visualization       addonInterface_kodi_visualization
 xbmc/commons                                    commons

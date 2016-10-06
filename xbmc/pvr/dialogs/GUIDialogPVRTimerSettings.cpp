@@ -24,7 +24,7 @@
 #include "epg/EpgInfoTag.h"
 #include "guilib/GUIWindowManager.h"
 #include "guilib/LocalizeStrings.h"
-#include "addons/PVRClient.h"
+#include "addons/interfaces/kodi/pvr/PVRClient.h"
 #include "pvr/channels/PVRChannelGroupsContainer.h"
 #include "pvr/PVRManager.h"
 #include "pvr/PVRSettings.h"

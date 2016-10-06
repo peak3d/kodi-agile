@@ -23,7 +23,7 @@
 #include <utility>
 
 #include "dbwrappers/dataset.h"
-#include "addons/PVRClient.h"
+#include "addons/interfaces/kodi/pvr/PVRClient.h"
 #include "pvr/channels/PVRChannelGroupInternal.h"
 #include "pvr/channels/PVRChannelGroupsContainer.h"
 #include "settings/AdvancedSettings.h"
