@@ -371,6 +371,10 @@ namespace addon {
     /// @param[in] freqData             fft-ed audio data
     /// @param[in] freqDataLength       length of frequeny data array
     ///
+    /// Values **freqData** and **freqDataLength** becomes used if on GetInfo()
+    /// the `wantsFreq` is set to true, otherwise is **freqData** = `nullptr`
+    /// and **freqDataLength** = `0`.
+    ///
     /// @note Required to implement
     ///
     virtual void AudioData(const float* audioData, int audioDataLength, float* freqData, int freqDataLength)=0;
@@ -391,8 +395,14 @@ namespace addon {
     /// @ingroup cpp_kodi_addon_visualization
     /// @brief To get the number of buffers from the current visualization
     ///
-    /// @param[out] wantsFreq           Fourier transform the data if the wants it
+    /// @param[out] wantsFreq           Fourier transform the data if the wants it.
+    ///                                 If set to true are the values
+    ///                                 **freqData** and **freqDataLength** on
+    ///                                 AudioData() used.
     /// @param[out] syncDelay           Number of buffers from the current
+    ///
+    /// @note If function becomes not used is as defaults from parent the
+    /// `wantsFreq` = 0 and the `syncDelay` = 0.
     ///
     virtual void GetInfo(bool& wantsFreq, int& syncDelay) { wantsFreq = false; syncDelay = 0; }
     //--------------------------------------------------------------------------
