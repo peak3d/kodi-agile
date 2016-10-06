@@ -18,7 +18,7 @@
  *
  */
 
-#include "AddonDll.h"
+#include "addons/AddonDll.h"
 #include "FileItem.h"
 #include "addons/kodi-addon-dev-kit/include/kodi/inputstream/InputStream.h"
 #include "threads/CriticalSection.h"
@@ -44,7 +44,7 @@ namespace ADDON
                  const std::string& extensions,
                  const std::string& protocols);
     virtual ~CInputStream();
-    
+
     ADDON_STATUS Create();
     void Destroy(void);
 
@@ -91,7 +91,7 @@ namespace ADDON
     // Static callback functions for add-on to Kodi below
     static DemuxPacket* InputStreamAllocateDemuxPacket(void* addonData, int iDataSize = 0); /*!< @ref kodi_addon_inputstream_AllocateDemuxPacket */
     static void InputStreamFreeDemuxPacket(void* addonData, DemuxPacket* pPacket); /*!< @ref kodi_addon_inputstream_FreeDemuxPacket */
-  
+
   protected:
     void UpdateStreams();
     void DisposeStreams();

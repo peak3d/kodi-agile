@@ -23,7 +23,7 @@
 #include "addons/interfaces/kodi/audioencoder/AudioEncoder.h"
 #include "addons/ContextMenuAddon.h"
 #include "addons/ImageResource.h"
-#include "addons/InputStream.h"
+#include "addons/interfaces/kodi/inputstream/InputStream.h"
 #include "addons/LanguageResource.h"
 #include "addons/PluginSource.h"
 #include "addons/Repository.h"

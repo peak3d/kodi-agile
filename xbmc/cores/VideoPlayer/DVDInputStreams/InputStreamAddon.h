@@ -24,7 +24,7 @@
 #include <vector>
 
 #include "DVDInputStream.h"
-#include "addons/InputStream.h"
+#include "addons/interfaces/kodi/inputstream/InputStream.h"
 
 //! \brief Input stream class
 class CInputStreamAddon :

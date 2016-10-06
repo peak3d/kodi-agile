@@ -19,7 +19,7 @@
  */
 
 #include "InputStreamAddon.h"
-#include "addons/InputStream.h"
+#include "addons/interfaces/kodi/inputstream/InputStream.h"
 #include "cores/VideoPlayer/DVDClock.h"
 
 CInputStreamAddon::CInputStreamAddon(const CFileItem& fileitem, std::shared_ptr<ADDON::CInputStream> inputStream)
