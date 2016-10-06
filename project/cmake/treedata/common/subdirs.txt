@@ -3,6 +3,7 @@ xbmc/addons                                     addons
 xbmc/addons/interfaces                          addonsBinaryInterfaces
 xbmc/addons/interfaces/kodi                     addonInterface_kodi
 xbmc/addons/interfaces/kodi/audiodecoder        addoninterface_kodi_audiodecoder
+xbmc/addons/interfaces/kodi/audioencoder        addoninterface_kodi_audioencoder
 xbmc/addons/interfaces/kodi/gui                 addonInterface_kodi_gui
 xbmc/addons/interfaces/kodi/screensaver         addonInterface_kodi_screensaver
 xbmc/addons/interfaces/kodi/visualization       addonInterface_kodi_visualization

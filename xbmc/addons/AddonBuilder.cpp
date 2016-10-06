@@ -20,7 +20,7 @@
 
 #include "addons/AddonBuilder.h"
 #include "addons/interfaces/kodi/audiodecoder/AudioDecoder.h"
-#include "addons/AudioEncoder.h"
+#include "addons/interfaces/kodi/audioencoder/AudioEncoder.h"
 #include "addons/ContextMenuAddon.h"
 #include "addons/ImageResource.h"
 #include "addons/InputStream.h"

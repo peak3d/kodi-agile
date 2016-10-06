@@ -45,7 +45,7 @@
 #include "Application.h"
 #include "music/MusicDatabase.h"
 #include "addons/AddonManager.h"
-#include "addons/AudioEncoder.h"
+#include "addons/interfaces/kodi/audioencoder/AudioEncoder.h"
 
 using namespace ADDON;
 using namespace XFILE;

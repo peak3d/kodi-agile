@@ -31,7 +31,7 @@
 #include "addons/UISoundsResource.h"
 #include "addons/Webinterface.h"
 #include "addons/interfaces/kodi/audiodecoder/AudioDecoder.h"
-#include "AudioEncoder.h"
+#include "addons/interfaces/kodi/audioencoder/AudioEncoder.h"
 #include "ContextMenuAddon.h"
 #include "ContextMenuManager.h"
 #include "cores/AudioEngine/Engines/ActiveAE/AudioDSPAddons/ActiveAEDSP.h"

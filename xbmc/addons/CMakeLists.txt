@@ -8,7 +8,6 @@ set(SOURCES Addon.cpp
             AddonStatusHandler.cpp
             AddonSystemSettings.cpp
             AddonVersion.cpp
-            AudioEncoder.cpp
             ContextMenuAddon.cpp
             ContextMenus.cpp
             GUIDialogAddonInfo.cpp
@@ -39,7 +38,6 @@ set(HEADERS Addon.h
             AddonStatusHandler.h
             AddonSystemSettings.h
             AddonVersion.h
-            AudioEncoder.h
             ContextMenuAddon.h
             ContextMenus.h
             DllAddon.h

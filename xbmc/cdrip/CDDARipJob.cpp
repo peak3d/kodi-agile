@@ -35,7 +35,7 @@
 #include "utils/StringUtils.h"
 #include "storage/MediaManager.h"
 #include "addons/AddonManager.h"
-#include "addons/AudioEncoder.h"
+#include "addons/interfaces/kodi/audioencoder/AudioEncoder.h"
 
 using namespace ADDON;
 using namespace MUSIC_INFO;
