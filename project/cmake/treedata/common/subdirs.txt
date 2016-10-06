@@ -2,6 +2,7 @@ xbmc                                            xbmc
 xbmc/addons                                     addons
 xbmc/addons/interfaces                          addonsBinaryInterfaces
 xbmc/addons/interfaces/kodi                     addonInterface_kodi
+xbmc/addons/interfaces/kodi/adsp                addoninterface_kodi_adsp
 xbmc/addons/interfaces/kodi/audiodecoder        addoninterface_kodi_audiodecoder
 xbmc/addons/interfaces/kodi/audioencoder        addoninterface_kodi_audioencoder
 xbmc/addons/interfaces/kodi/gui                 addonInterface_kodi_gui

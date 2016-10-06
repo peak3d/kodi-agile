@@ -20,8 +20,8 @@
 
 #include <vector>
 #include "Application.h"
-#include "ActiveAEDSPAddon.h"
-#include "ActiveAEDSP.h"
+#include "AudioDSP.h"
+#include "cores/AudioEngine/Engines/ActiveAE/AudioDSPAddons/ActiveAEDSP.h"
 #include "commons/Exception.h"
 #include "settings/AdvancedSettings.h"
 #include "settings/Settings.h"
@@ -102,12 +102,12 @@ void CActiveAEDSPAddon::ResetProperties(int iClientId /* = AE_DSP_INVALID_ADDON_
   m_strAudioDSPName       = DEFAULT_INFO_STRING_VALUE;
   memset(&m_addonCapabilities, 0, sizeof(m_addonCapabilities));
   m_apiVersion = AddonVersion("0.0.0");
-  
+
   memset(&m_struct, 0, sizeof(m_struct));
 
   m_struct.props.strUserPath = m_strUserPath.c_str();
   m_struct.props.strAddonPath = m_strAddonPath.c_str();
-  
+
   m_struct.toKodi.kodiInstance = this;
   m_struct.toKodi.AddMenuHook = ADSPAddMenuHook;
   m_struct.toKodi.RemoveMenuHook = ADSPRemoveMenuHook;
@@ -134,7 +134,7 @@ ADDON_STATUS CActiveAEDSPAddon::Create(int iClientId)
   {
     if ((status = CAddonDll::Create()) != ADDON_STATUS_OK)
       return status;
-    
+
     if ((status = CAddonDll::CreateInstance(ADDON_INSTANCE_ADSP, ID().c_str(), &m_struct, &m_addonInstance)) != ADDON_STATUS_OK)
       return status;
 

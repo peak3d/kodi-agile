@@ -24,7 +24,7 @@
 #include <utility>
 #include <vector>
 
-#include "ActiveAEDSPAddon.h"
+#include "addons/interfaces/kodi/adsp/AudioDSP.h"
 #include "threads/CriticalSection.h"
 #include "utils/Observer.h"
 

@@ -27,7 +27,7 @@
 #include "utils/Observer.h"
 #include "messaging/IMessageTarget.h"
 
-#include "ActiveAEDSPAddon.h"
+#include "addons/interfaces/kodi/adsp/AudioDSP.h"
 #include "ActiveAEDSPDatabase.h"
 #include "ActiveAEDSPMode.h"
 

@@ -2,7 +2,6 @@ set(SOURCES AEFactory.cpp
             AEResampleFactory.cpp
             AESinkFactory.cpp
             Engines/ActiveAE/AudioDSPAddons/ActiveAEDSP.cpp
-            Engines/ActiveAE/AudioDSPAddons/ActiveAEDSPAddon.cpp
             Engines/ActiveAE/AudioDSPAddons/ActiveAEDSPDatabase.cpp
             Engines/ActiveAE/AudioDSPAddons/ActiveAEDSPMode.cpp
             Engines/ActiveAE/AudioDSPAddons/ActiveAEDSPProcess.cpp
@@ -27,7 +26,6 @@ set(HEADERS AEFactory.h
             AEResampleFactory.h
             AESinkFactory.h
             Engines/ActiveAE/AudioDSPAddons/ActiveAEDSP.h
-            Engines/ActiveAE/AudioDSPAddons/ActiveAEDSPAddon.h
             Engines/ActiveAE/AudioDSPAddons/ActiveAEDSPDatabase.h
             Engines/ActiveAE/AudioDSPAddons/ActiveAEDSPMode.h
             Engines/ActiveAE/AudioDSPAddons/ActiveAEDSPProcess.h
