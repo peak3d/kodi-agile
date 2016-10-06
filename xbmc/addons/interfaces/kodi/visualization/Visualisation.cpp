@@ -305,7 +305,7 @@ void CVisualisation::CreateBuffers()
   catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   m_iNumBuffers = info.iSyncDelay + 1;
-  m_bWantsFreq = (info.bWantsFreq != 0);
+  m_bWantsFreq = info.bWantsFreq;
   if (m_iNumBuffers > MAX_AUDIO_BUFFERS)
     m_iNumBuffers = MAX_AUDIO_BUFFERS;
   if (m_iNumBuffers < 1)
