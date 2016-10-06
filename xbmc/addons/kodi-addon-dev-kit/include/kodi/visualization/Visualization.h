@@ -99,14 +99,12 @@ typedef struct VIS_PROPS
   const char *name;
   const char *presets;
   const char *profile;
-  const char *submodule;
 } VIS_PROPS;
 
 typedef struct sAddonToKodiFuncTable_Visualization
 {
   void* kodiInstance;
   void (__cdecl* TransferPreset) (void* kodiInstance, const char* preset);
-  void (__cdecl* TransferSubmodule) (void* kodiInstance, const char* submodule);
 } sAddonToKodiFuncTable_Visualization;
 
 typedef struct sKodiToAddonFuncTable_Visualization
@@ -119,7 +117,6 @@ typedef struct sKodiToAddonFuncTable_Visualization
   bool (__cdecl* HasPresets)(void* addonInstance);
   unsigned int (__cdecl *GetPresets)(void* addonInstance);
   unsigned int (__cdecl *GetPreset)(void* addonInstance);
-  unsigned int (__cdecl *GetSubModules)(void* addonInstance);
   bool (__cdecl* IsLocked)(void* addonInstance);
 } sKodiToAddonFuncTable_Visualization;
 
@@ -326,7 +323,6 @@ namespace addon {
        m_instance->toAddon.HasPresets = ADDON_HasPresets;
        m_instance->toAddon.GetPresets = ADDON_GetPresets;
        m_instance->toAddon.GetPreset = ADDON_GetPreset;
-       m_instance->toAddon.GetSubModules = ADDON_GetSubModules;
        m_instance->toAddon.IsLocked = ADDON_IsLocked;
     }
 
@@ -436,17 +432,6 @@ namespace addon {
     //==========================================================================
     ///
     /// @ingroup cpp_kodi_addon_visualization
-    /// @brief
-    ///
-    /// @param[out] submodules
-    /// @return
-    ///
-    virtual bool GetSubModules(std::vector<std::string>& submodules) { return 0; }
-    //--------------------------------------------------------------------------
-
-    //==========================================================================
-    ///
-    /// @ingroup cpp_kodi_addon_visualization
     /// @brief To ask add-on is locked on current preset
     ///
     /// @return                         True if locked there
@@ -535,7 +520,7 @@ namespace addon {
     ///
     /// @param[in] track        Visualization track information structure
     /// @return                 Return true if it becomes used from you
-    virtual bool UpdateTrack(const VisTrack &track);
+    virtual bool UpdateTrack(const VisTrack &track) { return false; }
 
     //==========================================================================
     ///
@@ -643,16 +628,6 @@ namespace addon {
     ///
     inline std::string Profile() { return m_instance->props.profile; }
     //--------------------------------------------------------------------------
-
-    //==========================================================================
-    ///
-    /// @ingroup cpp_kodi_addon_visualization_CB
-    /// @brief
-    ///
-    /// @return
-    ///
-    inline std::string SubModule() { return m_instance->props.submodule; }
-    //--------------------------------------------------------------------------
     //@}
 
   private:
@@ -727,19 +702,6 @@ namespace addon {
     inline static unsigned int ADDON_GetPreset(void* addonInstance)
     {
       return static_cast<CInstanceVisualization*>(addonInstance)->GetPreset();
-    }
-
-    inline static unsigned int ADDON_GetSubModules(void* addonInstance)
-    {
-      CInstanceVisualization* addon = static_cast<CInstanceVisualization*>(addonInstance);
-      std::vector<std::string> subModules;
-      if (addon->GetSubModules(subModules))
-      {
-        for (auto it : subModules)
-          addon->m_instance->toKodi.TransferSubmodule(addon->m_instance->toKodi.kodiInstance, it.c_str());
-      }
-
-      return subModules.size();
     }
 
     inline static bool ADDON_IsLocked(void* addonInstance)

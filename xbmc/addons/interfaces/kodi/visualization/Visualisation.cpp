@@ -97,11 +97,9 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   m_struct.props.name = strdup(m_addon->Name().c_str());
   m_struct.props.presets = strdup(CSpecialProtocol::TranslatePath(m_addon->Path()).c_str());
   m_struct.props.profile = strdup(CSpecialProtocol::TranslatePath(m_addon->Profile()).c_str());
-  m_struct.props.submodule = nullptr;
 
   m_struct.toKodi.kodiInstance = this;
   m_struct.toKodi.TransferPreset = TransferPreset;
-  m_struct.toKodi.TransferSubmodule = TransferSubmodule;
 
   ADDON_STATUS status = m_addon->CreateInstance(ADDON_INSTANCE_VISUALIZATION, m_addon->ID().c_str(), &m_struct, &m_addonInstance);
   if (status != ADDON_STATUS_OK)
@@ -119,11 +117,6 @@ bool CVisualisation::Create(int x, int y, int w, int h, void *device)
   catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   m_hasPresets = GetPresets();
-
-  if (GetSubModules())
-    m_struct.props.submodule = strdup(CSpecialProtocol::TranslatePath(m_submodules.front()).c_str());
-  else
-    m_struct.props.submodule = nullptr;
 
   CreateBuffers();
 
@@ -384,44 +377,6 @@ void CVisualisation::TransferPreset(void* kodiInstance, const char* preset)
     throw std::logic_error("Visualization - TransferPreset - invalid handler data");
 
   addon->m_presets.push_back(preset);
-}
-
-bool CVisualisation::GetSubModuleList(std::vector<std::string> &vecmodules)
-{
-  vecmodules = m_submodules;
-  return !m_submodules.empty();
-}
-
-bool CVisualisation::GetSubModules()
-{
-  m_submodules.clear();
-  try
-  {
-    if (m_struct.toAddon.GetSubModules)
-      m_struct.toAddon.GetSubModules(m_addonInstance);
-    // Note: m_submodules becomes filled up with callback function TransferSubmodule
-  }
-  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
-  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
-  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
-
-  return (!m_submodules.empty());
-}
-
-void CVisualisation::TransferSubmodule(void* kodiInstance, const char* submodule)
-{
-  CVisualisation *addon = static_cast<CVisualisation*>(kodiInstance);
-  if (!addon)
-    throw std::logic_error("Visualization - TransferSubmodule - invalid handler data");
-
-  addon->m_submodules.push_back(submodule);
-}
-
-std::string CVisualisation::GetFriendlyName(const std::string& strVisz,
-                                            const std::string& strSubModule)
-{
-  // should be of the format "moduleName (visName)"
-  return strSubModule + " (" + strVisz + ")";
 }
 
 bool CVisualisation::IsLocked()
