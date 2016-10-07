@@ -107,7 +107,9 @@ bool CAudioDecoder::Init(const CFileItem& file, unsigned int filecache)
       }
     }
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   m_format.m_dataFormat = ADDON::GetKodiAudioFormat(format);
   m_format.m_sampleRate = sampleRate;
@@ -135,8 +137,10 @@ int CAudioDecoder::ReadPCM(uint8_t* buffer, int size, int* actualsize)
     if (m_struct.toAddon.ReadPCM)
       return m_struct.toAddon.ReadPCM(m_addonInstance, buffer, size, actualsize);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
-  
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
+
   return 0;
 }
 
@@ -150,7 +154,9 @@ bool CAudioDecoder::Seek(int64_t time)
     if (m_struct.toAddon.Seek)
       return m_struct.toAddon.Seek(m_addonInstance, time);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return false;
 }
@@ -182,7 +188,9 @@ bool CAudioDecoder::Load(const std::string& fileName,
     if (m_struct.toAddon.ReadTag)
       ret = m_struct.toAddon.ReadTag(m_addonInstance, fileName.c_str(), title, artist, &length);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   if (ret)
   {
@@ -206,7 +214,9 @@ int CAudioDecoder::GetTrackCount(const std::string& strPath)
     if (m_struct.toAddon.TrackCount)
       result = m_struct.toAddon.TrackCount(m_addonInstance, strPath.c_str());
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   if (result > 1 && !Load(strPath, XFILE::CMusicFileDirectory::m_tag, nullptr))
     return 0;
@@ -215,10 +225,28 @@ int CAudioDecoder::GetTrackCount(const std::string& strPath)
   return result;
 }
 
-void CAudioDecoder::ExceptionHandle(std::exception& ex, const char* function)
+void CAudioDecoder::ExceptionStdHandle(std::exception& ex, const char* function)
 {
-  ADDON::Exception::LogStdException(this, ex, function); // Handle exception
-  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call  
+  Exception::LogStdException(this, ex, function);
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(this->ID());
+  Exception::ShowExceptionErrorDialog(this);
+}
+
+void CAudioDecoder::ExceptionErrHandle(int ex, const char* function)
+{
+  Exception::LogErrException(this, ex, function);
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(this->ID());
+  Exception::ShowExceptionErrorDialog(this);
+}
+
+void CAudioDecoder::ExceptionUnkHandle(const char* function)
+{
+  Exception::LogUnkException(this, function);
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(this->ID());
+  Exception::ShowExceptionErrorDialog(this);
 }
 
 } /* namespace ADDON */
