@@ -100,7 +100,7 @@ namespace ADDON
     * log entry. This is always the first call, to see if it still crashes the
     * source of them.
     *
-    * After them becomes the screensaver add-on Destroyed and complete disabled.
+    * After them becomes the audio decoder add-on Destroyed and complete disabled.
     *
     * As last step comes a dialog to inform the used about the Exception.
     *

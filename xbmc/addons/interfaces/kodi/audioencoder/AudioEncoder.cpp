@@ -49,7 +49,7 @@ bool CAudioEncoder::Init(sAddonToKodiFuncTable_AudioEncoder &callbacks)
 {
   if (!Initialized())
     return false;
-  
+
   m_struct.toKodi = callbacks;
   if (CAddonDll::CreateInstance(ADDON_INSTANCE_AUDIOENCODER, ID().c_str(), &m_struct, &m_addonInstance) != ADDON_STATUS_OK)
     return false;
@@ -71,7 +71,9 @@ bool CAudioEncoder::Init(sAddonToKodiFuncTable_AudioEncoder &callbacks)
                                     m_strComment.c_str(),
                                     m_iTrackLength);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return false;
 }
@@ -86,7 +88,9 @@ int CAudioEncoder::Encode(int nNumBytesRead, uint8_t* pbtStream)
     if (m_struct.toAddon.Encode)
       return m_struct.toAddon.Encode(m_addonInstance, nNumBytesRead, pbtStream);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return 0;
 }
@@ -104,7 +108,9 @@ bool CAudioEncoder::Close()
         return false;
     }
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   CAddonDll::DestroyInstance(ADDON_INSTANCE_AUDIOENCODER, m_addonInstance);
   m_addonInstance = nullptr;
@@ -112,10 +118,28 @@ bool CAudioEncoder::Close()
   return true;
 }
 
-void CAudioEncoder::ExceptionHandle(std::exception& ex, const char* function)
+void CAudioEncoder::ExceptionStdHandle(std::exception& ex, const char* function)
 {
-  ADDON::Exception::LogStdException(this, ex, function); // Handle exception and disable add-on
-  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call  
+  Exception::LogStdException(this, ex, function);
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(this->ID());
+  Exception::ShowExceptionErrorDialog(this);
+}
+
+void CAudioEncoder::ExceptionErrHandle(int ex, const char* function)
+{
+  Exception::LogErrException(this, ex, function);
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(this->ID());
+  Exception::ShowExceptionErrorDialog(this);
+}
+
+void CAudioEncoder::ExceptionUnkHandle(const char* function)
+{
+  Exception::LogUnkException(this, function);
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(this->ID());
+  Exception::ShowExceptionErrorDialog(this);
 }
 
 } /* namespace ADDON */
