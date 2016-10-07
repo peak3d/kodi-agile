@@ -115,7 +115,50 @@ namespace ADDON
     static std::map<std::string, Config> m_configMap;
 
   private:
-    void ExceptionHandle(std::exception& ex, const char* function);
+    /*!
+    * @{
+    * @brief Functions below are used to handle exception between Kodi and his
+    * add-on.
+    *
+    * ExceptionStdHandle(...):
+    *   Used for to handle standard c++ exception partly generated from dev kits
+    *   headers.
+    *
+    * ExceptionErrHandle(...):
+    *   This is a special type basically used also in dev kit headers to give a
+    *   exception with his ADDON_STATUS as integer value.
+    *   Can be generated from headers by a massive fault detected on call of
+    *   them.
+    *
+    * ExceptionUnkHandle(...);
+    *   Used for everything else.
+    *
+    * With a call of them becomes the standardized function
+    * Exception::LogUnkException(...) from ExceptionHandling.h used to write
+    * log entry. This is always the first call, to see if it still crashes the
+    * source of them.
+    *
+    * After them becomes the audio encoder add-on Destroyed and complete disabled.
+    *
+    * As last step comes a dialog to inform the used about the Exception.
+    *
+    * How it is set on add-on calls
+    * ~~~~~~~~~~~~~{.cpp}
+    * try
+    * {
+    *   ...
+    * }
+    * catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    * catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    * catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
+    * ~~~~~~~~~~~~~
+    *
+    * @note this way becomes also used on add-on typed e.g. pvr ...
+    */
+    void ExceptionStdHandle(std::exception& ex, const char* function);
+    void ExceptionErrHandle(int ex, const char* function);
+    void ExceptionUnkHandle(const char* function);
+    /* @}*/
 
     sFuncTable_InputStream m_struct;
     void* m_addonInstance;

@@ -92,7 +92,7 @@ ADDON_STATUS CInputStream::Create()
   ADDON_STATUS status = CAddonDll::Create();
   if (status != ADDON_STATUS_OK)
     return status;
-  
+
   memset(&m_struct, 0, sizeof(m_struct));
   m_struct.toKodi.kodiInstance = this;
   m_struct.toKodi.AllocateDemuxPacket = InputStreamAllocateDemuxPacket;
@@ -110,7 +110,7 @@ void CInputStream::Destroy(void)
     memset(&m_struct, 0, sizeof(m_struct));
     m_addonInstance = nullptr;
   }
-  
+
   CAddonDll::Destroy();
 }
 
@@ -147,7 +147,10 @@ void CInputStream::UpdateConfig()
     if (m_struct.toAddon.GetPathList)
       pathList = m_struct.toAddon.GetPathList(m_addonInstance);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
+
   Destroy();
 
   Config config;
@@ -258,7 +261,7 @@ bool CInputStream::Open(CFileItem &fileitem)
   }
 
   props.m_strURL = fileitem.GetPath().c_str();
-  
+
   std::string libFolder = URIUtils::GetDirectory(m_parentLib);
   std::string profileFolder = CSpecialProtocol::TranslatePath(Profile());
   props.m_libFolder = libFolder.c_str();
@@ -274,7 +277,9 @@ bool CInputStream::Open(CFileItem &fileitem)
          m_struct.toAddon.GetCapabilities(m_addonInstance, &m_caps);
     }
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); return false; }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   UpdateStreams();
   return ret;
@@ -287,7 +292,9 @@ void CInputStream::Close()
     if (m_struct.toAddon.Close)
       m_struct.toAddon.Close(m_addonInstance);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   if (!m_bIsChild)
   {
@@ -307,7 +314,10 @@ int CInputStream::GetTotalTime()
     if (m_struct.toAddon.GetTotalTime)
       ret = m_struct.toAddon.GetTotalTime(m_addonInstance);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
+
   return ret;
 }
 
@@ -319,7 +329,10 @@ int CInputStream::GetTime()
     if (m_struct.toAddon.GetTime)
       ret = m_struct.toAddon.GetTime(m_addonInstance);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
+
   return ret;
 }
 
@@ -332,7 +345,10 @@ bool CInputStream::PosTime(int ms)
     if (m_struct.toAddon.PosTime)
       ret = m_struct.toAddon.PosTime(m_addonInstance, ms);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
+
   return ret;
 }
 
@@ -371,12 +387,9 @@ void CInputStream::UpdateStreams()
       if (m_struct.toAddon.GetStream)
         m_struct.toAddon.GetStream(m_addonInstance, streamIDs.m_streamIds[i], &stream);
     }
-    catch (std::exception& ex)
-    {
-      DisposeStreams();
-      ExceptionHandle(ex, __FUNCTION__);
-      return;
-    }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
     if (stream.m_streamType == INPUTSTREAM_INFO::TYPE_NONE)
       continue;
@@ -485,7 +498,9 @@ void CInputStream::EnableStream(int iStreamId, bool enable)
     if (m_struct.toAddon.EnableStream)
       m_struct.toAddon.EnableStream(m_addonInstance, it->second->uniqueId, enable);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 }
 
 DemuxPacket* CInputStream::ReadDemux()
@@ -496,7 +511,9 @@ DemuxPacket* CInputStream::ReadDemux()
     if (m_struct.toAddon.DemuxRead)
       pPacket = m_struct.toAddon.DemuxRead(m_addonInstance);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); return nullptr; }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   if (!pPacket)
   {
@@ -522,7 +539,10 @@ bool CInputStream::SeekTime(int time, bool backward, double* startpts)
     if (m_struct.toAddon.DemuxSeekTime)
       ret = m_struct.toAddon.DemuxSeekTime(m_addonInstance, time, backward, startpts);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
+
   return ret;
 }
 
@@ -533,7 +553,9 @@ void CInputStream::AbortDemux()
     if (m_struct.toAddon.DemuxAbort)
       m_struct.toAddon.DemuxAbort(m_addonInstance);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 }
 
 void CInputStream::FlushDemux()
@@ -543,7 +565,9 @@ void CInputStream::FlushDemux()
     if (m_struct.toAddon.DemuxFlush)
       m_struct.toAddon.DemuxFlush(m_addonInstance);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 }
 
 void CInputStream::SetSpeed(int iSpeed)
@@ -553,7 +577,9 @@ void CInputStream::SetSpeed(int iSpeed)
     if (m_struct.toAddon.DemuxSetSpeed)
       m_struct.toAddon.DemuxSetSpeed(m_addonInstance, iSpeed);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 }
 
 int CInputStream::ReadStream(uint8_t* buf, unsigned int size)
@@ -564,7 +590,10 @@ int CInputStream::ReadStream(uint8_t* buf, unsigned int size)
     if (m_struct.toAddon.ReadStream)
       ret = m_struct.toAddon.ReadStream(m_addonInstance, buf, size);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
+
   return ret;
 }
 
@@ -576,7 +605,10 @@ int64_t CInputStream::SeekStream(int64_t offset, int whence)
     if (m_struct.toAddon.SeekStream)
       ret = m_struct.toAddon.SeekStream(m_addonInstance, offset, whence);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
+
   return ret;
 }
 
@@ -588,7 +620,10 @@ int64_t CInputStream::PositionStream()
     if (m_struct.toAddon.PositionStream)
       ret = m_struct.toAddon.PositionStream(m_addonInstance);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
+
   return ret;
 }
 
@@ -600,7 +635,10 @@ int64_t CInputStream::LengthStream()
     if (m_struct.toAddon.LengthStream)
       ret = m_struct.toAddon.LengthStream(m_addonInstance);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
+
   return ret;
 }
 
@@ -611,7 +649,9 @@ void CInputStream::PauseStream(double time)
     if (m_struct.toAddon.PauseStream)
       m_struct.toAddon.PauseStream(m_addonInstance, time);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 }
 
 bool CInputStream::IsRealTimeStream()
@@ -622,7 +662,10 @@ bool CInputStream::IsRealTimeStream()
     if (m_struct.toAddon.IsRealTimeStream)
       ret = m_struct.toAddon.IsRealTimeStream(m_addonInstance);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
+  
   return ret;
 }
 
@@ -633,13 +676,9 @@ void CInputStream::SetVideoResolution(int width, int height)
     if (m_struct.toAddon.SetVideoResolution)
       m_struct.toAddon.SetVideoResolution(m_addonInstance, width, height);
   }
-  catch (std::exception& ex) { ExceptionHandle(ex, __FUNCTION__); }
-}
-
-void CInputStream::ExceptionHandle(std::exception& ex, const char* function)
-{
-  ADDON::Exception::LogStdException(this, ex, function); // Handle exception and disable add-on
-  memset(&m_struct.toAddon, 0, sizeof(m_struct.toAddon)); // reset function table to prevent further exception call  
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 }
 
 // Static callback functions for add-on to Kodi below
@@ -652,6 +691,33 @@ DemuxPacket* CInputStream::InputStreamAllocateDemuxPacket(void *addonData, int i
 void CInputStream::InputStreamFreeDemuxPacket(void *addonData, DemuxPacket* pPacket)
 {
   CDVDDemuxUtils::FreeDemuxPacket(pPacket);
+}
+
+void CInputStream::ExceptionStdHandle(std::exception& ex, const char* function)
+{
+  Exception::LogStdException(this, ex, function);
+  DisposeStreams();
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(this->ID());
+  Exception::ShowExceptionErrorDialog(this);
+}
+
+void CInputStream::ExceptionErrHandle(int ex, const char* function)
+{
+  Exception::LogErrException(this, ex, function);
+  DisposeStreams();
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(this->ID());
+  Exception::ShowExceptionErrorDialog(this);
+}
+
+void CInputStream::ExceptionUnkHandle(const char* function)
+{
+  Exception::LogUnkException(this, function);
+  DisposeStreams();
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(this->ID());
+  Exception::ShowExceptionErrorDialog(this);
 }
 
 } /* namespace ADDON */
