@@ -129,9 +129,6 @@ bool CAudioDecoder::Init(const CFileItem& file, unsigned int filecache)
 
 int CAudioDecoder::ReadPCM(uint8_t* buffer, int size, int* actualsize)
 {
-  if (!Initialized())
-    return 0;
-
   try
   {
     if (m_struct.toAddon.ReadPCM)
@@ -146,9 +143,6 @@ int CAudioDecoder::ReadPCM(uint8_t* buffer, int size, int* actualsize)
 
 bool CAudioDecoder::Seek(int64_t time)
 {
-  if (!Initialized())
-    return false;
-
   try
   {
     if (m_struct.toAddon.Seek)
@@ -163,9 +157,6 @@ bool CAudioDecoder::Seek(int64_t time)
 
 void CAudioDecoder::DeInit()
 {
-  if (!Initialized())
-    return;
-
   CAddonDll::DestroyInstance(ADDON_INSTANCE_AUDIODECODER, m_addonInstance);
   memset(&m_struct, 0, sizeof(m_struct));
   m_addonInstance = nullptr;
@@ -176,9 +167,6 @@ bool CAudioDecoder::Load(const std::string& fileName,
                          MUSIC_INFO::EmbeddedArt* art)
 {
   bool ret = false;
-
-  if (!Initialized())
-    return ret;
 
   char title[ADDON_STANDARD_STRING_LENGTH_SMALL];
   char artist[ADDON_STANDARD_STRING_LENGTH_SMALL];
@@ -205,9 +193,6 @@ bool CAudioDecoder::Load(const std::string& fileName,
 int CAudioDecoder::GetTrackCount(const std::string& strPath)
 {
   int result = 0;
-
-  if (!Initialized())
-    return result;
 
   try
   {
