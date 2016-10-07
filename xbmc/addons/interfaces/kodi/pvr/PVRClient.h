@@ -501,12 +501,12 @@ namespace PVR
     /*!
      * @brief Check whether PVR backend supports pausing the currently playing stream
      */
-    bool CanPauseStream(void) const;
+    bool CanPauseStream(void);
 
     /*!
      * @brief Check whether PVR backend supports seeking for the currently playing stream
      */
-    bool CanSeekStream(void) const;
+    bool CanSeekStream(void);
 
     /*!
      * Notify the pvr addon/demuxer that XBMC wishes to seek the stream by time
@@ -592,22 +592,22 @@ namespace PVR
     /*!
      * @brief is timeshift active?
      */
-    bool IsTimeshifting() const;
+    bool IsTimeshifting();
 
     /*!
      * @brief actual playing time
      */
-    time_t GetPlayingTime() const;
+    time_t GetPlayingTime();
 
     /*!
      * @brief time of oldest packet in timeshift buffer
      */
-    time_t GetBufferTimeStart() const;
+    time_t GetBufferTimeStart();
 
     /*!
      * @brief time of latest packet in timeshift buffer
      */
-    time_t GetBufferTimeEnd() const;
+    time_t GetBufferTimeEnd();
 
     /*!
      * @return True if this add-on can be auto-configured via avahi, false otherwise
@@ -629,7 +629,7 @@ namespace PVR
     /*!
      * @brief is real-time stream?
      */
-    bool IsRealTimeStream() const;
+    bool IsRealTimeStream();
 
     /*!
      * @brief reads the client's properties
@@ -775,7 +775,7 @@ namespace PVR
     */
     static void PVREpgEventStateChange(void* kodiInstance, EPG_TAG* tag, unsigned int iUniqueChannelId, EPG_EVENT_STATE newState);
 
-  
+
   private:
     /*!
      * @brief Resets all class members to their defaults. Called by the constructors.
@@ -811,7 +811,7 @@ namespace PVR
     static void WriteClientChannelInfo(const CPVRChannelPtr &xbmcChannel, PVR_CHANNEL &addonChannel);
 
     static void UpdateEpgEvent(const EpgEventStateChange &ch, bool bQueued);
-  
+
     /*!
      * @brief Whether a channel can be played by this add-on
      * @param channel The channel to check.
@@ -820,7 +820,6 @@ namespace PVR
     bool CanPlayChannel(const CPVRChannelPtr &channel) const;
 
     bool LogError(const PVR_ERROR error, const char *strMethod) const;
-    void LogException(const std::exception &e, const char *strFunctionName) const;
 
     bool                   m_bReadyToUse;          /*!< true if this add-on is initialised (ADDON_Create returned true), false otherwise */
     PVR_CONNECTION_STATE   m_connectionState;      /*!< the backend connection state */
@@ -855,6 +854,52 @@ namespace PVR
     ADDON::AddonVersion m_apiVersion;
     bool                m_bAvahiServiceAdded;
     sFuncTable_PVRClient m_struct;
+
+    /*!
+    * @{
+    * @brief Functions below are used to handle exception between Kodi and his
+    * add-on.
+    *
+    * ExceptionStdHandle(...):
+    *   Used for to handle standard c++ exception partly generated from dev kits
+    *   headers.
+    *
+    * ExceptionErrHandle(...):
+    *   This is a special type basically used also in dev kit headers to give a
+    *   exception with his ADDON_STATUS as integer value.
+    *   Can be generated from headers by a massive fault detected on call of
+    *   them.
+    *
+    * ExceptionUnkHandle(...);
+    *   Used for everything else.
+    *
+    * With a call of them becomes the standardized function
+    * Exception::LogUnkException(...) from ExceptionHandling.h used to write
+    * log entry. This is always the first call, to see if it still crashes the
+    * source of them.
+    *
+    * After them becomes the PVR add-on Destroyed and complete disabled.
+    *
+    * As last step comes a dialog to inform the used about the Exception.
+    *
+    * How it is set on add-on calls
+    * ~~~~~~~~~~~~~{.cpp}
+    * try
+    * {
+    *   ...
+    * }
+    * catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    * catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    * catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
+    * ~~~~~~~~~~~~~
+    *
+    * @note this way becomes also used on add-on typed e.g. adsp ...
+    */
+    void ExceptionStdHandle(std::exception& ex, const char* function);
+    void ExceptionErrHandle(int ex, const char* function);
+    void ExceptionUnkHandle(const char* function);
+    /* @}*/
+
     void* m_addonInstance;
   };
 }

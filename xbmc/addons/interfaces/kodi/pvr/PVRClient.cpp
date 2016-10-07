@@ -19,6 +19,7 @@
  */
 
 #include "Application.h"
+#include "addons/interfaces/ExceptionHandling.h"
 #include "cores/VideoPlayer/DVDDemuxers/DVDDemuxUtils.h"
 #include "dialogs/GUIDialogKaiToast.h"
 #include "epg/Epg.h"
@@ -154,7 +155,7 @@ void CPVRClient::ResetProperties(int iClientId /* = PVR_INVALID_CLIENT_ID */)
   m_bIsPlayingRecording   = false;
   memset(&m_addonCapabilities, 0, sizeof(m_addonCapabilities));
   m_apiVersion = AddonVersion("0.0.0");
-  
+
   memset(&m_struct, 0, sizeof(m_struct));
 
   m_struct.props.strUserPath = m_strUserPath.c_str();
@@ -196,13 +197,15 @@ ADDON_STATUS CPVRClient::Create(int iClientId)
   {
     if ((status = CAddonDll::Create()) != ADDON_STATUS_OK)
       return status;
-    
+
     if ((status = CAddonDll::CreateInstance(ADDON_INSTANCE_PVR, ID().c_str(), &m_struct, &m_addonInstance)) != ADDON_STATUS_OK)
       return status;
 
     bReadyToUse = GetAddonProperties();
   }
-  catch (std::exception &e) { LogException(e, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   m_bReadyToUse = bReadyToUse;
   return status;
@@ -210,10 +213,7 @@ ADDON_STATUS CPVRClient::Create(int iClientId)
 
 bool CPVRClient::DllLoaded(void) const
 {
-  try { return CAddonDll::DllLoaded(); }
-  catch (std::exception &e) { LogException(e, __FUNCTION__); }
-
-  return false;
+  return CAddonDll::DllLoaded();
 }
 
 void CPVRClient::Destroy(void)
@@ -227,12 +227,14 @@ void CPVRClient::Destroy(void)
 
   /* destroy the add-on */
   try
-  { 
+  {
     CAddonDll::DestroyInstance(ADDON_INSTANCE_PVR, m_addonInstance);
     CAddonDll::Destroy();
     m_addonInstance = nullptr;
   }
-  catch (std::exception &e) { LogException(e, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   /* reset all properties to defaults */
   ResetProperties();
@@ -411,26 +413,36 @@ bool CPVRClient::GetAddonProperties(void)
     memset(&addonCapabilities, 0, sizeof(addonCapabilities));
     m_struct.toAddon.GetCapabilities(m_addonInstance, &addonCapabilities);
   }
-  catch (std::exception &e) { LogException(e, "GetCapabilities()"); return false; }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, "GetCapabilities()"); return false; }
+  catch (int ex)             { ExceptionErrHandle(ex, "GetCapabilities()"); return false; }
+  catch (...)                { ExceptionUnkHandle("GetCapabilities()"); return false; }
 
   /* get the name of the backend */
   try { strBackendName = m_struct.toAddon.GetBackendName(m_addonInstance); }
-  catch (std::exception &e) { LogException(e, "GetBackendName()"); return false;  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, "GetBackendName()"); return false; }
+  catch (int ex)             { ExceptionErrHandle(ex, "GetBackendName()"); return false; }
+  catch (...)                { ExceptionUnkHandle("GetBackendName()"); return false; }
 
   /* get the connection string */
   try { strConnectionString = m_struct.toAddon.GetConnectionString(m_addonInstance); }
-  catch (std::exception &e) { LogException(e, "GetConnectionString()"); return false;  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, "GetConnectionString()"); return false; }
+  catch (int ex)             { ExceptionErrHandle(ex, "GetConnectionString()"); return false; }
+  catch (...)                { ExceptionUnkHandle("GetConnectionString()"); return false; }
 
   /* display name = backend name:connection string */
   strFriendlyName = StringUtils::Format("%s:%s", strBackendName.c_str(), strConnectionString.c_str());
 
   /* backend version number */
   try { strBackendVersion = m_struct.toAddon.GetBackendVersion(m_addonInstance); }
-  catch (std::exception &e) { LogException(e, "GetBackendVersion()"); return false;  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, "GetBackendVersion()"); return false; }
+  catch (int ex)             { ExceptionErrHandle(ex, "GetBackendVersion()"); return false; }
+  catch (...)                { ExceptionUnkHandle("GetBackendVersion()"); return false; }
 
   /* backend hostname */
   try { strBackendHostname = m_struct.toAddon.GetBackendHostname(m_addonInstance); }
-  catch (std::exception &e) { LogException(e, "GetBackendHostname()"); return false; }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, "GetBackendHostname()"); return false; }
+  catch (int ex)             { ExceptionErrHandle(ex, "GetBackendHostname()"); return false; }
+  catch (...)                { ExceptionUnkHandle("GetBackendHostname()"); return false; }
 
   /* timer types */
   if (addonCapabilities.bSupportsTimers)
@@ -542,7 +554,9 @@ bool CPVRClient::GetAddonProperties(void)
         return false;
       }
     }
-    catch (std::exception &e) { LogException(e, "GetTimerTypes()"); return false; }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, "GetTimerTypes()"); return false; }
+    catch (int ex)             { ExceptionErrHandle(ex, "GetTimerTypes()"); return false; }
+    catch (...)                { ExceptionUnkHandle("GetTimerTypes()"); return false; }
   }
 
   /* update the members */
@@ -594,7 +608,9 @@ PVR_ERROR CPVRClient::GetDriveSpace(long long *iTotal, long long *iUsed)
     return PVR_ERROR_SERVER_ERROR;
 
   try { return m_struct.toAddon.GetDriveSpace(m_addonInstance, iTotal, iUsed); }
-  catch (std::exception &e) { LogException(e, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   /* default to 0 on error */
   *iTotal = 0;
@@ -612,7 +628,9 @@ PVR_ERROR CPVRClient::StartChannelScan(void)
     return PVR_ERROR_NOT_IMPLEMENTED;
 
   try { return m_struct.toAddon.OpenDialogChannelScan(m_addonInstance); }
-  catch (std::exception &e) { LogException(e, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return PVR_ERROR_UNKNOWN;
 }
@@ -634,10 +652,9 @@ PVR_ERROR CPVRClient::OpenDialogChannelAdd(const CPVRChannelPtr &channel)
     retVal = m_struct.toAddon.OpenDialogChannelAdd(m_addonInstance, addonChannel);
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -659,10 +676,9 @@ PVR_ERROR CPVRClient::OpenDialogChannelSettings(const CPVRChannelPtr &channel)
     retVal = m_struct.toAddon.OpenDialogChannelSettings(m_addonInstance, addonChannel);
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -684,10 +700,9 @@ PVR_ERROR CPVRClient::DeleteChannel(const CPVRChannelPtr &channel)
     retVal = m_struct.toAddon.DeleteChannel(m_addonInstance, addonChannel);
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -709,10 +724,9 @@ PVR_ERROR CPVRClient::RenameChannel(const CPVRChannelPtr &channel)
     retVal = m_struct.toAddon.RenameChannel(m_addonInstance, addonChannel);
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -757,7 +771,9 @@ void CPVRClient::CallMenuHook(const PVR_MENUHOOK &hook, const CFileItem *item)
 
     m_struct.toAddon.MenuHook(m_addonInstance, hook, hookData);
   }
-  catch (std::exception &e) { LogException(e, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 }
 
 PVR_ERROR CPVRClient::GetEPGForChannel(const CPVRChannelPtr &channel, CEpg *epg, time_t start /* = 0 */, time_t end /* = 0 */, bool bSaveInDb /* = false*/)
@@ -785,10 +801,9 @@ PVR_ERROR CPVRClient::GetEPGForChannel(const CPVRChannelPtr &channel, CEpg *epg,
 
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -808,10 +823,9 @@ PVR_ERROR CPVRClient::SetEPGTimeFrame(int iDays)
 
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -827,7 +841,9 @@ int CPVRClient::GetChannelGroupsAmount(void)
     return iReturn;
 
   try { iReturn = m_struct.toAddon.GetChannelGroupsAmount(m_addonInstance); }
-  catch (std::exception &e) { LogException(e, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return iReturn;
 }
@@ -850,10 +866,9 @@ PVR_ERROR CPVRClient::GetChannelGroups(CPVRChannelGroups *groups)
 
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -882,10 +897,9 @@ PVR_ERROR CPVRClient::GetChannelGroupMembers(CPVRChannelGroup *group)
 
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -896,7 +910,9 @@ int CPVRClient::GetChannelsAmount(void)
   if (m_bReadyToUse && (m_addonCapabilities.bSupportsTV || m_addonCapabilities.bSupportsRadio))
   {
     try { iReturn = m_struct.toAddon.GetChannelsAmount(m_addonInstance); }
-    catch (std::exception &e) { LogException(e, __FUNCTION__); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
 
   return iReturn;
@@ -922,10 +938,9 @@ PVR_ERROR CPVRClient::GetChannels(CPVRChannelGroup &channels, bool radio)
 
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -941,10 +956,9 @@ int CPVRClient::GetRecordingsAmount(bool deleted)
   {
     iReturn = m_struct.toAddon.GetRecordingsAmount(m_addonInstance, deleted);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return iReturn;
 }
@@ -967,10 +981,9 @@ PVR_ERROR CPVRClient::GetRecordings(CPVRRecordings *results, bool deleted)
 
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -993,10 +1006,9 @@ PVR_ERROR CPVRClient::DeleteRecording(const CPVRRecording &recording)
 
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -1019,10 +1031,9 @@ PVR_ERROR CPVRClient::UndeleteRecording(const CPVRRecording &recording)
 
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -1042,10 +1053,9 @@ PVR_ERROR CPVRClient::DeleteAllRecordingsFromTrash()
 
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -1068,10 +1078,9 @@ PVR_ERROR CPVRClient::RenameRecording(const CPVRRecording &recording)
 
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -1094,10 +1103,9 @@ PVR_ERROR CPVRClient::SetRecordingPlayCount(const CPVRRecording &recording, int 
 
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -1120,10 +1128,9 @@ PVR_ERROR CPVRClient::SetRecordingLastPlayedPosition(const CPVRRecording &record
 
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -1144,10 +1151,9 @@ int CPVRClient::GetRecordingLastPlayedPosition(const CPVRRecording &recording)
 
     iReturn = m_struct.toAddon.GetRecordingLastPlayedPosition(m_addonInstance, tag);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return iReturn;
 }
@@ -1178,10 +1184,9 @@ std::vector<PVR_EDL_ENTRY> CPVRClient::GetRecordingEdl(const CPVRRecording &reco
       }
     }
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return edl;
 }
@@ -1196,7 +1201,9 @@ int CPVRClient::GetTimersAmount(void)
     return iReturn;
 
   try { iReturn = m_struct.toAddon.GetTimersAmount(m_addonInstance); }
-  catch (std::exception &e) { LogException(e, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return iReturn;
 }
@@ -1219,10 +1226,9 @@ PVR_ERROR CPVRClient::GetTimers(CPVRTimers *results)
 
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -1245,10 +1251,9 @@ PVR_ERROR CPVRClient::AddTimer(const CPVRTimerInfoTag &timer)
 
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -1271,10 +1276,9 @@ PVR_ERROR CPVRClient::DeleteTimer(const CPVRTimerInfoTag &timer, bool bForce /* 
 
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -1297,10 +1301,9 @@ PVR_ERROR CPVRClient::RenameTimer(const CPVRTimerInfoTag &timer, const std::stri
 
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -1323,10 +1326,9 @@ PVR_ERROR CPVRClient::UpdateTimer(const CPVRTimerInfoTag &timer)
 
     LogError(retVal, __FUNCTION__);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -1345,12 +1347,16 @@ int CPVRClient::ReadStream(void* lpBuf, int64_t uiBufSize)
   if (IsPlayingLiveStream())
   {
     try { return m_struct.toAddon.ReadLiveStream(m_addonInstance, (unsigned char *)lpBuf, (int)uiBufSize); }
-    catch (std::exception &e) { LogException(e, "ReadLiveStream()"); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, "ReadLiveStream()"); }
+    catch (int ex)             { ExceptionErrHandle(ex, "ReadLiveStream()"); }
+    catch (...)                { ExceptionUnkHandle("ReadLiveStream()"); }
   }
   else if (IsPlayingRecording())
   {
     try { return m_struct.toAddon.ReadRecordedStream(m_addonInstance, (unsigned char *)lpBuf, (int)uiBufSize); }
-    catch (std::exception &e) { LogException(e, "ReadRecordedStream()"); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, "ReadRecordedStream()"); }
+    catch (int ex)             { ExceptionErrHandle(ex, "ReadRecordedStream()"); }
+    catch (...)                { ExceptionUnkHandle("ReadRecordedStream()"); }
   }
   return -EINVAL;
 }
@@ -1360,12 +1366,16 @@ int64_t CPVRClient::SeekStream(int64_t iFilePosition, int iWhence/* = SEEK_SET*/
   if (IsPlayingLiveStream())
   {
     try { return m_struct.toAddon.SeekLiveStream(m_addonInstance, iFilePosition, iWhence); }
-    catch (std::exception &e) { LogException(e, "SeekLiveStream()"); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, "SeekLiveStream()"); }
+    catch (int ex)             { ExceptionErrHandle(ex, "SeekLiveStream()"); }
+    catch (...)                { ExceptionUnkHandle("SeekLiveStream()"); }
   }
   else if (IsPlayingRecording())
   {
     try { return m_struct.toAddon.SeekRecordedStream(m_addonInstance, iFilePosition, iWhence); }
-    catch (std::exception &e) { LogException(e, "SeekRecordedStream()"); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, "SeekRecordedStream()"); }
+    catch (int ex)             { ExceptionErrHandle(ex, "SeekRecordedStream()"); }
+    catch (...)                { ExceptionUnkHandle("SeekRecordedStream()"); }
   }
   return -EINVAL;
 }
@@ -1375,7 +1385,9 @@ bool CPVRClient::SeekTime(int time, bool backwards, double *startpts)
   if (IsPlaying())
   {
     try { return m_struct.toAddon.SeekTime(m_addonInstance, time, backwards, startpts); }
-    catch (std::exception &e) { LogException(e, "SeekTime()"); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
   return false;
 }
@@ -1385,12 +1397,16 @@ int64_t CPVRClient::GetStreamPosition(void)
   if (IsPlayingLiveStream())
   {
     try { return m_struct.toAddon.PositionLiveStream(m_addonInstance); }
-    catch (std::exception &e) { LogException(e, "PositionLiveStream()"); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, "PositionLiveStream()"); }
+    catch (int ex)             { ExceptionErrHandle(ex, "PositionLiveStream()"); }
+    catch (...)                { ExceptionUnkHandle("PositionLiveStream()"); }
   }
   else if (IsPlayingRecording())
   {
     try { return m_struct.toAddon.PositionRecordedStream(m_addonInstance); }
-    catch (std::exception &e) { LogException(e, "PositionRecordedStream()"); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, "PositionRecordedStream()"); }
+    catch (int ex)             { ExceptionErrHandle(ex, "PositionRecordedStream()"); }
+    catch (...)                { ExceptionUnkHandle("PositionRecordedStream()"); }
   }
   return -EINVAL;
 }
@@ -1400,12 +1416,16 @@ int64_t CPVRClient::GetStreamLength(void)
   if (IsPlayingLiveStream())
   {
     try { return m_struct.toAddon.LengthLiveStream(m_addonInstance); }
-    catch (std::exception &e) { LogException(e, "LengthLiveStream()"); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, "LengthLiveStream()"); }
+    catch (int ex)             { ExceptionErrHandle(ex, "LengthLiveStream()"); }
+    catch (...)                { ExceptionUnkHandle("LengthLiveStream()"); }
   }
   else if (IsPlayingRecording())
   {
     try { return m_struct.toAddon.LengthRecordedStream(m_addonInstance); }
-    catch (std::exception &e) { LogException(e, "LengthRecordedStream()"); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, "LengthRecordedStream()"); }
+    catch (int ex)             { ExceptionErrHandle(ex, "LengthRecordedStream()"); }
+    catch (...)                { ExceptionUnkHandle("LengthRecordedStream()"); }
   }
   return -EINVAL;
 }
@@ -1422,7 +1442,9 @@ bool CPVRClient::SwitchChannel(const CPVRChannelPtr &channel)
     {
       bSwitched = m_struct.toAddon.SwitchChannel(m_addonInstance, tag);
     }
-    catch (std::exception &e) { LogException(e, __FUNCTION__); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
 
   if (bSwitched)
@@ -1443,10 +1465,9 @@ bool CPVRClient::SignalQuality(PVR_SIGNAL_STATUS &qualityinfo)
     {
       return m_struct.toAddon.SignalStatus(m_addonInstance, qualityinfo) == PVR_ERROR_NO_ERROR;
     }
-    catch (std::exception &e)
-    {
-      LogException(e, __FUNCTION__);
-    }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
   return false;
 }
@@ -1464,10 +1485,9 @@ std::string CPVRClient::GetLiveStreamURL(const CPVRChannelPtr &channel)
     WriteClientChannelInfo(channel, tag);
     strReturn = m_struct.toAddon.GetLiveStreamURL(m_addonInstance, tag);
   }
-  catch (std::exception &e)
-  {
-    LogException(e, __FUNCTION__);
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return strReturn;
 }
@@ -1478,7 +1498,9 @@ PVR_ERROR CPVRClient::GetStreamProperties(PVR_STREAM_PROPERTIES *props)
     return PVR_ERROR_REJECTED;
 
   try { return m_struct.toAddon.GetStreamProperties(m_addonInstance, props); }
-  catch (std::exception &e) { LogException(e, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return PVR_ERROR_UNKNOWN;
 }
@@ -1488,7 +1510,9 @@ void CPVRClient::DemuxReset(void)
   if (m_bReadyToUse && m_addonCapabilities.bHandlesDemuxing)
   {
     try { m_struct.toAddon.DemuxReset(m_addonInstance); }
-    catch (std::exception &e) { LogException(e, __FUNCTION__); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
 }
 
@@ -1497,7 +1521,9 @@ void CPVRClient::DemuxAbort(void)
   if (m_bReadyToUse && m_addonCapabilities.bHandlesDemuxing)
   {
     try { m_struct.toAddon.DemuxAbort(m_addonInstance); }
-    catch (std::exception &e) { LogException(e, __FUNCTION__); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
 }
 
@@ -1506,7 +1532,9 @@ void CPVRClient::DemuxFlush(void)
   if (m_bReadyToUse && m_addonCapabilities.bHandlesDemuxing)
   {
     try { m_struct.toAddon.DemuxFlush(m_addonInstance); }
-    catch (std::exception &e) { LogException(e, __FUNCTION__); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
 }
 
@@ -1515,7 +1543,9 @@ DemuxPacket* CPVRClient::DemuxRead(void)
   if (m_bReadyToUse && m_addonCapabilities.bHandlesDemuxing)
   {
     try { return m_struct.toAddon.DemuxRead(m_addonInstance); }
-    catch (std::exception &e) { LogException(e, __FUNCTION__); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
   return NULL;
 }
@@ -1579,11 +1609,6 @@ bool CPVRClient::LogError(const PVR_ERROR error, const char *strMethod) const
     return false;
   }
   return true;
-}
-
-void CPVRClient::LogException(const std::exception &e, const char *strFunctionName) const
-{
-  CLog::Log(LOGERROR, "PVR - exception '%s' caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s", e.what(), strFunctionName, GetFriendlyName().c_str(), Author().c_str());
 }
 
 bool CPVRClient::CanPlayChannel(const CPVRChannelPtr &channel) const
@@ -1754,7 +1779,9 @@ bool CPVRClient::OpenStream(const CPVRChannelPtr &channel, bool bIsSwitchingChan
     {
       bReturn = m_struct.toAddon.OpenLiveStream(m_addonInstance, tag);
     }
-    catch (std::exception &e) { LogException(e, __FUNCTION__); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
 
   if (bReturn)
@@ -1783,7 +1810,9 @@ bool CPVRClient::OpenStream(const CPVRRecordingPtr &recording)
     {
       bReturn = m_struct.toAddon.OpenRecordedStream(m_addonInstance, tag);
     }
-    catch (std::exception &e) { LogException(e, __FUNCTION__); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
 
   if (bReturn)
@@ -1802,7 +1831,9 @@ void CPVRClient::CloseStream(void)
   if (IsPlayingLiveStream())
   {
     try { m_struct.toAddon.CloseLiveStream(m_addonInstance); }
-    catch (std::exception &e) { LogException(e, "CloseLiveStream()"); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, "CloseLiveStream()"); }
+    catch (int ex)             { ExceptionErrHandle(ex, "CloseLiveStream()"); }
+    catch (...)                { ExceptionUnkHandle("CloseLiveStream()"); }
 
     CSingleLock lock(m_critSection);
     m_bIsPlayingTV = false;
@@ -1810,7 +1841,9 @@ void CPVRClient::CloseStream(void)
   else if (IsPlayingRecording())
   {
     try { m_struct.toAddon.CloseRecordedStream(m_addonInstance); }
-    catch (std::exception &e) { LogException(e, "CloseRecordedStream()"); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, "CloseRecordedStream()"); }
+    catch (int ex)             { ExceptionErrHandle(ex, "CloseRecordedStream()"); }
+    catch (...)                { ExceptionUnkHandle("CloseRecordedStream()"); }
 
     CSingleLock lock(m_critSection);
     m_bIsPlayingRecording = false;
@@ -1822,7 +1855,9 @@ void CPVRClient::PauseStream(bool bPaused)
   if (IsPlaying())
   {
     try { m_struct.toAddon.PauseStream(m_addonInstance, bPaused); }
-    catch (std::exception &e) { LogException(e, "PauseStream()"); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
 }
 
@@ -1831,11 +1866,13 @@ void CPVRClient::SetSpeed(int speed)
   if (IsPlaying())
   {
     try { m_struct.toAddon.SetSpeed(m_addonInstance, speed); }
-    catch (std::exception &e) { LogException(e, "SetSpeed()"); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
 }
 
-bool CPVRClient::CanPauseStream(void) const
+bool CPVRClient::CanPauseStream(void)
 {
   bool bReturn(false);
   if (IsPlaying())
@@ -1844,13 +1881,15 @@ bool CPVRClient::CanPauseStream(void) const
     {
       bReturn = m_struct.toAddon.CanPauseStream(m_addonInstance);
     }
-    catch (std::exception &e) { LogException(e, __FUNCTION__); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
 
   return bReturn;
 }
 
-bool CPVRClient::CanSeekStream(void) const
+bool CPVRClient::CanSeekStream(void)
 {
   bool bReturn(false);
   if (IsPlaying())
@@ -1859,12 +1898,14 @@ bool CPVRClient::CanSeekStream(void) const
     {
       bReturn = m_struct.toAddon.CanSeekStream(m_addonInstance);
     }
-    catch (std::exception &e) { LogException(e, __FUNCTION__); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
   return bReturn;
 }
 
-bool CPVRClient::IsTimeshifting(void) const
+bool CPVRClient::IsTimeshifting(void)
 {
   bool bReturn(false);
   if (IsPlaying())
@@ -1874,12 +1915,14 @@ bool CPVRClient::IsTimeshifting(void) const
       if (m_struct.toAddon.IsTimeshifting)
         bReturn = m_struct.toAddon.IsTimeshifting(m_addonInstance);
     }
-    catch (std::exception &e) { LogException(e, __FUNCTION__); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
   return bReturn;
 }
 
-time_t CPVRClient::GetPlayingTime(void) const
+time_t CPVRClient::GetPlayingTime(void)
 {
   time_t time = 0;
   if (IsPlaying())
@@ -1888,7 +1931,9 @@ time_t CPVRClient::GetPlayingTime(void) const
     {
       time = m_struct.toAddon.GetPlayingTime(m_addonInstance);
     }
-    catch (std::exception &e) { LogException(e, __FUNCTION__); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
   // fallback if not implemented by addon
   if (time == 0)
@@ -1898,7 +1943,7 @@ time_t CPVRClient::GetPlayingTime(void) const
   return time;
 }
 
-time_t CPVRClient::GetBufferTimeStart(void) const
+time_t CPVRClient::GetBufferTimeStart(void)
 {
   time_t time = 0;
   if (IsPlaying())
@@ -1907,12 +1952,14 @@ time_t CPVRClient::GetBufferTimeStart(void) const
     {
       time = m_struct.toAddon.GetBufferTimeStart(m_addonInstance);
     }
-    catch (std::exception &e) { LogException(e, __FUNCTION__); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
   return time;
 }
 
-time_t CPVRClient::GetBufferTimeEnd(void) const
+time_t CPVRClient::GetBufferTimeEnd(void)
 {
   time_t time = 0;
   if (IsPlaying())
@@ -1921,7 +1968,9 @@ time_t CPVRClient::GetBufferTimeEnd(void) const
     {
       time = m_struct.toAddon.GetBufferTimeEnd(m_addonInstance);
     }
-    catch (std::exception &e) { LogException(e, __FUNCTION__); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
   return time;
 }
@@ -1971,7 +2020,7 @@ bool CPVRClient::Autoconfigure(void)
         std::string strLogLine(StringUtils::Format(g_localizeStrings.Get(19689).c_str(), (*it).GetName().c_str(), (*it).GetIP().c_str()));
         CLog::Log(LOGDEBUG, "%s - %s", __FUNCTION__, strLogLine.c_str());
 
-        if (DialogResponse::YES != 
+        if (DialogResponse::YES !=
           HELPERS::ShowYesNoDialogLines(CVariant{19688}, // Scanning for PVR services
                                         CVariant{strLogLine},
                                         CVariant{19690})) // Do you want to use this service?
@@ -1997,7 +2046,7 @@ bool CPVRClient::Autoconfigure(void)
   return bReturn;
 }
 
-bool CPVRClient::IsRealTimeStream(void) const
+bool CPVRClient::IsRealTimeStream(void)
 {
   bool bReturn(false);
   if (IsPlaying())
@@ -2006,7 +2055,9 @@ bool CPVRClient::IsRealTimeStream(void) const
     {
       bReturn = m_struct.toAddon.IsRealTimeStream(m_addonInstance);
     }
-    catch (std::exception &e) { LogException(e, __FUNCTION__); }
+    catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+    catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+    catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
   }
   return bReturn;
 }
@@ -2020,7 +2071,9 @@ void CPVRClient::OnSystemSleep(void)
   {
     m_struct.toAddon.OnSystemSleep(m_addonInstance);
   }
-  catch (std::exception &e) { LogException(e, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 }
 
 void CPVRClient::OnSystemWake(void)
@@ -2032,7 +2085,9 @@ void CPVRClient::OnSystemWake(void)
   {
     m_struct.toAddon.OnSystemWake(m_addonInstance);
   }
-  catch (std::exception &e) { LogException(e, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 }
 
 void CPVRClient::OnPowerSavingActivated(void)
@@ -2044,7 +2099,9 @@ void CPVRClient::OnPowerSavingActivated(void)
   {
     m_struct.toAddon.OnPowerSavingActivated(m_addonInstance);
   }
-  catch (std::exception &e) { LogException(e, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 }
 
 void CPVRClient::OnPowerSavingDeactivated(void)
@@ -2056,7 +2113,9 @@ void CPVRClient::OnPowerSavingDeactivated(void)
   {
     m_struct.toAddon.OnPowerSavingDeactivated(m_addonInstance);
   }
-  catch (std::exception &e) { LogException(e, __FUNCTION__); }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 }
 
 void CPVRClient::PVRTransferChannelGroup(void* kodiInstance, const ADDON_HANDLE handle, const PVR_CHANNEL_GROUP *group)
@@ -2392,4 +2451,28 @@ void CPVRClient::PVREpgEventStateChange(void* kodiInstance, EPG_TAG* tag, unsign
     CSingleLock lock(queueMutex);
     queuedChanges.push_back(EpgEventStateChange(client->GetID(), iUniqueChannelId, tag, newState));
   }
+}
+
+void CPVRClient::ExceptionStdHandle(std::exception& ex, const char* function)
+{
+  Exception::LogStdException(this, ex, function);
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(this->ID());
+  Exception::ShowExceptionErrorDialog(this);
+}
+
+void CPVRClient::ExceptionErrHandle(int ex, const char* function)
+{
+  Exception::LogErrException(this, ex, function);
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(this->ID());
+  Exception::ShowExceptionErrorDialog(this);
+}
+
+void CPVRClient::ExceptionUnkHandle(const char* function)
+{
+  Exception::LogUnkException(this, function);
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(this->ID());
+  Exception::ShowExceptionErrorDialog(this);
 }

@@ -29,7 +29,7 @@
 namespace ADDON
 {
 
-void Exception::LogStdException(CAddonDll* addon, const std::exception &e, const char *strFunctionName)
+void Exception::LogStdException(const CAddonDll* addon, const std::exception &e, const char *strFunctionName)
 {
   CLog::Log(LOGERROR,
             "Addon - %s - exception '%s' caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s",
@@ -40,7 +40,7 @@ void Exception::LogStdException(CAddonDll* addon, const std::exception &e, const
               addon->Author().c_str());
 }
 
-void Exception::LogErrException(CAddonDll* addon, int e, const char *name)
+void Exception::LogErrException(const CAddonDll* addon, int e, const char *name)
 {
   CLog::Log(LOGERROR,
             "Addon - %s - exception '%s' caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s",
@@ -51,7 +51,7 @@ void Exception::LogErrException(CAddonDll* addon, int e, const char *name)
               addon->Author().c_str());
 }
 
-void Exception::LogUnkException(CAddonDll* addon, const char *name)
+void Exception::LogUnkException(const CAddonDll* addon, const char *name)
 {
   CLog::Log(LOGERROR,
             "Addon - %s - unknown exception caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s",
@@ -61,7 +61,7 @@ void Exception::LogUnkException(CAddonDll* addon, const char *name)
               addon->Author().c_str());
 }
 
-void Exception::LogStdException(AddonDllPtr addon, const std::exception &e, const char *strFunctionName)
+void Exception::LogStdException(const AddonDllPtr addon, const std::exception &e, const char *strFunctionName)
 {
   CLog::Log(LOGERROR,
             "Addon - %s - exception '%s' caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s",
@@ -72,7 +72,7 @@ void Exception::LogStdException(AddonDllPtr addon, const std::exception &e, cons
               addon->Author().c_str());
 }
 
-void Exception::LogErrException(AddonDllPtr addon, int e, const char *name)
+void Exception::LogErrException(const AddonDllPtr addon, int e, const char *name)
 {
   CLog::Log(LOGERROR,
             "Addon - %s - exception '%s' caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s",
@@ -83,7 +83,7 @@ void Exception::LogErrException(AddonDllPtr addon, int e, const char *name)
               addon->Author().c_str());
 }
 
-void Exception::LogUnkException(AddonDllPtr addon, const char *name)
+void Exception::LogUnkException(const AddonDllPtr addon, const char *name)
 {
   CLog::Log(LOGERROR,
             "Addon - %s - unknown exception caught while trying to call '%s' on add-on '%s'. Please contact the developer of this add-on: %s",
@@ -93,7 +93,7 @@ void Exception::LogUnkException(AddonDllPtr addon, const char *name)
               addon->Author().c_str());
 }
 
-void Exception::ShowExceptionErrorDialog(CAddonDll* addon)
+void Exception::ShowExceptionErrorDialog(const CAddonDll* addon)
 {
   std::string heading = StringUtils::Format("%s: %s", TranslateType(addon->Type(), true).c_str(), addon->Name().c_str());
   CGUIDialogOK::ShowAndGetInput(CVariant{heading}, CVariant{g_localizeStrings.Get(24094)});

@@ -32,15 +32,15 @@ namespace ADDON
 
   struct Exception
   {
-    static void LogStdException(AddonDllPtr addon, const std::exception &e, const char *name);
-    static void LogErrException(AddonDllPtr addon, int e, const char *name);
-    static void LogUnkException(AddonDllPtr addon, const char *name);
-    static void ShowExceptionErrorDialog(AddonDllPtr addon);
+    static void LogStdException(const AddonDllPtr addon, const std::exception &e, const char *name);
+    static void LogErrException(const AddonDllPtr addon, int e, const char *name);
+    static void LogUnkException(const AddonDllPtr addon, const char *name);
+    static void ShowExceptionErrorDialog(const AddonDllPtr addon);
 
-    static void LogStdException(CAddonDll* addon, const std::exception &e, const char *name);
-    static void LogErrException(CAddonDll* addon, int e, const char *name);
-    static void LogUnkException(CAddonDll* addon, const char *name);
-    static void ShowExceptionErrorDialog(CAddonDll* addon);
+    static void LogStdException(const CAddonDll* addon, const std::exception &e, const char *name);
+    static void LogErrException(const CAddonDll* addon, int e, const char *name);
+    static void LogUnkException(const CAddonDll* addon, const char *name);
+    static void ShowExceptionErrorDialog(const CAddonDll* addon);
   };
 
 };
