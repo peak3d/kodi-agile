@@ -21,6 +21,7 @@
 #include <vector>
 #include "Application.h"
 #include "AudioDSP.h"
+#include "addons/interfaces/ExceptionHandling.h"
 #include "cores/AudioEngine/Engines/ActiveAE/AudioDSPAddons/ActiveAEDSP.h"
 #include "commons/Exception.h"
 #include "settings/AdvancedSettings.h"
@@ -140,12 +141,9 @@ ADDON_STATUS CActiveAEDSPAddon::Create(int iClientId)
 
     bReadyToUse = GetAddonProperties();
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   m_bReadyToUse = bReadyToUse;
 
@@ -154,17 +152,7 @@ ADDON_STATUS CActiveAEDSPAddon::Create(int iClientId)
 
 bool CActiveAEDSPAddon::DllLoaded(void) const
 {
-  try
-  {
-    return CAddonDll::DllLoaded();
-  }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-  }
-
-  return false;
+  return CAddonDll::DllLoaded();
 }
 
 void CActiveAEDSPAddon::Destroy(void)
@@ -183,12 +171,9 @@ void CActiveAEDSPAddon::Destroy(void)
     CAddonDll::Destroy();
     m_addonInstance = nullptr;
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   /* reset all properties to defaults */
   ResetProperties();
@@ -229,24 +214,19 @@ bool CActiveAEDSPAddon::GetAddonProperties(void)
     memset(&addonCapabilities, 0, sizeof(addonCapabilities));
     m_struct.toAddon.GetCapabilities(m_addonInstance, &addonCapabilities);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException("GetCapabilities()");
-    return false;
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, "GetCapabilities()"); return false; }
+  catch (int ex)             { ExceptionErrHandle(ex, "GetCapabilities()"); return false; }
+  catch (...)                { ExceptionUnkHandle("GetCapabilities()"); return false; }
 
   /* get the name of the dsp addon */
   try
   {
     strDSPName = m_struct.toAddon.GetDSPName(m_addonInstance);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException("GetDSPName()");
-    return false;
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, "GetDSPName()"); return false; }
+  catch (int ex)             { ExceptionErrHandle(ex, "GetDSPName()"); return false; }
+  catch (...)                { ExceptionUnkHandle("GetDSPName()"); return false; }
+
 
   /* display name = backend name string */
   strFriendlyName = StringUtils::Format("%s", strDSPName.c_str());
@@ -256,12 +236,9 @@ bool CActiveAEDSPAddon::GetAddonProperties(void)
   {
     strAudioDSPVersion = m_struct.toAddon.GetDSPVersion(m_addonInstance);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException("GetDSPVersion()");
-    return false;
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, "GetDSPVersion()"); return false; }
+  catch (int ex)             { ExceptionErrHandle(ex, "GetDSPVersion()"); return false; }
+  catch (...)                { ExceptionUnkHandle("GetDSPVersion()"); return false; }
 
   /* update the members */
   m_strAudioDSPName     = strDSPName;
@@ -320,12 +297,9 @@ void CActiveAEDSPAddon::CallMenuHook(const AE_DSP_MENUHOOK &hook, AE_DSP_MENUHOO
   {
     m_struct.toAddon.MenuHook(m_addonInstance, hook, hookData);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, "MenuHook()"); }
+  catch (int ex)             { ExceptionErrHandle(ex, "MenuHook()"); }
+  catch (...)                { ExceptionUnkHandle("MenuHook()"); }
 }
 
 AE_DSP_ERROR CActiveAEDSPAddon::StreamCreate(const AE_DSP_SETTINGS *addonSettings, const AE_DSP_STREAM_PROPERTIES* pProperties, ADDON_HANDLE handle)
@@ -339,12 +313,9 @@ AE_DSP_ERROR CActiveAEDSPAddon::StreamCreate(const AE_DSP_SETTINGS *addonSetting
       m_isInUse = true;
     LogError(retVal, __FUNCTION__);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -355,12 +326,9 @@ void CActiveAEDSPAddon::StreamDestroy(const ADDON_HANDLE handle)
   {
     m_struct.toAddon.StreamDestroy(m_addonInstance, handle);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   m_isInUse = false;
 }
@@ -375,12 +343,9 @@ bool CActiveAEDSPAddon::StreamIsModeSupported(const ADDON_HANDLE handle, AE_DSP_
     else if (retVal != AE_DSP_ERROR_IGNORE_ME)
       LogError(retVal, __FUNCTION__);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return false;
 }
@@ -394,12 +359,9 @@ AE_DSP_ERROR CActiveAEDSPAddon::StreamInitialize(const ADDON_HANDLE handle, cons
     retVal = m_struct.toAddon.StreamInitialize(m_addonInstance, handle, addonSettings);
     LogError(retVal, __FUNCTION__);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -410,12 +372,9 @@ bool CActiveAEDSPAddon::InputProcess(const ADDON_HANDLE handle, const float **ar
   {
     return m_struct.toAddon.InputProcess(m_addonInstance, handle, array_in, samples);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return 0;
 }
@@ -426,12 +385,9 @@ unsigned int CActiveAEDSPAddon::InputResampleProcessNeededSamplesize(const ADDON
   {
     return m_struct.toAddon.InputResampleProcessNeededSamplesize(m_addonInstance, handle);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return 0;
 }
@@ -442,12 +398,9 @@ unsigned int CActiveAEDSPAddon::InputResampleProcess(const ADDON_HANDLE handle, 
   {
     return m_struct.toAddon.InputResampleProcess(m_addonInstance, handle, array_in, array_out, samples);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return 0;
 }
@@ -458,12 +411,9 @@ int CActiveAEDSPAddon::InputResampleSampleRate(const ADDON_HANDLE handle)
   {
     return m_struct.toAddon.InputResampleSampleRate(m_addonInstance, handle);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return -1;
 }
@@ -474,12 +424,9 @@ float CActiveAEDSPAddon::InputResampleGetDelay(const ADDON_HANDLE handle)
   {
     return m_struct.toAddon.InputResampleGetDelay(m_addonInstance, handle);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return 0.0f;
 }
@@ -490,12 +437,9 @@ unsigned int CActiveAEDSPAddon::PreProcessNeededSamplesize(const ADDON_HANDLE ha
   {
     return m_struct.toAddon.PreProcessNeededSamplesize(m_addonInstance, handle, mode_id);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return 0;
 }
@@ -506,12 +450,9 @@ float CActiveAEDSPAddon::PreProcessGetDelay(const ADDON_HANDLE handle, unsigned 
   {
     return m_struct.toAddon.PreProcessGetDelay(m_addonInstance, handle, mode_id);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return 0.0f;
 }
@@ -522,12 +463,9 @@ unsigned int CActiveAEDSPAddon::PreProcess(const ADDON_HANDLE handle, unsigned i
   {
     return m_struct.toAddon.PostProcess(m_addonInstance, handle, mode_id, array_in, array_out, samples);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return 0;
 }
@@ -541,12 +479,9 @@ AE_DSP_ERROR CActiveAEDSPAddon::MasterProcessSetMode(const ADDON_HANDLE handle, 
     retVal = m_struct.toAddon.MasterProcessSetMode(m_addonInstance, handle, type, mode_id, unique_db_mode_id);
     LogError(retVal, __FUNCTION__);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return retVal;
 }
@@ -557,12 +492,9 @@ unsigned int CActiveAEDSPAddon::MasterProcessNeededSamplesize(const ADDON_HANDLE
   {
     return m_struct.toAddon.MasterProcessNeededSamplesize(m_addonInstance, handle);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return 0;
 }
@@ -573,12 +505,9 @@ float CActiveAEDSPAddon::MasterProcessGetDelay(const ADDON_HANDLE handle)
   {
     return m_struct.toAddon.MasterProcessGetDelay(m_addonInstance, handle);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return 0.0f;
 }
@@ -589,12 +518,9 @@ int CActiveAEDSPAddon::MasterProcessGetOutChannels(const ADDON_HANDLE handle, un
   {
     return m_struct.toAddon.MasterProcessGetOutChannels(m_addonInstance, handle, out_channel_present_flags);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return -1;
 }
@@ -605,12 +531,9 @@ unsigned int CActiveAEDSPAddon::MasterProcess(const ADDON_HANDLE handle, float *
   {
     return m_struct.toAddon.MasterProcess(m_addonInstance, handle, array_in, array_out, samples);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return 0;
 }
@@ -626,12 +549,9 @@ std::string CActiveAEDSPAddon::MasterProcessGetStreamInfoString(const ADDON_HAND
   {
     strReturn = m_struct.toAddon.MasterProcessGetStreamInfoString(m_addonInstance, handle);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return strReturn;
 }
@@ -642,12 +562,9 @@ unsigned int CActiveAEDSPAddon::PostProcessNeededSamplesize(const ADDON_HANDLE h
   {
     return m_struct.toAddon.PostProcessNeededSamplesize(m_addonInstance, handle, mode_id);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return 0;
 }
@@ -658,12 +575,9 @@ float CActiveAEDSPAddon::PostProcessGetDelay(const ADDON_HANDLE handle, unsigned
   {
     return m_struct.toAddon.PostProcessGetDelay(m_addonInstance, handle, mode_id);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return 0.0f;
 }
@@ -674,12 +588,9 @@ unsigned int CActiveAEDSPAddon::PostProcess(const ADDON_HANDLE handle, unsigned 
   {
     return m_struct.toAddon.PostProcess(m_addonInstance, handle, mode_id, array_in, array_out, samples);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return 0;
 }
@@ -690,12 +601,9 @@ unsigned int CActiveAEDSPAddon::OutputResampleProcessNeededSamplesize(const ADDO
   {
     return m_struct.toAddon.OutputResampleProcessNeededSamplesize(m_addonInstance, handle);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return 0;
 }
@@ -706,12 +614,9 @@ unsigned int CActiveAEDSPAddon::OutputResampleProcess(const ADDON_HANDLE handle,
   {
     return m_struct.toAddon.OutputResampleProcess(m_addonInstance, handle, array_in, array_out, samples);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return 0;
 }
@@ -722,12 +627,9 @@ int CActiveAEDSPAddon::OutputResampleSampleRate(const ADDON_HANDLE handle)
   {
     return m_struct.toAddon.OutputResampleSampleRate(m_addonInstance, handle);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return -1;
 }
@@ -738,12 +640,9 @@ float CActiveAEDSPAddon::OutputResampleGetDelay(const ADDON_HANDLE handle)
   {
     return m_struct.toAddon.OutputResampleGetDelay(m_addonInstance, handle);
   }
-  XBMCCOMMONS_HANDLE_UNCHECKED
-  catch (...)
-  {
-    LogUnhandledException(__FUNCTION__);
-    Destroy();
-  }
+  catch (std::exception& ex) { ExceptionStdHandle(ex, __FUNCTION__); }
+  catch (int ex)             { ExceptionErrHandle(ex, __FUNCTION__); }
+  catch (...)                { ExceptionUnkHandle(__FUNCTION__); }
 
   return 0.0f;
 }
@@ -814,12 +713,6 @@ bool CActiveAEDSPAddon::LogError(const AE_DSP_ERROR error, const char *strMethod
   }
   return true;
 }
-
-void CActiveAEDSPAddon::LogUnhandledException(const char *strFunctionName) const
-{
-  CLog::Log(LOGERROR, "ActiveAE DSP - Unhandled exception caught while trying to call '%s' on add-on '%s', becomes diabled. Please contact the developer of this add-on: %s", strFunctionName, GetFriendlyName().c_str(), Author().c_str());
-}
-
 
 void CActiveAEDSPAddon::ADSPAddMenuHook(void *kodiInstance, AE_DSP_MENUHOOK *hook)
 {
@@ -903,4 +796,28 @@ void CActiveAEDSPAddon::ADSPUnregisterMode(void* kodiInstance, AE_DSP_MODES::AE_
 
   CActiveAEDSPMode transferMode(*mode, addon->GetID());
   transferMode.Delete();
+}
+
+void CActiveAEDSPAddon::ExceptionStdHandle(std::exception& ex, const char* function)
+{
+  Exception::LogStdException(this, ex, function);
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(this->ID());
+  Exception::ShowExceptionErrorDialog(this);
+}
+
+void CActiveAEDSPAddon::ExceptionErrHandle(int ex, const char* function)
+{
+  Exception::LogErrException(this, ex, function);
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(this->ID());
+  Exception::ShowExceptionErrorDialog(this);
+}
+
+void CActiveAEDSPAddon::ExceptionUnkHandle(const char* function)
+{
+  Exception::LogUnkException(this, function);
+  Destroy();
+  CAddonMgr::GetInstance().DisableAddon(this->ID());
+  Exception::ShowExceptionErrorDialog(this);
 }
