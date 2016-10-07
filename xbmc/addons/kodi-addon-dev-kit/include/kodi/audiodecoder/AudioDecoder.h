@@ -27,6 +27,23 @@
 extern "C" {
 #endif
 
+/*
+ * The four structures below are used from the headers to create the "C"
+ * interface to Kodi. It contains the needed data and for Kodi needed add-on
+ * function addresses for the call of them.
+ *
+ * The sAddonInstance_AudioDecoder structure becomes given to the class creation
+ * of CInstanceAudioDecoder(KODI_HANDLE instance) who structure is send from
+ * Kodi before.
+ *
+ * No need of doxygen documentation of the structures here, are only internally
+ * used.
+ *
+ * Note: AUDIODEC_PROPS and sAddonToKodiFuncTable_AudioDecoder are currently
+ * unused, but present in lowest structure to have equal with other types and
+ * to have values `props`, `toKodi` and `toAddon` present.
+ */
+
 typedef struct AUDIODEC_PROPS
 {
   int dummy;
@@ -45,7 +62,7 @@ typedef struct sKodiToAddonFuncTable_AudioDecoder
                         int* bitspersample, int64_t* totaltime,
                         int* bitrate, AudioDataFormat* format,
                         const AudioChannel** info);
-  int  (__cdecl* ReadPCM) (void* addonInstance, uint8_t* buffer, int size, 
+  int  (__cdecl* ReadPCM) (void* addonInstance, uint8_t* buffer, int size,
                            int* actualsize);
   int64_t  (__cdecl* Seek) (void* addonInstance, int64_t time);
   bool (__cdecl* ReadTag) (void* addonInstance, const char* file, char* title,
@@ -63,19 +80,112 @@ typedef struct sAddonInstance_AudioDecoder
 #ifdef __cplusplus
 namespace kodi {
 namespace addon {
-namespace audiodecoder {
 
-  class CAddon
+  //============================================================================
+  ///
+  /// \addtogroup cpp_kodi_addon_audiodecoder
+  /// @brief \cpp_class{ kodi::addon::CInstanceAudioDecoder }
+  /// **Audio Decoder add-on instance**
+  ///
+  /// An audio codec is a add-on capable of coding or decoding a digital data
+  /// stream of audio.
+  ///
+  /// It has the header \ref AudioDecoder.h "#include <kodi/AudioDecoder/AudioDecoder.h>"
+  /// be included to enjoy it.
+  ///
+  /// The interface is small and easy usable, it have minimum two function which
+  /// must be present. One for the creation with <b><c>Init()</c></b> and for
+  /// the data read with <b><c>ReadPCM()</c></b>.
+  ///
+  ///
+  /// --------------------------------------------------------------------------
+  ///
+  /// **Here as example what is minimum required to start on a audio decoder:**
+  /// ~~~~~~~~~~~~~{.cpp}
+  /// #include <kodi/AudioDecoder/AudioDecoder.h>
+  ///
+  /// class CMyAudioDecoder : public ::kodi::addon::CInstanceAudioDecoder
+  /// {
+  /// public:
+  ///   CMyAudioDecoder(void* instance);
+  ///
+  ///   bool Init(std::string file, unsigned int filecache,
+  ///             int& channels, int& samplerate,
+  ///             int& bitspersample, int64_t& totaltime,
+  ///             int& bitrate, AudioDataFormat& format,
+  ///             std::vector<AudioChannel>& channellist) override;
+  ///   int ReadPCM(uint8_t* buffer, int size, int& actualsize) override;
+  /// };
+  ///
+  /// CMyAudioDecoder::CMyAudioDecoder(void* instance)
+  ///   : CInstanceAudioDecoder(instance)
+  /// {
+  ///   ...
+  /// }
+  ///
+  /// bool CMyAudioDecoder::Init(std::string file, unsigned int filecache,
+  ///                            int& channels, int& samplerate,
+  ///                            int& bitspersample, int64_t& totaltime,
+  ///                            int& bitrate, AudioDataFormat& format,
+  ///                            std::vector<AudioChannel>& channellist)
+  /// {
+  ///   ...
+  ///   return true;
+  /// }
+  ///
+  /// int CMyAudioDecoder::ReadPCM(uint8_t* buffer, int size, int& actualsize)
+  /// {
+  ///   int length = 0;
+  ///   ...
+  ///   return length;
+  /// }
+  ///
+  /// /*----------------------------------------------------------------------*/
+  ///
+  /// class CMyAddon : public ::kodi::addon::CAddonBase
+  /// {
+  /// public:
+  ///   CMyAddon() { }
+  ///   ADDON_STATUS CreateInstance(int instanceType,
+  ///                               std::string instanceID,
+  ///                               KODI_HANDLE instance,
+  ///                               KODI_HANDLE& addonInstance) override;
+  /// };
+  ///
+  /// /* If you use only one instance in your add-on, can be instanceType and
+  ///  * instanceID ignored */
+  /// ADDON_STATUS CMyAddon::CreateInstance(int instanceType,
+  ///                                       std::string instanceID,
+  ///                                       KODI_HANDLE instance,
+  ///                                       KODI_HANDLE& addonInstance)
+  /// {
+  ///   kodi::Log(LOG_NOTICE, "Creating my Audio Decoder");
+  ///   addonInstance = new CMyAudioDecoder(instance);
+  ///   return ADDON_STATUS_OK;
+  /// }
+  ///
+  /// ADDONCREATOR(CMyAddon);
+  /// ~~~~~~~~~~~~~
+  ///
+  /// The **desctruction** of the here created example class `CMyAudioDecoder`
+  /// becomes done from Kodi's header and never for add-on instances a delete on
+  /// add-on itself necessary.
+  ///
+  //----------------------------------------------------------------------------
+  class CInstanceAudioDecoder : public IAddonInstance
   {
   public:
     //==========================================================================
+    /// @ingroup cpp_kodi_addon_audiodecoder
     /// @brief Class constructor
     ///
-    /// @param[in] instance             The from Kodi given instance given be
-    ///                                 add-on CreateInstance call with instance
-    ///                                 id ADDON_INSTANCE_AUDIOENCODER.
-    CAddon(void* instance)
-      : m_instance(static_cast<sAddonInstance_AudioDecoder*>(instance))
+    /// @param[in] instance               The with <b>`kodi::addon::CInstanceAudioDecoderBase::CreateInstance(...)`</b>
+    ///                                   given `instance` value.
+    ///   @warning Use always only `instance` value from CreateInstance call
+    ///
+    CInstanceAudioDecoder(KODI_HANDLE instance)
+      : IAddonInstance(ADDON_INSTANCE_AUDIODECODER),
+        m_instance(static_cast<sAddonInstance_AudioDecoder*>(instance))
     {
       m_instance->toAddon.Init = ADDON_Init;
       m_instance->toAddon.ReadPCM = ADDON_ReadPCM;
@@ -86,6 +196,15 @@ namespace audiodecoder {
     //--------------------------------------------------------------------------
 
     //==========================================================================
+    ///
+    /// @ingroup cpp_kodi_addon_audiodecoder
+    /// @brief Destructor
+    ///
+    virtual ~CInstanceAudioDecoder() { }
+    //--------------------------------------------------------------------------
+
+    //==========================================================================
+    /// @ingroup cpp_kodi_addon_audiodecoder
     /// @brief Initialize a decoder
     ///
     /// @param[in] file                 The file to read
@@ -104,10 +223,11 @@ namespace audiodecoder {
                       int& channels, int& samplerate,
                       int& bitspersample, int64_t& totaltime,
                       int& bitrate, AudioDataFormat& format,
-                      std::vector<AudioChannel>& channellist) { return false; }
+                      std::vector<AudioChannel>& channellist)=0;
     //--------------------------------------------------------------------------
 
     //==========================================================================
+    /// @ingroup cpp_kodi_addon_audiodecoder
     /// @brief Produce some noise
     ///
     /// @param[in] buffer               Output buffer
@@ -120,10 +240,11 @@ namespace audiodecoder {
     ///                                 |  -1   | on end of stream
     ///                                 |   1   | on failure
     ///
-    virtual int ReadPCM(uint8_t* buffer, int size, int& actualsize) { return 0; }
+    virtual int ReadPCM(uint8_t* buffer, int size, int& actualsize)=0;
     //--------------------------------------------------------------------------
 
     //==========================================================================
+    /// @ingroup cpp_kodi_addon_audiodecoder
     /// @brief Seek in output stream
     ///
     /// @param[in] time                 Time position to seek to in milliseconds
@@ -133,6 +254,7 @@ namespace audiodecoder {
     //--------------------------------------------------------------------------
 
     //==========================================================================
+    /// @ingroup cpp_kodi_addon_audiodecoder
     /// @brief Read tag of a file
     ///
     /// @param[in] file                 File to read tag for
@@ -145,6 +267,7 @@ namespace audiodecoder {
     //--------------------------------------------------------------------------
 
     //==========================================================================
+    /// @ingroup cpp_kodi_addon_audiodecoder
     /// @brief Get number of tracks in a file
     ///
     /// @param[in] file                 File to read tag for
@@ -160,13 +283,13 @@ namespace audiodecoder {
                                   int* bitrate, AudioDataFormat* format,
                                   const AudioChannel** info)
     {
-      static_cast<CAddon*>(addonInstance)->m_channelList.clear();
-      bool ret = static_cast<CAddon*>(addonInstance)->Init(file, filecache, *channels,
-                                                           *samplerate, *bitspersample, 
-                                                           *totaltime, *bitrate, *format, 
-                                                           static_cast<CAddon*>(addonInstance)->m_channelList);
-      if (!static_cast<CAddon*>(addonInstance)->m_channelList.empty())
-        *info = static_cast<CAddon*>(addonInstance)->m_channelList.data();
+      static_cast<CInstanceAudioDecoder*>(addonInstance)->m_channelList.clear();
+      bool ret = static_cast<CInstanceAudioDecoder*>(addonInstance)->Init(file, filecache, *channels,
+                                                           *samplerate, *bitspersample,
+                                                           *totaltime, *bitrate, *format,
+                                                           static_cast<CInstanceAudioDecoder*>(addonInstance)->m_channelList);
+      if (!static_cast<CInstanceAudioDecoder*>(addonInstance)->m_channelList.empty())
+        *info = static_cast<CInstanceAudioDecoder*>(addonInstance)->m_channelList.data();
       else
         *info = nullptr;
       return ret;
@@ -174,12 +297,12 @@ namespace audiodecoder {
 
     inline static int ADDON_ReadPCM(void* addonInstance, uint8_t* buffer, int size, int* actualsize)
     {
-      return static_cast<CAddon*>(addonInstance)->ReadPCM(buffer, size, *actualsize);
+      return static_cast<CInstanceAudioDecoder*>(addonInstance)->ReadPCM(buffer, size, *actualsize);
     }
 
     inline static int64_t ADDON_Seek(void* addonInstance, int64_t time)
     {
-      return static_cast<CAddon*>(addonInstance)->Seek(time);
+      return static_cast<CInstanceAudioDecoder*>(addonInstance)->Seek(time);
     }
 
     inline static bool ADDON_ReadTag(void* addonInstance, const char* file, char* title, char* artist, int* length)
@@ -188,7 +311,7 @@ namespace audiodecoder {
       std::string intArtist;
       memset(title, 0, ADDON_STANDARD_STRING_LENGTH_SMALL);
       memset(artist, 0, ADDON_STANDARD_STRING_LENGTH_SMALL);
-      bool ret = static_cast<CAddon*>(addonInstance)->ReadTag(file, intTitle, intArtist, *length);
+      bool ret = static_cast<CInstanceAudioDecoder*>(addonInstance)->ReadTag(file, intTitle, intArtist, *length);
       if (ret)
       {
         strncpy(title, intTitle.c_str(), ADDON_STANDARD_STRING_LENGTH_SMALL-1);
@@ -199,14 +322,13 @@ namespace audiodecoder {
 
     inline static int ADDON_TrackCount(void* addonInstance, const char* file)
     {
-      return static_cast<CAddon*>(addonInstance)->TrackCount(file);
+      return static_cast<CInstanceAudioDecoder*>(addonInstance)->TrackCount(file);
     }
 
     std::vector<AudioChannel> m_channelList;
     sAddonInstance_AudioDecoder* m_instance;
   };
 
-} /* namespace audiodecoder */
 } /* namespace addon */
 } /* namespace kodi */
 } /* extern "C" */
