@@ -33,13 +33,12 @@ namespace MUSIC_INFO
 namespace ADDON
 {
 
-  class CAudioDecoder : public CAddonDll,
-                        public ICodec,
+  class CAudioDecoder : public ICodec,
                         public MUSIC_INFO::IMusicInfoTagLoader,
                         public XFILE::CMusicFileDirectory
   {
   public:
-    explicit CAudioDecoder(std::string addonPath);
+    explicit CAudioDecoder(ADDON::AddonDllPtr addon);
     virtual ~CAudioDecoder();
 
     // Child functions related to ICodec
@@ -115,7 +114,14 @@ namespace ADDON
     void ExceptionUnkHandle(const char* function);
     /* @}*/
 
+    /*! The on add-on header defined interface function table */
     sAddonInstance_AudioDecoder m_struct;
+
+    /*! Used add-on class of the screensaver */
+    ADDON::AddonDllPtr m_addon;
+
+    /*! The instance pointer from add-on itself, who becomes passed back on all
+    *  calls to them and set by the CAddonDll::CreateInstance(...) call */
     void* m_addonInstance;
   };
 

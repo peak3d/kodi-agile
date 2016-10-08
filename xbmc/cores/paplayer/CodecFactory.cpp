@@ -38,14 +38,10 @@ ICodec* CodecFactory::CreateCodec(const std::string &strFileType)
   addonCache.GetAddons(codecs, ADDON::ADDON_AUDIODECODER);
   for (size_t i=0;i<codecs.size();++i)
   {
-    std::shared_ptr<CAudioDecoder> dec(std::static_pointer_cast<CAudioDecoder>(codecs[i]));
-    std::vector<std::string> exts = StringUtils::Split(dec->GetExtensions(), "|");
+    std::shared_ptr<CAddonDll> dec(std::static_pointer_cast<CAddonDll>(codecs[i]));
+    std::vector<std::string> exts = StringUtils::Split(codecs[i]->ExtraInfoValueString("extension"), "|");
     if (std::find(exts.begin(), exts.end(), "."+fileType) != exts.end())
-    {
-      CAudioDecoder* result = new CAudioDecoder(*dec);
-      static_cast<CAddonDll&>(*result).Create();
-      return result;
-    }
+      return new CAudioDecoder(dec);
   }
 
   VideoPlayerCodec *dvdcodec = new VideoPlayerCodec();
@@ -64,14 +60,10 @@ ICodec* CodecFactory::CreateCodecDemux(const CFileItem& file, unsigned int filec
     addonCache.GetAddons(codecs, ADDON_AUDIODECODER);
     for (size_t i=0;i<codecs.size();++i)
     {
-      std::shared_ptr<CAudioDecoder> dec(std::static_pointer_cast<CAudioDecoder>(codecs[i]));
-      std::vector<std::string> mime = StringUtils::Split(dec->GetMimetypes(), "|");
+      std::shared_ptr<CAddonDll> dec(std::static_pointer_cast<CAddonDll>(codecs[i]));
+      std::vector<std::string> mime = StringUtils::Split(codecs[i]->ExtraInfoValueString("mimetype"), "|");
       if (std::find(mime.begin(), mime.end(), content) != mime.end())
-      {
-        CAudioDecoder* result = new CAudioDecoder(*dec);
-        static_cast<CAddonDll&>(*result).Create();
-        return result;
-      }
+        return new CAudioDecoder(dec);
     }
   }
 
@@ -86,8 +78,8 @@ ICodec* CodecFactory::CreateCodecDemux(const CFileItem& file, unsigned int filec
       content == "application/ogg"  ||
       content == "audio/ogg"        ||
       content == "audio/x-xbmc-pcm" ||
-      content == "audio/flac"       || 
-      content == "audio/x-flac"     || 
+      content == "audio/flac"       ||
+      content == "audio/x-flac"     ||
       content == "application/x-flac"
       )
   {

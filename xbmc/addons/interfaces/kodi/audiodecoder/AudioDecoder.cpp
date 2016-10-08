@@ -27,19 +27,19 @@
 namespace ADDON
 {
 
-CAudioDecoder::CAudioDecoder(std::string addonPath)
-  : CAddonDll(std::move(addonPath)),
+CAudioDecoder::CAudioDecoder(ADDON::AddonDllPtr addon)
+  : m_addon(addon),
     m_tags(false),
     m_tracks(false),
     m_addonInstance(nullptr)
 
 {
-  m_extension = ExtraInfoValueString("extension");
-  m_mimetype = ExtraInfoValueString("mimetype");
-  m_tags = ExtraInfoValueBool("tags");
-  m_tracks = ExtraInfoValueBool("tracks");
-  m_CodecName = ExtraInfoValueString("name");
-  m_strExt = ExtraInfoValueString("name") + "stream";
+  m_extension = m_addon->ExtraInfoValueString("extension");
+  m_mimetype = m_addon->ExtraInfoValueString("mimetype");
+  m_tags = m_addon->ExtraInfoValueBool("tags");
+  m_tracks = m_addon->ExtraInfoValueBool("tracks");
+  m_CodecName = m_addon->ExtraInfoValueString("name");
+  m_strExt = m_addon->ExtraInfoValueString("name") + "stream";
 
   memset(&m_struct, 0, sizeof(m_struct));
 }
@@ -51,11 +51,17 @@ CAudioDecoder::~CAudioDecoder()
 
 bool CAudioDecoder::Init(const CFileItem& file, unsigned int filecache)
 {
-  if (!Initialized())
+  if (!m_addon)
     return false;
 
+  if (!m_addon->Initialized())
+  {
+    if (m_addon->Create() != ADDON_STATUS_OK)
+      return false;
+  }
+
   m_struct.toKodi.kodiInstance = this;
-  if (CAddonDll::CreateInstance(ADDON_INSTANCE_AUDIODECODER, ID().c_str(), &m_struct, &m_addonInstance) != ADDON_STATUS_OK)
+  if (m_addon->CreateInstance(ADDON_INSTANCE_AUDIODECODER, m_addon->ID().c_str(), &m_struct, &m_addonInstance) != ADDON_STATUS_OK)
     return false;
 
   // for replaygain
@@ -130,7 +136,7 @@ bool CAudioDecoder::Seek(int64_t time)
 
 void CAudioDecoder::DeInit()
 {
-  CAddonDll::DestroyInstance(ADDON_INSTANCE_AUDIODECODER, m_addonInstance);
+  m_addon->DestroyInstance(ADDON_INSTANCE_AUDIODECODER, m_addonInstance);
   memset(&m_struct, 0, sizeof(m_struct));
   m_addonInstance = nullptr;
 }
@@ -185,26 +191,26 @@ int CAudioDecoder::GetTrackCount(const std::string& strPath)
 
 void CAudioDecoder::ExceptionStdHandle(std::exception& ex, const char* function)
 {
-  Exception::LogStdException(this, ex, function);
-  Destroy();
-  CAddonMgr::GetInstance().DisableAddon(this->ID());
-  Exception::ShowExceptionErrorDialog(this);
+  Exception::LogStdException(m_addon, ex, function);
+  m_addon->Destroy();
+  CAddonMgr::GetInstance().DisableAddon(m_addon->ID());
+  Exception::ShowExceptionErrorDialog(m_addon);
 }
 
 void CAudioDecoder::ExceptionErrHandle(int ex, const char* function)
 {
-  Exception::LogErrException(this, ex, function);
-  Destroy();
-  CAddonMgr::GetInstance().DisableAddon(this->ID());
-  Exception::ShowExceptionErrorDialog(this);
+  Exception::LogErrException(m_addon, ex, function);
+  m_addon->Destroy();
+  CAddonMgr::GetInstance().DisableAddon(m_addon->ID());
+  Exception::ShowExceptionErrorDialog(m_addon);
 }
 
 void CAudioDecoder::ExceptionUnkHandle(const char* function)
 {
-  Exception::LogUnkException(this, function);
-  Destroy();
-  CAddonMgr::GetInstance().DisableAddon(this->ID());
-  Exception::ShowExceptionErrorDialog(this);
+  Exception::LogUnkException(m_addon, function);
+  m_addon->Destroy();
+  CAddonMgr::GetInstance().DisableAddon(m_addon->ID());
+  Exception::ShowExceptionErrorDialog(m_addon);
 }
 
 } /* namespace ADDON */

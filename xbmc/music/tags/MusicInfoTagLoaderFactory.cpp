@@ -62,21 +62,19 @@ IMusicInfoTagLoader* CMusicInfoTagLoaderFactory::CreateLoader(const CFileItem& i
   CAddonMgr::GetInstance().GetAddons(codecs, ADDON_AUDIODECODER);
   for (size_t i=0;i<codecs.size();++i)
   {
-    std::shared_ptr<CAudioDecoder> dec(std::static_pointer_cast<CAudioDecoder>(codecs[i]));
-    if (dec->HasTags() && dec->GetExtensions().find("."+strExtension) != std::string::npos)
+    if (codecs[i]->ExtraInfoValueBool("tags") && codecs[i]->ExtraInfoValueString("extension").find("."+strExtension) != std::string::npos)
     {
-      CAudioDecoder* result = new CAudioDecoder(*dec);
-      static_cast<CAddonDll&>(*result).Create();
-      return result;
+      std::shared_ptr<CAddonDll> dec(std::static_pointer_cast<CAddonDll>(codecs[i]));
+      return new CAudioDecoder(dec);
     }
   }
 
 
   if (strExtension == "aac" ||
       strExtension == "ape" || strExtension == "mac" ||
-      strExtension == "mp3" || 
-      strExtension == "wma" || 
-      strExtension == "flac" || 
+      strExtension == "mp3" ||
+      strExtension == "wma" ||
+      strExtension == "flac" ||
       strExtension == "m4a" || strExtension == "mp4" ||
       strExtension == "mpc" || strExtension == "mpp" || strExtension == "mp+" ||
       strExtension == "ogg" || strExtension == "oga" || strExtension == "oggstream" ||

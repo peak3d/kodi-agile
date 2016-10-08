@@ -72,11 +72,10 @@ IFileDirectory* CFileDirectoryFactory::Create(const CURL& url, CFileItem* pItem,
     addonCache.GetAddons(codecs, ADDON_AUDIODECODER);
     for (size_t i=0;i<codecs.size();++i)
     {
-      std::shared_ptr<CAudioDecoder> dec(std::static_pointer_cast<CAudioDecoder>(codecs[i]));
-      if (dec->HasTracks() && dec->GetExtensions().find(strExtension) != std::string::npos)
+      if (codecs[i]->ExtraInfoValueBool("tracks") && codecs[i]->ExtraInfoValueString("extension").find(strExtension) != std::string::npos)
       {
-        CAudioDecoder* result = new CAudioDecoder(*dec);
-        static_cast<CAddonDll&>(*result).Create();
+        std::shared_ptr<CAddonDll> dec(std::static_pointer_cast<CAddonDll>(codecs[i]));
+        CAudioDecoder* result = new CAudioDecoder(dec);
         if (result->ContainsFiles(url))
           return result;
         delete result;
@@ -86,7 +85,7 @@ IFileDirectory* CFileDirectoryFactory::Create(const CURL& url, CFileItem* pItem,
   }
 
 #ifdef HAS_FILESYSTEM
-  
+
   if (pItem->IsRSS())
     return new CRSSDirectory();
 

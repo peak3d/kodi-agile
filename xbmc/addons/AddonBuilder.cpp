@@ -130,7 +130,7 @@ std::shared_ptr<IAddon> CAddonBuilder::Build()
     case ADDON_AUDIOENCODER:
       return CAudioEncoder::FromExtension(std::move(m_props), m_extPoint);
     case ADDON_AUDIODECODER:
-      return std::make_shared<CAudioDecoder>(std::move(m_props.path));
+      return std::make_shared<CAddonDll>(std::move(m_props.path));
     case ADDON_INPUTSTREAM:
       return CInputStream::FromExtension(std::move(m_props), m_extPoint);
     case ADDON_PERIPHERALDLL:
@@ -198,7 +198,7 @@ AddonPtr CAddonBuilder::FromProps(AddonProps addonProps)
     case ADDON_AUDIOENCODER:
       return AddonPtr(new CAudioEncoder(std::move(addonProps)));
     case ADDON_AUDIODECODER:
-      return std::make_shared<CAudioDecoder>(std::move(addonProps.path));
+      return std::make_shared<CAddonDll>(std::move(addonProps.path));
     case ADDON_RESOURCE_IMAGES:
       return AddonPtr(new CImageResource(std::move(addonProps)));
     case ADDON_RESOURCE_LANGUAGE:
