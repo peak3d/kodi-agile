@@ -118,6 +118,10 @@ namespace ADDON
     virtual std::string Origin() const =0;
     virtual uint64_t PackageSize() const =0;
     virtual const InfoMap &ExtraInfo() const =0;
+    virtual std::string ExtraInfoValueString(std::string id) const =0;
+    virtual bool ExtraInfoValueBool(std::string id) const =0;
+    virtual int ExtraInfoValueInt(std::string id) const =0;
+    virtual float ExtraInfoValueFloat(std::string id) const =0;
     virtual bool HasSettings() =0;
     virtual void SaveSettings() =0;
     virtual void UpdateSetting(const std::string& key, const std::string& value) =0;

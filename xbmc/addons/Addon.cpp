@@ -438,6 +438,38 @@ CAddon::CAddon(AddonProps props)
   m_userSettingsLoaded = false;
 }
 
+std::string CAddon::ExtraInfoValueString(std::string id) const
+{
+  InfoMap::const_iterator it = m_props.extrainfo.find(id);
+  if (it != m_props.extrainfo.end())
+    return it->second;
+  return "";
+}
+
+bool CAddon::ExtraInfoValueBool(std::string id) const
+{
+  InfoMap::const_iterator it = m_props.extrainfo.find(id);
+  if (it != m_props.extrainfo.end())
+    return (it->second == "true");
+  return false;
+}
+
+int CAddon::ExtraInfoValueInt(std::string id) const
+{
+  InfoMap::const_iterator it = m_props.extrainfo.find(id);
+  if (it != m_props.extrainfo.end())
+    return atoi(it->second.c_str());
+  return 0;
+}
+
+float CAddon::ExtraInfoValueFloat(std::string id) const
+{
+  InfoMap::const_iterator it = m_props.extrainfo.find(id);
+  if (it != m_props.extrainfo.end())
+    return atof(it->second.c_str());
+  return 0.0f;
+}
+
 bool CAddon::MeetsVersion(const AddonVersion &version) const
 {
   return m_props.minversion <= version && version <= m_props.version;

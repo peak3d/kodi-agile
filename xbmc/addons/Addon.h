@@ -120,6 +120,10 @@ public:
   std::string Origin() const override { return m_props.origin; }
   uint64_t PackageSize() const override { return m_props.packageSize; }
   const InfoMap& ExtraInfo() const override { return m_props.extrainfo; }
+  std::string ExtraInfoValueString(std::string id) const override;
+  bool ExtraInfoValueBool(std::string id) const override;
+  int ExtraInfoValueInt(std::string id) const override;
+  float ExtraInfoValueFloat(std::string id) const override;
   const ADDONDEPS& GetDeps() const override { return m_props.dependencies; }
 
   /*! \brief Check whether the this addon can be configured or not
