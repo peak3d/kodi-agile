@@ -27,46 +27,19 @@
 namespace ADDON
 {
 
-std::unique_ptr<CAudioDecoder> CAudioDecoder::FromExtension(AddonProps props, const cp_extension_t* ext)
-{
-  std::string extension = CAddonMgr::GetInstance().GetExtValue(ext->configuration, "@extension");
-  std::string mimetype = CAddonMgr::GetInstance().GetExtValue(ext->configuration, "@mimetype");
-  bool tags = CAddonMgr::GetInstance().GetExtValue(ext->configuration, "@tags") == "true";
-  bool tracks = CAddonMgr::GetInstance().GetExtValue(ext->configuration, "@tracks") == "true";
-  std::string codecName = CAddonMgr::GetInstance().GetExtValue(ext->configuration, "@name");
-  std::string strExt = CAddonMgr::GetInstance().GetExtValue(ext->configuration, "@name") + "stream";
-
-  return std::unique_ptr<CAudioDecoder>(new CAudioDecoder(std::move(props), std::move(extension),
-      std::move(mimetype), tags, tracks, std::move(codecName), std::move(strExt)));
-}
-
-CAudioDecoder::CAudioDecoder(AddonProps props)
-  : CAddonDll(std::move(props)),
+CAudioDecoder::CAudioDecoder(std::string addonPath)
+  : CAddonDll(std::move(addonPath)),
     m_tags(false),
     m_tracks(false),
     m_addonInstance(nullptr)
 
 {
-  memset(&m_struct, 0, sizeof(m_struct));
-}
-
-CAudioDecoder::CAudioDecoder(AddonProps props,
-                             std::string extension,
-                             std::string mimetype,
-                             bool tags,
-                             bool tracks,
-                             std::string codecName,
-                             std::string strExt)
-  : CAddonDll(std::move(props)),
-    m_extension(extension),
-    m_mimetype(mimetype),
-    m_tags(tags),
-    m_tracks(tracks),
-    m_addonInstance(nullptr)
-
-{
-  m_CodecName = std::move(codecName);
-  m_strExt = std::move(strExt);
+  m_extension = ExtraInfoValueString("extension");
+  m_mimetype = ExtraInfoValueString("mimetype");
+  m_tags = ExtraInfoValueBool("tags");
+  m_tracks = ExtraInfoValueBool("tracks");
+  m_CodecName = ExtraInfoValueString("name");
+  m_strExt = ExtraInfoValueString("name") + "stream";
 
   memset(&m_struct, 0, sizeof(m_struct));
 }

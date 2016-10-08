@@ -1378,9 +1378,8 @@ std::string CAdvancedSettings::GetMusicExtensions() const
   addonCache.GetAddons(codecs, ADDON_AUDIODECODER);
   for (size_t i=0;i<codecs.size();++i)
   {
-    std::shared_ptr<CAudioDecoder> dec(std::static_pointer_cast<CAudioDecoder>(codecs[i]));
     result += '|';
-    result += dec->GetExtensions();
+    result += codecs[i]->ExtraInfoValueString("extension");
   }
 
   return result;

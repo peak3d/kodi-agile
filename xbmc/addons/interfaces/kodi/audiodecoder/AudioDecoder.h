@@ -39,14 +39,7 @@ namespace ADDON
                         public XFILE::CMusicFileDirectory
   {
   public:
-    static std::unique_ptr<CAudioDecoder> FromExtension(AddonProps props, const cp_extension_t* ext);
-
-    explicit CAudioDecoder(AddonProps props);
-    CAudioDecoder(AddonProps props, std::string extension,
-                  std::string mimetype, bool tags,
-                  bool tracks, std::string codecName,
-                  std::string strExt);
-
+    explicit CAudioDecoder(std::string addonPath);
     virtual ~CAudioDecoder();
 
     // Child functions related to ICodec
