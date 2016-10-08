@@ -57,6 +57,7 @@ class AddonProps
 public:
   AddonProps() : type(ADDON_UNKNOWN), packageSize(0) {};
   AddonProps(std::string id, TYPE type) : id(std::move(id)), type(type), packageSize(0) {}
+  AddonProps(std::string addonPath);
 
   std::string id;
   TYPE type;
@@ -89,6 +90,7 @@ public:
 class CAddon : public IAddon
 {
 public:
+  CAddon(std::string addonPath);
   explicit CAddon(AddonProps props);
   virtual ~CAddon() {}
 

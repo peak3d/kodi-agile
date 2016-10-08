@@ -24,12 +24,14 @@
 #include <ostream>
 #include <utility>
 #include <vector>
+#include <tinyxml.h>
 
 #include "AddonManager.h"
 #include "addons/Service.h"
 #include "ContextMenuManager.h"
 #include "filesystem/Directory.h"
 #include "filesystem/File.h"
+#include "filesystem/SpecialProtocol.h"
 #include "RepositoryUpdater.h"
 #include "settings/Settings.h"
 #include "ServiceBroker.h"
@@ -40,6 +42,7 @@
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "utils/Variant.h"
+#include "utils/XMLUtils.h"
 
 #ifdef HAS_PYTHON
 #include "interfaces/python/XBPython.h"
@@ -58,7 +61,7 @@ namespace ADDON
 {
 
 /**
- * helper functions 
+ * helper functions
  *
  */
 
@@ -145,6 +148,284 @@ std::string GetIcon(ADDON::TYPE type)
       return map.icon;
   }
   return "";
+}
+
+const char* GetPlatformLibraryName(const TiXmlElement* element)
+{
+  const char* libraryName;
+#if defined(TARGET_ANDROID)
+  libraryName = element->Attribute("library_android");
+#elif defined(TARGET_LINUX) || defined(TARGET_FREEBSD)
+#if defined(TARGET_FREEBSD)
+  libraryName = element->Attribute("library_freebsd");
+  if (libraryName.empty())
+#elif defined(TARGET_RASPBERRY_PI)
+  libraryName = element->Attribute("library_rbpi");
+  if (libraryName.empty())
+#endif
+  libraryName = element->Attribute("library_linux");
+#elif defined(TARGET_WINDOWS) && defined(HAS_DX)
+  libraryName = element->Attribute("library_windx");
+  if (libraryName.empty())
+    libraryName = element->Attribute("library_windows");
+#elif defined(TARGET_DARWIN)
+#if defined(TARGET_DARWIN_IOS)
+  libraryName = element->Attribute("library_ios");
+  if (libraryName.empty())
+#endif
+  libraryName = element->Attribute("library_osx");
+#endif
+
+  return libraryName;
+}
+
+AddonProps::AddonProps(std::string addonPath)
+  : path(addonPath)
+{
+  /*
+  * Following values currently not set from creator:
+  * - AddonVersion minversion{"0.0.0"};
+  * - CDateTime installDate;
+  * - CDateTime lastUpdated;
+  * - CDateTime lastUsed;
+  * - std::string origin;
+  */
+
+  auto addonXmlPath = CSpecialProtocol::TranslatePath(URIUtils::AddFileToFolder(addonPath, "addon.xml"));
+
+  CXBMCTinyXML xmlDoc;
+  if (!xmlDoc.LoadFile(addonXmlPath))
+    throw std::logic_error(StringUtils::Format("AddonProps: Unable to load '%s', Line %d\n%s",
+                                               addonPath.c_str(),
+                                               xmlDoc.ErrorRow(),
+                                               xmlDoc.ErrorDesc()).c_str());
+
+  // Root element should be <addon>
+  const TiXmlElement* rootElement = xmlDoc.RootElement();
+  if (!rootElement)
+    throw std::logic_error(StringUtils::Format("AddonProps: file '%s' not possible to get xml root element", addonXmlPath.c_str()).c_str());
+
+  if (!StringUtils::EqualsNoCase(rootElement->Value(), "addon"))
+    throw std::logic_error(StringUtils::Format("AddonProps: file '%s' doesnt contain <addon>", addonXmlPath.c_str()).c_str());
+
+  /*
+   * Parse addon.xml:
+   * <addon id="???"
+   *        name="???"
+   *        version="???"
+   *        provider-name="???">
+   */
+  id = rootElement->Attribute("id");
+  name = rootElement->Attribute("name");
+  version = AddonVersion(rootElement->Attribute("version"));
+  author = rootElement->Attribute("provider-name");
+  if (id.empty() || name.empty() || version.empty() || author.empty())
+    throw std::logic_error(StringUtils::Format("AddonProps: file '%s' doesnt contain required values on <addon ... >", addonXmlPath.c_str()).c_str());
+
+  /*
+   * Parse addon.xml:
+   * <requires>
+   *   <import addon="???" version="???" optional="???"/>
+   * </requires>
+   */
+  const TiXmlElement* requires = rootElement->FirstChildElement("requires");
+  if (requires)
+  {
+    for (const TiXmlElement* child = requires->FirstChildElement("import"); child != nullptr; child = child->NextSiblingElement("import"))
+    {
+      const char* id = child->Attribute("addon");
+      if (id)
+      {
+        const char* version = child->Attribute("version");
+        bool optional = false;
+        child->QueryBoolAttribute("optional", &optional);
+        dependencies.emplace(id, std::make_pair(AddonVersion(version ? version : "0.0.0"), optional));
+      }
+    }
+  }
+
+  /*
+   * Parse addon.xml:
+   * <extension>
+   *   ...
+   * </extension>
+   */
+  for (const TiXmlElement* child = rootElement->FirstChildElement("extension"); child != nullptr; child = child->NextSiblingElement("extension"))
+  {
+    std::string point = child->Attribute("point");
+    if (point == "kodi.addon.metadata" || point == "xbmc.addon.metadata")
+    {
+      /*
+       * Parse addon.xml "<summary lang="..">...</summary>"
+       */
+      for (const TiXmlElement* element = child->FirstChildElement("summary"); element != nullptr; element = element->NextSiblingElement("summary"))
+      {
+        std::string lang = element->Attribute("lang");
+        if (g_langInfo.GetLocale().Matches(lang))
+        {
+          summary = element->GetText();
+          break;
+        }
+        else if (lang == "en" || lang == "en_GB" || summary.empty())
+        {
+          summary = element->GetText();
+        }
+      }
+
+      /*
+       * Parse addon.xml "<description lang="..">...</description>"
+       */
+      for (const TiXmlElement* element = child->FirstChildElement("description"); element != nullptr; element = element->NextSiblingElement("description"))
+      {
+        std::string lang = element->Attribute("lang");
+        if (g_langInfo.GetLocale().Matches(lang))
+        {
+          description = element->GetText();
+          break;
+        }
+        else if (lang == "en" || lang == "en_GB" || description.empty())
+        {
+          description = element->GetText();
+        }
+      }
+
+      /*
+       * Parse addon.xml "<disclaimer lang="..">...</disclaimer>"
+       */
+      for (const TiXmlElement* element = child->FirstChildElement("disclaimer"); element != nullptr; element = element->NextSiblingElement("disclaimer"))
+      {
+        std::string lang = element->Attribute("lang");
+        if (g_langInfo.GetLocale().Matches(lang))
+        {
+          disclaimer = element->GetText();
+          break;
+        }
+        else if (lang == "en" || lang == "en_GB" || disclaimer.empty())
+        {
+          disclaimer = element->GetText();
+        }
+      }
+
+      /*
+       * Parse addon.xml "<assets>...</assets>"
+       */
+      const TiXmlElement* element = child->FirstChildElement("assets");
+      if (element)
+      {
+        for (const TiXmlElement* elementsAssets = element->FirstChildElement(); elementsAssets != nullptr; elementsAssets = elementsAssets->NextSiblingElement())
+        {
+          std::string value = elementsAssets->Value();
+          if (value == "icon")
+          {
+            icon = elementsAssets->GetText();
+            if (!icon.empty())
+              icon = URIUtils::AddFileToFolder(path, icon);
+          }
+          else if (value == "fanart")
+          {
+            fanart = elementsAssets->GetText();
+            if (!fanart.empty())
+              fanart = URIUtils::AddFileToFolder(path, fanart);
+          }
+          else if (value == "screenshot")
+          {
+            std::string screenshot = elementsAssets->GetText();
+            if (!screenshot.empty())
+               screenshots.emplace_back(URIUtils::AddFileToFolder(path, screenshot));
+          }
+        }
+      }
+
+      /* Parse addon.xml "<license">...</license>" */
+      element = child->FirstChildElement("license");
+      if (element)
+        license = element->GetText();
+
+      /* Parse addon.xml "<source">...</source>" */
+      element = child->FirstChildElement("source");
+      if (element)
+        source = element->GetText();
+
+      /* Parse addon.xml "<broken">...</broken>" */
+      element = child->FirstChildElement("broken");
+      if (element)
+        broken = element->GetText();
+
+      /* Parse addon.xml "<size">...</size>" */
+      element = child->FirstChildElement("size");
+      if (element)
+        packageSize = StringUtils::ToUint64(element->GetText(), 0);
+
+      /* Parse addon.xml "<news lang="..">...</news>" */
+      element = child->FirstChildElement("news");
+      while (element)
+      {
+        const char *lang = element->Attribute("lang");
+        if (lang != nullptr && g_langInfo.GetLocale().Matches(lang))
+        {
+          changelog = element->GetText();
+          break;
+        }
+        else if (lang == nullptr || strcmp(lang, "en") == 0 || strcmp(lang, "en_GB") == 0)
+        {
+          changelog = element->GetText();
+        }
+
+        element = element->NextSiblingElement("news");
+      }
+    }
+    else
+    {
+      // Get add-on type
+      type = TranslateType(point);
+      if (type == ADDON_UNKNOWN)
+        throw std::logic_error(StringUtils::Format("AddonProps: file '%s' doesnt contain a valid add-on type name (%s)", addonXmlPath.c_str(), point.c_str()).c_str());
+
+      // Get add-on library file name (if present)
+      const char* library = child->Attribute("library");
+      if (library == nullptr)
+        library = GetPlatformLibraryName(child);
+      if (library != nullptr)
+        libname = library;
+
+      const TiXmlAttribute* attribute = child->FirstAttribute();
+      while (attribute)
+      {
+        std::string name = attribute->Name();
+        if (name != "point" && !StringUtils::StartsWithNoCase(name, "library") )
+        {
+          const char* value = attribute->Value();
+          if (value)
+            extrainfo.insert(std::make_pair(name, value));
+        }
+        attribute = attribute->Next();
+      }
+    }
+  }
+
+  if (!icon.empty())
+  {
+    std::string tmpIcon = URIUtils::AddFileToFolder(path, "icon.png");
+    if (CFile::Exists(tmpIcon))
+      icon = tmpIcon;
+  }
+
+  if (!fanart.empty())
+  {
+    std::string tmpFanart = URIUtils::AddFileToFolder(path, "fanart.png");
+    if (CFile::Exists(tmpFanart))
+      fanart = tmpFanart;
+  }
+}
+
+CAddon::CAddon(std::string addonPath)
+  : m_props(std::move(addonPath))
+{
+  m_profilePath = StringUtils::Format("special://profile/addon_data/%s/", ID().c_str());
+  m_userSettingsPath = URIUtils::AddFileToFolder(m_profilePath, "settings.xml");
+  m_hasSettings = true;
+  m_settingsLoaded = false;
+  m_userSettingsLoaded = false;
 }
 
 CAddon::CAddon(AddonProps props)
@@ -248,7 +529,7 @@ void CAddon::SaveSettings(void)
   SettingsToXML(doc);
   doc.SaveFile(m_userSettingsPath);
   m_userSettingsLoaded = true;
-  
+
   CAddonMgr::GetInstance().ReloadSettings(ID());//push the settings changes to the running addon instance
 #ifdef HAS_PYTHON
   g_pythonParser.OnSettingsChanged(ID());

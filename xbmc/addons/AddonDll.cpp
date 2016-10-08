@@ -44,6 +44,17 @@
 namespace ADDON
 {
 
+CAddonDll::CAddonDll(std::string addonPath)
+  : CAddon(std::move(addonPath)),
+    m_bIsChild(false)
+{
+  m_initialized = false;
+  m_pDll = nullptr;
+  m_needsavedsettings = false;
+  m_parentLib.clear();
+  memset(&m_interface, 0, sizeof(m_interface));
+}
+
 CAddonDll::CAddonDll(AddonProps props)
   : CAddon(std::move(props)),
     m_bIsChild(false)
