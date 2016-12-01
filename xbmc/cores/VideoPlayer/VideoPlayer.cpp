@@ -2574,7 +2574,7 @@ void CVideoPlayer::HandleMessages()
       //! of the desired segment. With the current approach calculated time may point
       //! to nirvana
       if (m_pInputStream->GetIPosTime() == nullptr)
-        time -= DVD_TIME_TO_MSEC(m_State.time_offset);
+        time -= m_State.time_offset * 1000 / DVD_TIME_BASE;
 
       CLog::Log(LOGDEBUG, "demuxer seek to: %f", time);
       if (m_pDemuxer && m_pDemuxer->SeekTime(time, msg.GetBackward(), &start))
@@ -4979,7 +4979,7 @@ void CVideoPlayer::UpdatePlayState(double timeout)
       }
     }
 
-    state.time = DVD_TIME_TO_MSEC(m_clock.GetClock(false));
+    state.time = m_clock.GetClock(false) * 1000 / DVD_TIME_BASE;
     state.time_total = m_pDemuxer->GetStreamLength();
   }
 
@@ -5011,7 +5011,7 @@ void CVideoPlayer::UpdatePlayState(double timeout)
 
         state.time_offset = DVD_MSEC_TO_TIME(dispTime) - state.dts;
       }
-      state.time += DVD_TIME_TO_MSEC(state.time_offset);
+      state.time += state.time_offset * 1000 / DVD_TIME_BASE;
       state.time_total = pDisplayTime->GetTotalTime();
     }
     else
