@@ -388,7 +388,7 @@ bool CAddonDll::CheckAPIVersion(int type)
 }
 
 /*! @todo there comes further changes until it is final! */
-ADDON_STATUS CAddonDll::CreateInstance(int instanceType, const std::string& instanceID, KODI_HANDLE instance, KODI_HANDLE* addonInstance)
+ADDON_STATUS CAddonDll::CreateInstance(int instanceType, const std::string& instanceID, KODI_HANDLE instance, KODI_HANDLE* addonInstance, ::kodi::addon::IAddonInstance* parentInstance)
 {
   ADDON_STATUS status = ADDON_STATUS_OK;
 
@@ -401,7 +401,7 @@ ADDON_STATUS CAddonDll::CreateInstance(int instanceType, const std::string& inst
   if (!CheckAPIVersion(instanceType))
     return ADDON_STATUS_PERMANENT_FAILURE;
 
-  status = m_pDll->CreateInstance(instanceType, instanceID.c_str(), instance, addonInstance);
+  status = m_pDll->CreateInstance(instanceType, instanceID.c_str(), instance, addonInstance, parentInstance);
   if (status == ADDON_STATUS_OK)
   {
     m_usedInstances[instanceID] = std::make_pair(instanceType, *addonInstance);

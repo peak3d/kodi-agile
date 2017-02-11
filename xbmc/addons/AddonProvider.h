@@ -26,8 +26,14 @@
 * See Inputstream.cpp/h for an explaric use case
 */
 
+namespace kodi { namespace addon { class IAddonInstance; }}
+
 namespace ADDON
 {
+
+  class CAddonInfo;
+  typedef std::shared_ptr<CAddonInfo> AddonInfoPtr;
+
   class CAddonProvider
   {
   public:
@@ -35,7 +41,7 @@ namespace ADDON
     {
       INSTANCE_VIDEOCODEC
     };
-    virtual std::shared_ptr<kodi::addon::IAddonInstance> getAddonInstance(INSTANCE_TYPE instance_type) { return nullptr; };
+    virtual void getAddonInstance(INSTANCE_TYPE instance_type, AddonInfoPtr& addonInfo, kodi::addon::IAddonInstance*& parentInstance) { }
   };
 
-  } //Namespace
+} //Namespace

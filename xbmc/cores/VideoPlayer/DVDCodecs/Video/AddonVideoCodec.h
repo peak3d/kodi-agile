@@ -20,24 +20,37 @@
  */
 
 #include "DVDVideoCodec.h"
+#include "addons/AddonDll.h"
 #include "addons/kodi-addon-dev-kit/include/kodi/addon-instance/VideoCodec.h"
 
+namespace kodi { namespace addon { class IAddonInstance; } }
+
 class CAddonVideoCodec
-  : public CDVDVideoCodec
+  : public CDVDVideoCodec,
+    public ADDON::IAddonInstanceHandler
 {
 public:
-  CAddonVideoCodec(CProcessInfo &processInfo, std::shared_ptr<kodi::addon::CInstanceVideoCodec> videoCodec);
+  CAddonVideoCodec(CProcessInfo &processInfo, ADDON::AddonInfoPtr& addonInfo, kodi::addon::IAddonInstance* parentInstance = nullptr);
+  virtual ~CAddonVideoCodec();
+
   virtual bool Open(CDVDStreamInfo &hints, CDVDCodecOptions &options) override;
   virtual bool Reconfigure(CDVDStreamInfo &hints) override;
   virtual bool AddData(const DemuxPacket &packet) override;
   virtual void Reset() override;
   virtual VCReturn GetPicture(DVDVideoPicture* pDvdVideoPicture) override;
-  virtual const char* GetName() override { return m_addonVideoCodec->GetName(); };
+  virtual const char* GetName() override;
   virtual void SetCodecControl(int flags) override { m_codecFlags = flags; }
 private:
   bool CopyToInitData(VIDEOCODEC_INITDATA &initData, CDVDStreamInfo &hints);
 
   std::shared_ptr<kodi::addon::CInstanceVideoCodec> m_addonVideoCodec;
+
+  std::string m_id;
+  ADDON::AddonDllPtr m_addon;
+  kodi::addon::CInstanceVideoCodec* m_addonInstance;
+  AddonInstance_VideoCodec m_struct;
+  kodi::addon::IAddonInstance* m_parentInstance;
+
   int m_codecFlags;
   VIDEOCODEC_FORMAT m_formats[VIDEOCODEC_FORMAT::MaxVideoFormats + 1];
 };

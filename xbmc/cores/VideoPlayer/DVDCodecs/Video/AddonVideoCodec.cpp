@@ -22,12 +22,38 @@
 #include "cores/VideoPlayer/DVDStreamInfo.h"
 #include "cores/VideoPlayer/DVDDemuxers/DemuxCrypto.h"
 #include "cores/VideoPlayer/DVDCodecs/DVDCodecs.h"
+#include "utils/log.h"
 
-CAddonVideoCodec::CAddonVideoCodec(CProcessInfo &processInfo, std::shared_ptr<kodi::addon::CInstanceVideoCodec> videoCodec)
-  : CDVDVideoCodec(processInfo)
-  , m_addonVideoCodec(videoCodec)
-  , m_codecFlags(0)
-{};
+using namespace ADDON;
+
+CAddonVideoCodec::CAddonVideoCodec(CProcessInfo &processInfo, ADDON::AddonInfoPtr& addonInfo, kodi::addon::IAddonInstance* parentInstance)
+  : CDVDVideoCodec(processInfo),
+    IAddonInstanceHandler(ADDON::ADDON_VIDEOCODEC),
+    m_parentInstance(parentInstance)
+{
+  m_id = StringUtils::CreateUUID();
+
+  m_addon = CAddonMgr::GetInstance().GetAddon(addonInfo->ID(), this);
+  if (m_addon == nullptr)
+  {
+    CLog::Log(LOGFATAL, "CInputStreamAddon: Tried to get add-on '%s' who not available!", addonInfo->ID().c_str());
+    return;
+  }
+
+  memset(&m_struct, 0, sizeof(m_struct));
+  m_struct.toKodi.kodiInstance = this;
+  if (m_addon->CreateInstance(ADDON_INSTANCE_INPUTSTREAM, m_id, &m_struct, reinterpret_cast<KODI_HANDLE*>(&m_addonInstance), m_parentInstance) != ADDON_STATUS_OK || !m_struct.toAddon.Open)
+  {
+    CLog::Log(LOGERROR, "CInputStreamAddon: Failed to create add-on instance for '%s'", addonInfo->ID().c_str());
+    return;
+  }
+}
+
+CAddonVideoCodec::~CAddonVideoCodec()
+{
+  m_addon->DestroyInstance(m_id);
+  CAddonMgr::GetInstance().ReleaseAddon(m_addon, this);
+}
 
 bool CAddonVideoCodec::CopyToInitData(VIDEOCODEC_INITDATA &initData, CDVDStreamInfo &hints)
 {
@@ -107,9 +133,6 @@ bool CAddonVideoCodec::CopyToInitData(VIDEOCODEC_INITDATA &initData, CDVDStreamI
 
 bool CAddonVideoCodec::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options)
 {
-  if (!m_addonVideoCodec)
-    return false;
-
   unsigned int nformats(0);
   for (auto fmt : options.m_formats)
     if (fmt == RENDER_FMT_YUV420P)
@@ -126,30 +149,35 @@ bool CAddonVideoCodec::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options)
   if (!CopyToInitData(initData, hints))
     return false;
 
-  return m_addonVideoCodec->Open(initData);
+  return m_struct.toAddon.Open(m_addonInstance, initData);
 }
 
 bool CAddonVideoCodec::Reconfigure(CDVDStreamInfo &hints)
 {
-  if (!m_addonVideoCodec)
+  if (!m_struct.toAddon.Reconfigure)
     return false;
 
   VIDEOCODEC_INITDATA initData;
   if (!CopyToInitData(initData, hints))
     return false;
 
-  return m_addonVideoCodec->Reconfigure(initData);
+  return m_struct.toAddon.Reconfigure(m_addonInstance, initData);
 }
 
 bool CAddonVideoCodec::AddData(const DemuxPacket &packet)
 {
-  return m_addonVideoCodec->AddData(packet);
+  if (m_struct.toAddon.AddData)
+    return m_struct.toAddon.AddData(m_addonInstance, packet);
+  return false;
 }
 
 CDVDVideoCodec::VCReturn CAddonVideoCodec::GetPicture(DVDVideoPicture* pDvdVideoPicture)
 {
+  if (!m_struct.toAddon.GetPicture)
+    return CDVDVideoCodec::VC_ERROR;
+
   VIDEOCODEC_PICTURE picture;
-  switch (m_addonVideoCodec->GetPicture(picture))
+  switch (m_struct.toAddon.GetPicture(m_addonInstance, picture))
   {
   case VC_NONE:
     return CDVDVideoCodec::VC_NONE;
@@ -164,8 +192,16 @@ CDVDVideoCodec::VCReturn CAddonVideoCodec::GetPicture(DVDVideoPicture* pDvdVideo
   }
 }
 
+const char* CAddonVideoCodec::GetName()
+{
+  if (m_struct.toAddon.GetName)
+    return m_struct.toAddon.GetName(m_addonInstance);
+  return "";
+}
+
 void CAddonVideoCodec::Reset()
 {
-  return m_addonVideoCodec->Reset();
+  if (m_struct.toAddon.Reset)
+    m_struct.toAddon.Reset(m_addonInstance);
 }
 
