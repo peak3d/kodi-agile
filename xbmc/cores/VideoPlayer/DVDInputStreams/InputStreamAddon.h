@@ -31,14 +31,15 @@
 
 class CInputStreamProvider
   : public ADDON::CAddonProvider
-  , std::enable_shared_from_this<CInputStreamProvider>
 {
 public:
-  std::shared_ptr<CInputStreamProvider> get()
-  {
-    return shared_from_this();
-  }
-  virtual std::shared_ptr<kodi::addon::IAddonInstance> getAddonInstance(INSTANCE_TYPE instance_type) override;
+  CInputStreamProvider(ADDON::AddonInfoPtr addonInfo, kodi::addon::IAddonInstance* parentInstance);
+
+  virtual void getAddonInstance(INSTANCE_TYPE instance_type, ADDON::AddonInfoPtr& addonInfo, kodi::addon::IAddonInstance*& parentInstance);
+
+private:
+  ADDON::AddonInfoPtr m_addonInfo;
+  kodi::addon::IAddonInstance* m_parentInstance;
 };
 
 //! \brief Input stream class
@@ -117,6 +118,7 @@ private:
   INPUTSTREAM_CAPABILITIES m_caps;
   std::map<int, CDemuxStream*> m_streams;
 
+  ADDON::AddonInfoPtr m_addonInfo;
   ADDON::AddonDllPtr m_addon;
   kodi::addon::CInstanceInputStream* m_addonInstance;
   AddonInstance_InputStream m_struct;

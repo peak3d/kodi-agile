@@ -32,13 +32,21 @@
 
 using namespace ADDON;
 
-std::shared_ptr<kodi::addon::IAddonInstance> CInputStreamProvider::getAddonInstance(INSTANCE_TYPE instance_type)
+CInputStreamProvider::CInputStreamProvider(ADDON::AddonInfoPtr addonInfo, kodi::addon::IAddonInstance* parentInstance)
+  : m_addonInfo(addonInfo),
+    m_parentInstance(parentInstance)
+{
+  
+}
+
+void CInputStreamProvider::getAddonInstance(INSTANCE_TYPE instance_type, ADDON::AddonInfoPtr& addonInfo, kodi::addon::IAddonInstance*& parentInstance)
 {
   if (instance_type == ADDON::CAddonProvider::INSTANCE_VIDEOCODEC)
   {
-    //return std::shared_ptr<kodi::addon::CInstanceVideoCodec>(new kodi::addon::CInstanceVideoCodec());
+    addonInfo = m_addonInfo;
+    parentInstance = m_parentInstance;
   }
-  return nullptr;
+  return;
 }
 
 /*****************************************************************************************************************/
@@ -46,7 +54,8 @@ std::shared_ptr<kodi::addon::IAddonInstance> CInputStreamProvider::getAddonInsta
 CInputStreamAddon::CInputStreamAddon(ADDON::AddonInfoPtr addonInfo, IVideoPlayer* player, const CFileItem& fileitem)
   : CDVDInputStream(DVDSTREAM_TYPE_ADDON, fileitem),
     IAddonInstanceHandler(ADDON_INPUTSTREAM),
-    m_player(player)
+    m_player(player),
+    m_addonInfo(addonInfo)
 {
   m_addon = CAddonMgr::GetInstance().GetAddon(addonInfo->ID(), this);
   if (m_addon == nullptr)
@@ -500,9 +509,9 @@ void CInputStreamAddon::UpdateStreams()
       if ((m_caps.m_mask & INPUTSTREAM_CAPABILITIES::SUPPORTSDECODE) != 0)
       {
         if (!m_subAddonProvider)
-          m_subAddonProvider = std::shared_ptr<CInputStreamProvider>(new CInputStreamProvider());
+          m_subAddonProvider = std::shared_ptr<CInputStreamProvider>(new CInputStreamProvider(m_addonInfo, m_addonInstance));
 
-        demuxStream->externalInterfaces = m_subAddonProvider->get();
+        demuxStream->externalInterfaces = m_subAddonProvider;
       }
     }
 

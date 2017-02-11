@@ -70,10 +70,12 @@ CDVDVideoCodec* CDVDFactoryCodec::CreateVideoCodec(CDVDStreamInfo &hint, CProces
 
   if (hint.externalInterfaces)
   {
-    std::shared_ptr<kodi::addon::IAddonInstance> videoCodec(hint.externalInterfaces->getAddonInstance(ADDON::CAddonProvider::INSTANCE_VIDEOCODEC));
-    if (videoCodec)
+    ADDON::AddonInfoPtr addonInfo;
+    kodi::addon::IAddonInstance* parentInstance;
+    hint.externalInterfaces->getAddonInstance(ADDON::CAddonProvider::INSTANCE_VIDEOCODEC, addonInfo, parentInstance);
+    if (addonInfo && parentInstance)
     {
-      pCodec.reset(new CAddonVideoCodec(processInfo, std::static_pointer_cast<kodi::addon::CInstanceVideoCodec>(videoCodec)));
+      pCodec.reset(new CAddonVideoCodec(processInfo, addonInfo, parentInstance));
       if (pCodec && pCodec->Open(hint, options))
       {
         return pCodec.release();

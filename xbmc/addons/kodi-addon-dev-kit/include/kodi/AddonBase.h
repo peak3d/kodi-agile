@@ -219,6 +219,11 @@ public:
   IAddonInstance(ADDON_TYPE type) : m_type(type) { }
   virtual ~IAddonInstance() { }
 
+  virtual ADDON_STATUS CreateInstance(int instanceType, std::string instanceID, KODI_HANDLE instance, KODI_HANDLE& addonInstance)
+  {
+    return ADDON_STATUS_NOT_IMPLEMENTED;
+  }
+
   const ADDON_TYPE m_type;
 };
 } /* namespace addon */
@@ -304,9 +309,13 @@ public:
     return CAddonBase::m_interface->addonBase->SetSetting(settingName, CSettingValue(settingValue), lastSetting);
   }
 
-  static inline ADDON_STATUS ADDONBASE_CreateInstance(int instanceType, const char* instanceID, KODI_HANDLE instance, KODI_HANDLE* addonInstance)
+  static inline ADDON_STATUS ADDONBASE_CreateInstance(int instanceType, const char* instanceID, KODI_HANDLE instance, KODI_HANDLE* addonInstance, ::kodi::addon::IAddonInstance* parent = nullptr)
   {
-    ADDON_STATUS status = CAddonBase::m_interface->addonBase->CreateInstance(instanceType, instanceID, instance, *addonInstance);
+    ADDON_STATUS status = ADDON_STATUS_NOT_IMPLEMENTED;
+    if (parent != nullptr)
+      status = parent->CreateInstance(instanceType, instanceID, instance, *addonInstance);
+    if (status == ADDON_STATUS_NOT_IMPLEMENTED)
+      status = CAddonBase::m_interface->addonBase->CreateInstance(instanceType, instanceID, instance, *addonInstance);
     if (*addonInstance == nullptr)
       throw std::logic_error("kodi::addon::CAddonBase CreateInstance returns a empty instance pointer!");
 
@@ -413,9 +422,9 @@ inline void Log(const AddonLog loglevel, const char* format, ...)
   { \
     return kodi::addon::GetTypeVersion(type); \
   } \
-  extern "C" __declspec(dllexport) ADDON_STATUS ADDON_CreateInstance(int instanceType, const char* instanceID, KODI_HANDLE instance, KODI_HANDLE* addonInstance) \
+  extern "C" __declspec(dllexport) ADDON_STATUS ADDON_CreateInstance(int instanceType, const char* instanceID, KODI_HANDLE instance, KODI_HANDLE* addonInstance, ::kodi::addon::IAddonInstance* parent) \
   { \
-    return kodi::addon::CAddonBase::ADDONBASE_CreateInstance(instanceType, instanceID, instance, addonInstance); \
+    return kodi::addon::CAddonBase::ADDONBASE_CreateInstance(instanceType, instanceID, instance, addonInstance, parent); \
   } \
   extern "C" __declspec(dllexport) void ADDON_DestroyInstance(int instanceType, KODI_HANDLE instance) \
   { \

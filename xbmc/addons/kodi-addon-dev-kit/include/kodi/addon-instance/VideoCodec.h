@@ -143,6 +143,7 @@ extern "C"
 
   typedef struct AddonToKodiFuncTable_VideoCodec
   {
+    KODI_HANDLE kodiInstance;
   } AddonToKodiFuncTable_VideoCodec;
 
   typedef struct AddonInstance_VideoCodec
