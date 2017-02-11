@@ -26,6 +26,7 @@
 #include "DVDInputStream.h"
 #include "IVideoPlayer.h"
 #include "addons/AddonDll.h"
+#include "addons/AddonProvider.h"
 #include "addons/kodi-addon-dev-kit/include/kodi/addon-instance/Inputstream.h"
 
 //! \brief Input stream class
@@ -34,7 +35,8 @@ class CInputStreamAddon :
   public CDVDInputStream::IDisplayTime,
   public CDVDInputStream::IPosTime,
   public CDVDInputStream::IDemux,
-  public ADDON::IAddonInstanceHandler
+  public ADDON::IAddonInstanceHandler,
+  public ADDON::CAddonProvider
 {
 public:
   //! \brief constructor
@@ -92,6 +94,9 @@ public:
   virtual void SetVideoResolution(int width, int height) override;
   int64_t PositionStream();
   bool IsRealTimeStream();
+
+  //CAddonProvider
+  virtual std::shared_ptr<kodi::addon::IAddonInstance> getAddonInstance(INSTANCE_TYPE instance_type) override;
 
 protected:
   bool m_hasDemux;

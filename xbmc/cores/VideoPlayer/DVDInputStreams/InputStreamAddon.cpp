@@ -480,8 +480,8 @@ void CInputStreamAddon::UpdateStreams()
         demuxStream->ExtraData[j] = stream.m_ExtraData[j];
     }
 
-    if (stream.m_CryptoKeySystem != INPUTSTREAM_INFO::CRYPTO_KEY_SYSTEM_NONE &&
-      stream.m_CryptoKeySystem < INPUTSTREAM_INFO::CRYPTO_KEY_SYSTEM_COUNT)
+    if (stream.m_cryptoInfo.m_CryptoKeySystem != CRYPTO_INFO::CRYPTO_KEY_SYSTEM_NONE &&
+      stream.m_cryptoInfo.m_CryptoKeySystem < CRYPTO_INFO::CRYPTO_KEY_SYSTEM_COUNT)
     {
       static const CryptoSessionSystem map[] =
       {
@@ -490,7 +490,7 @@ void CInputStreamAddon::UpdateStreams()
         CRYPTO_SESSION_SYSTEM_PLAYREADY
       };
       demuxStream->cryptoSession = std::shared_ptr<DemuxCryptoSession>(new DemuxCryptoSession(
-        map[stream.m_CryptoKeySystem], stream.m_CryptoSessionIdSize, stream.m_CryptoSessionId));
+        map[stream.m_cryptoInfo.m_CryptoKeySystem], stream.m_cryptoInfo.m_CryptoSessionIdSize, stream.m_cryptoInfo.m_CryptoSessionId));
     }
 
     m_streams[demuxStream->uniqueId] = demuxStream;
@@ -522,4 +522,10 @@ DemuxPacket* CInputStreamAddon::InputStreamAllocateEncryptedDemuxPacket(void* ko
 {
   return CDVDDemuxUtils::AllocateDemuxPacket(iDataSize, encryptedSubsampleCount);
 }
+
+std::shared_ptr<kodi::addon::IAddonInstance> CInputStreamAddon::getAddonInstance(INSTANCE_TYPE instance_type)
+{
+  return nullptr;
+}
+
 //@}

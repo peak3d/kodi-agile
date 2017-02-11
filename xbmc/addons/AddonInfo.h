@@ -96,7 +96,7 @@ namespace ADDON
     const std::string asString()  const { return str; }
     const bool asBoolean() const { return StringUtils::EqualsNoCase(str, "true"); }
     const int asInteger() const { return atoi(str.c_str()); }
-    const float asFloat() const { return atof(str.c_str()); }
+    const float asFloat() const { return static_cast<float>(atof(str.c_str())); }
     const bool empty() const { return str.empty(); }
     const std::string str;
   };
