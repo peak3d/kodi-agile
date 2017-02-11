@@ -58,7 +58,10 @@ extern "C"
       SUPPORTSSEEK = (1 << 3),
 
       /// supports pause
-      SUPPORTSPAUSE = (1 << 4)
+      SUPPORTSPAUSE = (1 << 4),
+
+      /// supports decode
+      SUPPORTSDECODE = (1 << 5)
     };
 
     /// set of supported capabilities

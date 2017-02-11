@@ -29,14 +29,25 @@
 #include "addons/AddonProvider.h"
 #include "addons/kodi-addon-dev-kit/include/kodi/addon-instance/Inputstream.h"
 
+class CInputStreamProvider
+  : public ADDON::CAddonProvider
+  , std::enable_shared_from_this<CInputStreamProvider>
+{
+public:
+  std::shared_ptr<CInputStreamProvider> get()
+  {
+    return shared_from_this();
+  }
+  virtual std::shared_ptr<kodi::addon::IAddonInstance> getAddonInstance(INSTANCE_TYPE instance_type) override;
+};
+
 //! \brief Input stream class
 class CInputStreamAddon :
   public CDVDInputStream,
   public CDVDInputStream::IDisplayTime,
   public CDVDInputStream::IPosTime,
   public CDVDInputStream::IDemux,
-  public ADDON::IAddonInstanceHandler,
-  public ADDON::CAddonProvider
+  public ADDON::IAddonInstanceHandler
 {
 public:
   //! \brief constructor
@@ -95,16 +106,7 @@ public:
   int64_t PositionStream();
   bool IsRealTimeStream();
 
-  //CAddonProvider
-  virtual std::shared_ptr<kodi::addon::IAddonInstance> getAddonInstance(INSTANCE_TYPE instance_type) override;
-
 protected:
-  bool m_hasDemux;
-  bool m_hasDisplayTime;
-  bool m_hasPosTime;
-  bool m_canPause;
-  bool m_canSeek;
-
   void UpdateStreams();
   void DisposeStreams();
 
@@ -118,6 +120,7 @@ private:
   ADDON::AddonDllPtr m_addon;
   kodi::addon::CInstanceInputStream* m_addonInstance;
   AddonInstance_InputStream m_struct;
+  std::shared_ptr<CInputStreamProvider> m_subAddonProvider;
 
   /*!
    * Callbacks from add-on to kodi
