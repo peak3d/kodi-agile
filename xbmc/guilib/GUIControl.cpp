@@ -128,9 +128,11 @@ void CGUIControl::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyreg
 {
   CRect dirtyRegion = m_renderRegion;
 
-  bool changed = m_bInvalidated && IsVisible();
+  bool changed = m_controlIsDirty || (m_bInvalidated && IsVisible());
+  m_controlIsDirty = false;
 
-  changed |= Animate(currentTime);
+  if (Animate(currentTime))
+    MarkDirtyRegion();
 
   if (IsVisible())
   {
@@ -153,8 +155,6 @@ void CGUIControl::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyreg
   }
 
   changed |= m_controlIsDirty;
-
-  m_controlIsDirty = false;
 
   if (changed)
   {
@@ -477,6 +477,8 @@ float CGUIControl::GetHeight() const
 void CGUIControl::MarkDirtyRegion()
 {
   m_controlIsDirty = true;
+  if (m_parentControl)
+    m_parentControl->MarkDirtyRegion();
 }
 
 CRect CGUIControl::CalcRenderRegion() const
