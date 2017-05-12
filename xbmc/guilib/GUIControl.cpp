@@ -851,20 +851,11 @@ bool CGUIControl::Animate(unsigned int currentTime)
     changed |= (anim.GetProcess() != ANIM_PROCESS_NONE);
     anim.RenderAnimation(m_transform, center);
 
-/*    // debug stuff
-    if (anim.currentProcess != ANIM_PROCESS_NONE)
+    // debug stuff
+    if (anim.GetProcess() != ANIM_PROCESS_NONE && IsVisible())
     {
-      if (anim.effect == EFFECT_TYPE_ZOOM)
-      {
-        if (IsVisible())
-          CLog::Log(LOGDEBUG, "Animating control %d with a %s zoom effect %s. Amount is %2.1f, visible=%s", m_controlID, anim.type == ANIM_TYPE_CONDITIONAL ? (anim.lastCondition ? "conditional_on" : "conditional_off") : (anim.type == ANIM_TYPE_VISIBLE ? "visible" : "hidden"), anim.currentProcess == ANIM_PROCESS_NORMAL ? "normal" : "reverse", anim.amount, IsVisible() ? "true" : "false");
-      }
-      else if (anim.effect == EFFECT_TYPE_FADE)
-      {
-        if (IsVisible())
-          CLog::Log(LOGDEBUG, "Animating control %d with a %s fade effect %s. Amount is %2.1f. Visible=%s", m_controlID, anim.type == ANIM_TYPE_CONDITIONAL ? (anim.lastCondition ? "conditional_on" : "conditional_off") : (anim.type == ANIM_TYPE_VISIBLE ? "visible" : "hidden"), anim.currentProcess == ANIM_PROCESS_NORMAL ? "normal" : "reverse", anim.amount, IsVisible() ? "true" : "false");
-      }
-    }*/
+      CLog::Log(LOGDEBUG, "Animating control %d", m_controlID);
+    }
   }
 
   return changed;
