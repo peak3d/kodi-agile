@@ -852,10 +852,10 @@ bool CGUIControl::Animate(unsigned int currentTime)
     anim.RenderAnimation(m_transform, center);
 
     // debug stuff
-    if (anim.GetProcess() != ANIM_PROCESS_NONE && IsVisible())
-    {
-      CLog::Log(LOGDEBUG, "Animating control %d", m_controlID);
-    }
+    //if (anim.GetProcess() != ANIM_PROCESS_NONE && IsVisible())
+    //{
+    //  CLog::Log(LOGDEBUG, "Animating control %d", m_controlID);
+    //}
   }
 
   return changed;
