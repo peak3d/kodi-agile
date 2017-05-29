@@ -1148,7 +1148,12 @@ void CGUIWindowManager::AfterRender()
   for (const auto& window : activeDialogs)
   {
     if (window->IsDialogRunning())
+    {
       window->AfterRender();
+      // Dialog state can affect visibility states
+      if (pWindow && window->IsControlDirty())
+        pWindow->MarkDirtyRegion();
+    }
   }
 }
 

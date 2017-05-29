@@ -177,6 +177,7 @@ public:
   virtual float GetHeight() const;
 
   void MarkDirtyRegion();
+  bool IsControlDirty() const { return m_controlIsDirty; };
 
   /*! \brief return the render region in screen coordinates of this control
    */
