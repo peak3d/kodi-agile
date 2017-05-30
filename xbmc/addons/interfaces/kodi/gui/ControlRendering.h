@@ -49,7 +49,7 @@ namespace ADDON
 
   class CGUIAddonRenderingControl : public IRenderingCallback
   {
-  friend class Interface_GUIControlAddonRendering;
+  friend struct Interface_GUIControlAddonRendering;
   public:
     CGUIAddonRenderingControl(CGUIRenderingControl *pControl);
     virtual ~CGUIAddonRenderingControl() {}
