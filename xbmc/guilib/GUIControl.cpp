@@ -477,6 +477,9 @@ float CGUIControl::GetHeight() const
 
 void CGUIControl::MarkDirtyRegion()
 {
+  if (m_controlIsDirty)
+    return;
+
   m_controlIsDirty = true;
   if (m_parentControl)
     m_parentControl->MarkDirtyRegion();

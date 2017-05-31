@@ -242,6 +242,9 @@ bool CAddonVideoCodec::AddData(const DemuxPacket &packet)
   if (!m_struct.toAddon.AddData)
     return false;
 
+  if (g_advancedSettings.CanLogComponent(LOGVIDEO))
+    CLog::Log(LOGDEBUG, "CAddonVideoCodec: AddData with size:%d and PTS: %0.2lf", packet.iSize, packet.pts);
+
   return m_struct.toAddon.AddData(&m_struct, packet);
 }
 
