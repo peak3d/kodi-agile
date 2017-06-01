@@ -219,7 +219,7 @@ public:
   virtual void UpdateVisibility(const CGUIListItem *item = NULL);
   virtual void SetInitialVisibility();
   virtual void SetEnabled(bool bEnable);
-  virtual void SetInvalid() { m_bInvalidated = true; };
+  virtual void SetInvalid() { m_bInvalidated = true; MarkDirtyRegion(); };
   virtual void SetPulseOnSelect(bool pulse) { m_pulseOnSelect = pulse; };
   virtual std::string GetDescription() const { return ""; };
   virtual std::string GetDescriptionByIndex(int index) const { return ""; };

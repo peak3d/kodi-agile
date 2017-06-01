@@ -338,7 +338,6 @@ bool CGUIControl::OnMessage(CGUIMessage& message)
 {
   if ( message.GetControlId() == GetID() )
   {
-    MarkDirtyRegion();
     switch (message.GetMessage() )
     {
     case GUI_MSG_SETFOCUS:
