@@ -1175,9 +1175,6 @@ void CGUIWindowManager::FrameMove()
     m_deleteWindows.clear();
   }
 
-  if (CDataCacheCore::GetInstance().PlayStateChanged())
-    SendMessage(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_PLAYERSTATE_CHANGED);
-
   CGUIWindow* pWindow = GetWindow(GetActiveWindow());
   if (pWindow)
     pWindow->FrameMove();
@@ -1606,6 +1603,19 @@ bool CGUIWindowManager::IsWindowTopMost(const std::string &xmlFile) const
   if (topMost && StringUtils::EqualsNoCase(URIUtils::GetFileName(topMost->GetProperty("xmlfile").asString()), xmlFile))
     return true;
   return false;
+}
+
+bool CGUIWindowManager::HasVisibleControls()
+{
+  CSingleExit lock(g_graphicsContext);
+
+  if (m_activeDialogs.empty())
+  {
+    CGUIWindow *window(GetWindow(GetActiveWindow()));
+    return window && window->HasVisibleControls();
+  }
+  else
+    return false;
 }
 
 void CGUIWindowManager::ClearWindowHistory()

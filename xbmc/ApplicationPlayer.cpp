@@ -751,7 +751,12 @@ void CApplicationPlayer::FrameMove()
 {
   std::shared_ptr<IPlayer> player = GetInternal();
   if (player)
+  {
     player->FrameMove();
+
+    if (CDataCacheCore::GetInstance().PlayStateChanged())
+      g_application.SendGUIMessage(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_PLAYERSTATE_CHANGED);
+  }
 }
 
 void CApplicationPlayer::Render(bool clear, uint32_t alpha, bool gui)
