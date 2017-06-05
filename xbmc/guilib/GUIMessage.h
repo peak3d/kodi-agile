@@ -169,7 +169,7 @@
  /*!
  \brief Called from DataCacheCore if playerstate has changed
  */
-#define GUI_MSG_PLAYERSTATE_CHANGED  51
+#define GUI_MSG_STATE_CHANGED  51
 
 
 #define GUI_MSG_USER         1000

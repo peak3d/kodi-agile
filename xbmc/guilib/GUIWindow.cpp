@@ -754,7 +754,7 @@ bool CGUIWindow::OnMessage(CGUIMessage& message)
             control->OnMessage(msg);
           }
         }
-        else if (message.GetParam1() == GUI_MSG_PLAYERSTATE_CHANGED)
+        else if (message.GetParam1() == GUI_MSG_STATE_CHANGED)
           m_forceProcess = true;
       }
     }

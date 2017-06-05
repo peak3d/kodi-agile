@@ -395,10 +395,6 @@ bool CGUIControl::OnMessage(CGUIMessage& message)
       // invalidate controls to get them to recalculate sizing information
       SetInvalid();
       return true;
-    case GUI_MSG_PLAYERSTATE_CHANGED:
-      // Reevaluate visible state
-      UpdateVisibility();
-      break;
     }
   }
   return false;

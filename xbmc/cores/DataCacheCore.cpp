@@ -23,7 +23,6 @@
 #include "ServiceBroker.h"
 
 CDataCacheCore::CDataCacheCore()
-  :m_playStateChanged(false)
 {
   m_hasAVInfoChanges = false;
 }
@@ -228,7 +227,7 @@ void CDataCacheCore::SetStateSeeking(bool active)
   CSingleLock lock(m_stateSection);
 
   m_stateInfo.m_stateSeeking = active;
-  m_playStateChanged = true;
+  m_playerStateChanged = true;
 }
 
 bool CDataCacheCore::CDataCacheCore::IsSeeking()
@@ -243,7 +242,7 @@ void CDataCacheCore::SetGuiRender(bool gui)
   CSingleLock lock(m_stateSection);
 
   m_stateInfo.m_renderGuiLayer = gui;
-  m_playStateChanged = true;
+  m_playerStateChanged = true;
 }
 
 bool CDataCacheCore::CDataCacheCore::GetGuiRender()
@@ -258,7 +257,7 @@ void CDataCacheCore::SetVideoRender(bool video)
   CSingleLock lock(m_stateSection);
 
   m_stateInfo.m_renderVideoLayer = video;
-  m_playStateChanged = true;
+  m_playerStateChanged = true;
 }
 
 bool CDataCacheCore::CDataCacheCore::GetVideoRender()
@@ -268,12 +267,12 @@ bool CDataCacheCore::CDataCacheCore::GetVideoRender()
   return m_stateInfo.m_renderVideoLayer;
 }
 
-bool CDataCacheCore::PlayStateChanged()
+bool CDataCacheCore::IsPlayerStateChanged()
 {
   CSingleLock lock(m_stateSection);
 
-  bool ret(m_playStateChanged);
-  m_playStateChanged = false;
+  bool ret(m_playerStateChanged);
+  m_playerStateChanged = false;
 
   return ret;
 }

@@ -754,8 +754,8 @@ void CApplicationPlayer::FrameMove()
   {
     player->FrameMove();
 
-    if (CDataCacheCore::GetInstance().PlayStateChanged())
-      g_application.SendGUIMessage(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_PLAYERSTATE_CHANGED);
+    if (CDataCacheCore::GetInstance().IsPlayerStateChanged())
+      g_application.SendGUIMessage(GUI_MSG_NOTIFY_ALL, 0, 0, GUI_MSG_STATE_CHANGED);
   }
 }
 
