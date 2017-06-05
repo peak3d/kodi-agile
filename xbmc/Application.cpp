@@ -4580,7 +4580,7 @@ void CApplication::ProcessSlow()
 
   m_ServiceManager->GetActiveAE().GarbageCollect();
 
-  SendGUIMessage(GUI_MSG_REFRESH_TIMER);
+  g_windowManager.SendMessage(GUI_MSG_REFRESH_TIMER,0,0);
 
   // if we don't render the gui there's no reason to start the screensaver.
   // that way the screensaver won't kick in if we maximize the XBMC window
@@ -5212,12 +5212,6 @@ void CApplication::CloseNetworkShares()
 
   for (const auto& vfsAddon : CServiceBroker::GetVFSAddonCache().GetAddonInstances())
     vfsAddon->DisconnectAll();
-}
-
-void CApplication::SendGUIMessage(int dwMsg, int senderID/* = 0*/, int controlID/* = 0*/, int param1/* = 0*/, int param2/* = 0*/)
-{
-  CGUIMessage msg(dwMsg, senderID, controlID, param1, param2);
-  g_windowManager.SendThreadMessage(msg);
 }
 
 void CApplication::RegisterActionListener(IActionListener *listener)
